@@ -15,6 +15,7 @@ struct Batter {
     let runs: Int
     let onBasePercentage: Double
     let stolenBases: Int
+    let runsBattedIn: Int
 }
 
 func standardDeviation(for array: [Int]) -> Double {
@@ -62,6 +63,7 @@ var nameRow:Int? = 0
 var runsRow = headerRow.index(of: batterFields.runs.rawValue)
 var onBasePercentageRow = headerRow.index(of: batterFields.onBasePercentage.rawValue)
 var stolenBasesRow = headerRow.index(of: batterFields.steals.rawValue)
+var runsBattedInRow = headerRow.index(of: batterFields.runsBattedIn.rawValue)
     
 print("runsRow:\(String(describing:runsRow))")
 print("onBasePercentageRow:\(String(describing:onBasePercentageRow))")
@@ -70,7 +72,8 @@ guard let homeRunsRow = homeRunsRow,
       let nameRow = nameRow,
       let runsRow = runsRow,
       let stolenBasesRow = stolenBasesRow,
-      let onBasePercentageRow = onBasePercentageRow else {
+      let onBasePercentageRow = onBasePercentageRow,
+      let runsBattedInRow = runsBattedInRow else {
     print("Unable to determine rows")
     //print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
     exit(0)
@@ -82,9 +85,10 @@ while let row = csv.next() {
     if let homeRuns = Int(row[homeRunsRow]),
        let runs = Int(row[runsRow]),
        let onBasePercentage = Double(row[onBasePercentageRow]),
-       let stolenBases = Int(row[stolenBasesRow])
+       let stolenBases = Int(row[stolenBasesRow]),
+       let runsBattedIn = Int(row[runsBattedInRow])
        {
-        let batter = Batter(name: row[nameRow], homeRuns: homeRuns, runs: runs, onBasePercentage: onBasePercentage, stolenBases: stolenBases )
+        let batter = Batter(name: row[nameRow], homeRuns: homeRuns, runs: runs, onBasePercentage: onBasePercentage, stolenBases: stolenBases, runsBattedIn: runsBattedIn)
         batters.append(batter)
     }
     
