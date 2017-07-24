@@ -36,24 +36,18 @@ func standardDeviation(for array: [Int]) -> Double {
 //let spotifyResponse = try drop.client.get("https://api.spotify.com/v1/search?type=artist&q=\(query)")
 //print(spotifyResponse)
 
-//let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
 let filename = "/Users/jaim/code/xcode/command-line-tool/data/fg-2017-projections.csv"
 
-//let url = URL(fileURLWithPath: "/tmp/foo")
 let playerDataCSV = try String(contentsOfFile: filename, encoding: String.Encoding.ascii)
-
-//print(file)
-
 
 let csv = try! CSVReader(string: playerDataCSV,
                          hasHeaderRow: true) // It must be true.
 
-
-
 enum batterFields: String {
     case homeRuns = "HR"
     case name = "Name"
-    case runs = "Runs"
+    case runs = "R"
+    case runsBattedIn = "RBI"
     case onBasePercentage = "OBP"
     case steals = "SB"
 }
@@ -69,7 +63,9 @@ var runsRow = headerRow.index(of: batterFields.runs.rawValue)
 var onBasePercentageRow = headerRow.index(of: batterFields.onBasePercentage.rawValue)
 var stolenBasesRow = headerRow.index(of: batterFields.steals.rawValue)
     
-
+print("runsRow:\(String(describing:runsRow))")
+print("onBasePercentageRow:\(String(describing:onBasePercentageRow))")
+print("stolenBasesRow:\(String(describing:stolenBasesRow))")
 guard let homeRunsRow = homeRunsRow,
       let nameRow = nameRow,
       let runsRow = runsRow,
