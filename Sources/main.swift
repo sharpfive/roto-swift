@@ -62,28 +62,32 @@ enum batterFields: String {
 let headerRow = csv.headerRow!
 
 print(headerRow)
-var hrRowOptional = headerRow.index(of: batterFields.homeRuns.rawValue)
-var nameRowOptional:Int? = 0
-var runsRowOptional = headerRow.index(of: batterFields.runs.rawValue)
-var onBasePercentageOptional = headerRow.index(of: batterFields.onBasePercentage.rawValue)
-var stealsRowOptional = headerRow.index(of: batterFields.steals.rawValue)
+var homeRunsRow = headerRow.index(of: batterFields.homeRuns.rawValue)
+var nameRow:Int? = 0
+var runsRow = headerRow.index(of: batterFields.runs.rawValue)
+var onBasePercentageRow = headerRow.index(of: batterFields.onBasePercentage.rawValue)
+var stolenBasesRow = headerRow.index(of: batterFields.steals.rawValue)
     
 
-guard let hrRow = Int(hrRowOptional),
-      let nameRow = nameRowOptional,
-      let runsRow = Int(runsRowOptional),
-      let stolenBasesRow = Int(stealsRowOptional),
-      let onBasePercentage = Double(onBasePercentageOptional) else {
+guard let homeRunsRow = homeRunsRow,
+      let nameRow = nameRow,
+      let runsRow = runsRow,
+      let stolenBasesRow = stolenBasesRow,
+      let onBasePercentageRow = onBasePercentageRow else {
     print("Unable to determine rows")
-    print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
+    //print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
     exit(0)
 }
 
 var batters = [Batter]()
 
 while let row = csv.next() {
-    if let hrCount = Int(row[hrRow]) {
-        let batter = Batter(name: row[nameRow], homeRuns: hrCount, runs: row[runsRow], onBasePercentage: row[onBasePercentage], stolenBases: row[stolenBasesRow] )
+    if let homeRuns = Int(row[homeRunsRow]),
+       let runs = Int(row[runsRow]),
+       let onBasePercentage = Double(row[onBasePercentageRow]),
+       let stolenBases = Int(row[stolenBasesRow])
+       {
+        let batter = Batter(name: row[nameRow], homeRuns: homeRuns, runs: runs, onBasePercentage: onBasePercentage, stolenBases: stolenBases )
         batters.append(batter)
     }
     
