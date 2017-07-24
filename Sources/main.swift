@@ -36,7 +36,8 @@ func standardDeviation(for array: [Int]) -> Double {
 //let spotifyResponse = try drop.client.get("https://api.spotify.com/v1/search?type=artist&q=\(query)")
 //print(spotifyResponse)
 
-let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
+//let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
+let filename = "/Users/jaim/code/xcode/command-line-tool/data/fg-2017-projections.csv"
 
 //let url = URL(fileURLWithPath: "/tmp/foo")
 let playerDataCSV = try String(contentsOfFile: filename, encoding: String.Encoding.ascii)
