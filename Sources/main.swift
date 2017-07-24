@@ -12,6 +12,9 @@ print("Yo!")
 struct Batter {
     let name: String
     let homeRuns: Int
+    let runs: Int
+    let onBasePercentage: Double
+    let stolenBases: Int
 }
 
 func standardDeviation(for array: [Int]) -> Double {
@@ -47,8 +50,11 @@ let csv = try! CSVReader(string: playerDataCSV,
 
 
 enum batterFields: String {
-    case HR = "HR"
+    case homeRuns = "HR"
     case name = "Name"
+    case runs = "Runs"
+    case onBasePercentage = "OBP"
+    case steals = "SB"
 }
 
 //const let HR = "HR"
@@ -56,11 +62,18 @@ enum batterFields: String {
 let headerRow = csv.headerRow!
 
 print(headerRow)
-var hrRowOptional = headerRow.index(of: batterFields.HR.rawValue)
-var nameRowOptional:Int? = 0//headerRow.index(of: batterFields.name.rawValue)
+var hrRowOptional = headerRow.index(of: batterFields.homeRuns.rawValue)
+var nameRowOptional:Int? = 0
+var runsRowOptional = headerRow.index(of: batterFields.runs.rawValue)
+var onBasePercentageOptional = headerRow.index(of: batterFields.onBasePercentage.rawValue)
+var stealsRowOptional = headerRow.index(of: batterFields.steals.rawValue)
     
 
-guard let hrRow = hrRowOptional, let nameRow = nameRowOptional else {
+guard let hrRow = Int(hrRowOptional),
+      let nameRow = nameRowOptional,
+      let runsRow = Int(runsRowOptional),
+      let stolenBasesRow = Int(stealsRowOptional),
+      let onBasePercentage = Double(onBasePercentageOptional) else {
     print("Unable to determine rows")
     print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
     exit(0)
@@ -70,7 +83,7 @@ var batters = [Batter]()
 
 while let row = csv.next() {
     if let hrCount = Int(row[hrRow]) {
-        let batter = Batter(name: row[nameRow], homeRuns: hrCount)
+        let batter = Batter(name: row[nameRow], homeRuns: hrCount, runs: row[runsRow], onBasePercentage: row[onBasePercentage], stolenBases: row[stolenBasesRow] )
         batters.append(batter)
     }
     
