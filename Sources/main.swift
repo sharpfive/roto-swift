@@ -30,6 +30,44 @@ func standardDeviation(for array: [Int]) -> Double {
     return adjustedMean.squareRoot()
 }
 
+func calculateMean(for array: [Int]) -> Double {
+    let total = array.reduce(0,+)
+    return Double(total) / Double(array.count)
+}
+
+func calculateMean(for array: [Double]) -> Double {
+    let total = array.reduce(0,+)
+    return total / Double(array.count)
+}
+
+func standardDeviation(for array: [Double]) -> Double {
+    let sum = array.reduce(0,+)
+    let mean = Double(sum) / Double(array.count)
+    let adjustedArray = array.map { (value) -> Double in
+        return pow(Double(value) - mean, 2)
+    }
+    let adjustedSum = adjustedArray.reduce(0,+)
+    let adjustedMean = Double(adjustedSum) / Double(adjustedArray.count)
+    
+    return adjustedMean.squareRoot()
+}
+
+func calculateZScore(value: Int, mean: Double, standardDeviation:Double ) -> Double {
+    return (Double(value) - mean) / standardDeviation
+}
+
+func calculateZScore(value: Double, mean: Double, standardDeviation:Double ) -> Double {
+    return (value - mean) / standardDeviation
+}
+
+func calculateZScore(for batter: Batter, mean: Double, standardDeviation: Double) {
+    return calculateZScore(value: batter.homeRuns, mean: mean, standardDeviation: standardDeviation) +
+    calculateZScore(value: batter.runsBattedIn, mean: mean, standardDeviation: standardDeviation) +
+    calculateZScore(value: batter.runs, mean: mean, standardDeviation: standardDeviation) +
+    calculateZScore(value: batter.onBasePercentage, mean: mean, standardDeviation: standardDeviation) +
+    calculateZScore(value: batter.stolenBases, mean: mean, standardDeviation: standardDeviation)
+}
+
 
 //let drop = try Droplet()
 
@@ -108,12 +146,34 @@ let endIndex = min(batterPoolCount, batters.count)
 let batterPool = Array(batters[0..<endIndex])
 
 batterPool.forEach { (batter) in
-    print(batter)
+    //print(batter)
 }
 
 print("\(batterPool.count) batters found")
-let homeRunsStandardDeviation = standardDeviation(for: batterPool.map({ (batter) -> Int in
-    batter.homeRuns
-}))
-print("HR standard deviation = \(homeRunsStandardDeviation)")
+let homeRunsStandardDeviation = standardDeviation(for: batterPool.map{ $0.homeRuns})
+let meanHomeRuns = calculateMean(for: batterPool.map{ $0.homeRuns})
+print("HR standard deviation = \(homeRunsStandardDeviation) - Mean \(meanHomeRuns)")
+
+let runsStandardDeviation = standardDeviation(for: batterPool.map {$0.runs})
+let meanRuns = calculateMean(for: batterPool.map{ $0.runs})
+print("Runs standard deviation = \(runsStandardDeviation) - Mean \(meanRuns)")
+
+let runsBattedInStandardDeviation = standardDeviation(for: batterPool.map {$0.runsBattedIn})
+let meanRunsBattedIn = calculateMean(for: batterPool.map{ $0.runsBattedIn})
+print("RBI's deviation = \(runsBattedInStandardDeviation) - Mean \(meanRunsBattedIn)")
+
+let onBasePercentageStandardDeviation = standardDeviation(for: batterPool.map {$0.onBasePercentage})
+let meanOnBasePercentage = calculateMean(for: batterPool.map{ $0.onBasePercentage})
+print("OBP deviation = \(onBasePercentageStandardDeviation) - Mean \(meanOnBasePercentage)")
+
+let stolenBasesStandardDeviation = standardDeviation(for: batterPool.map {$0.stolenBases})
+let meanStolenBases = calculateMean(for: batterPool.map {$0.stolenBases})
+print("SB deviation = \(stolenBasesStandardDeviation) - Mean \(meanStolenBases)")
+
+let homeRunZScore = calculateZScore(value: <#T##Double#>, mean: <#T##Double#>, standardDeviation: <#T##Double#>)
+//calculate Z scores
+let zScores = batterPool.map {
+    ($0.name, calculateZScore(value: <#T##Double#>, mean: <#T##Double#>, standardDeviation: <#T##Double#>))}
+
+
 
