@@ -1,6 +1,7 @@
 //: Playground - noun: a place where people can play
 
 import UIKit
+import CSV
 
 var str = "Hello, playground"
 
@@ -85,11 +86,24 @@ func standardDeviation(for array: [Int]) -> Double {
     return adjustedMean.squareRoot()
 }
 
+
+
 let asdf = 1
 
 let testArray = [600,470,170,430,300]
 
 let stdDev = standardDeviation(for: testArray)
+
+let csvString = "id,name\n1,foo\n2,bar"
+let csv = try! CSVReader(string: csvString,
+                         hasHeaderRow: true) // It must be true.
+
+let headerRow = csv.headerRow!
+print("\(headerRow)") // => ["id", "name"]
+
+while let row = csv.next() {
+    print("\(row)")
+}
 
 
 //let adjustedBatters = sortedBatterArray.map { (batter) -> T in

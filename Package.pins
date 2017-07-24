@@ -14,6 +14,12 @@
       "version": "1.0.0"
     },
     {
+      "package": "CSV",
+      "reason": null,
+      "repositoryURL": "https://github.com/yaslab/CSV.swift.git",
+      "version": "2.0.1"
+    },
+    {
       "package": "CTLS",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/ctls.git",

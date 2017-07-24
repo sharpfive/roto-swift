@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "1561F3D16C6C66E5DE3CB002A40A5564A95EB1A1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "1561F3D16C6C66E5DE3CB002A40A5564A95EB1A1" : 9223372036854775807,
+    "4B9E1D733D0D83F5128ED7DA0DE7A20003C27748" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "65AE6D1F-B83C-42E4-B4E6-C0BCDAC4F09D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "1561F3D16C6C66E5DE3CB002A40A5564A95EB1A1" : "roto-swift\/",
+    "4B9E1D733D0D83F5128ED7DA0DE7A20003C27748" : "roto-swift\/.build\/checkouts\/CSV.swift.git-4712561669410534612\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "command-line-tool",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "command-line-tool.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/sharpfive\/roto-swift.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1561F3D16C6C66E5DE3CB002A40A5564A95EB1A1"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "\/Users\/jaim\/code\/roto-swift\/.build\/repositories\/CSV.swift.git-4712561669410534612",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4B9E1D733D0D83F5128ED7DA0DE7A20003C27748"
+    }
+  ]
+}
