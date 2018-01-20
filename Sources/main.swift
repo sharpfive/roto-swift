@@ -18,6 +18,12 @@ struct Batter {
     let runsBattedIn: Int
 }
 
+struct PlayerAuction {
+    let name: String
+    let zScore: Double
+    let auctionValue: Double
+}
+
 func standardDeviation(for array: [Int]) -> Double {
     let sum = array.reduce(0,+)
     let mean = Double(sum) / Double(array.count)
@@ -60,13 +66,13 @@ func calculateZScore(value: Double, mean: Double, standardDeviation:Double ) -> 
     return (value - mean) / standardDeviation
 }
 
-func calculateZScore(for batter: Batter, mean: Double, standardDeviation: Double) {
-    return calculateZScore(value: batter.homeRuns, mean: mean, standardDeviation: standardDeviation) +
-    calculateZScore(value: batter.runsBattedIn, mean: mean, standardDeviation: standardDeviation) +
-    calculateZScore(value: batter.runs, mean: mean, standardDeviation: standardDeviation) +
-    calculateZScore(value: batter.onBasePercentage, mean: mean, standardDeviation: standardDeviation) +
-    calculateZScore(value: batter.stolenBases, mean: mean, standardDeviation: standardDeviation)
-}
+// func calculateZScore(for batter: Batter, mean: Double, standardDeviation: Double) {
+//     return calculateZScore(value: batter.homeRuns, mean: mean, standardDeviation: standardDeviation) +
+//     calculateZScore(value: batter.runsBattedIn, mean: mean, standardDeviation: standardDeviation) +
+//     calculateZScore(value: batter.runs, mean: mean, standardDeviation: standardDeviation) +
+//     calculateZScore(value: batter.onBasePercentage, mean: mean, standardDeviation: standardDeviation) +
+//     calculateZScore(value: batter.stolenBases, mean: mean, standardDeviation: standardDeviation)
+// }
 
 
 //let drop = try Droplet()
@@ -75,7 +81,7 @@ func calculateZScore(for batter: Batter, mean: Double, standardDeviation: Double
 //let spotifyResponse = try drop.client.get("https://api.spotify.com/v1/search?type=artist&q=\(query)")
 //print(spotifyResponse)
 
-let filename = "/Users/jaim/code/xcode/command-line-tool/data/fg-2017-projections.csv"
+let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
 
 let playerDataCSV = try String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
@@ -134,9 +140,12 @@ while let row = csv.next() {
 
 let numberOfTeams = 12
 let playersPerTeam = 24
+let numberOfPlayers = numberOfTeams * playersPerTeam
+let numberOfHitters = numberOfPlayers / 2
 let hittersPerTeam = 12
 
 let auctionDollarsAvailable = 260
+let hitterAuctionDollarsAvailable = 130
 
 let batterPoolCount = hittersPerTeam * numberOfTeams
 
@@ -170,10 +179,72 @@ let stolenBasesStandardDeviation = standardDeviation(for: batterPool.map {$0.sto
 let meanStolenBases = calculateMean(for: batterPool.map {$0.stolenBases})
 print("SB deviation = \(stolenBasesStandardDeviation) - Mean \(meanStolenBases)")
 
-let homeRunZScore = calculateZScore(value: <#T##Double#>, mean: <#T##Double#>, standardDeviation: <#T##Double#>)
 //calculate Z scores
-let zScores = batterPool.map {
-    ($0.name, calculateZScore(value: <#T##Double#>, mean: <#T##Double#>, standardDeviation: <#T##Double#>))}
+let zScores = batterPool.map { batter in
+    (batter.name,
+        calculateZScore(value: batter.homeRuns, mean: meanHomeRuns, standardDeviation: homeRunsStandardDeviation) + // HR
+        calculateZScore(value: batter.runs, mean: meanRuns, standardDeviation: runsStandardDeviation) + // R
+        calculateZScore(value: batter.runsBattedIn, mean: meanRunsBattedIn, standardDeviation: runsBattedInStandardDeviation) + // RBI
+        calculateZScore(value: batter.onBasePercentage, mean: meanOnBasePercentage, standardDeviation: onBasePercentageStandardDeviation),
+        calculateZScore(value: batter.stolenBases, mean: meanStolenBases, standardDeviation: stolenBasesStandardDeviation) //SB
+    )
+}.sorted(by: { return $0.1 > $1.1 }) 
+
+enum IntParsingError: Error {
+    case overflow
+    case invalidInput(String)
+}
+
+// The lowest total z-score player is replacement level
+guard let worstBatter = zScores.last else {
+    throw IntParsingError.invalidInput("asdfasdf")
+//    throw Error(domain:"", code:0, userInfo:nil)
+}
+
+let worstZScore = worstBatter.1
+
+// subtract total-z-scores for each player from the replacement-z-score
+let adjustedBatters = zScores.map {
+    ($0.0,
+     $0.1 - worstZScore
+    )
+}
+
+// calculate and add z scores for all positions (total z-score)
+let totalZScores = adjustedBatters.map { $0.1}.reduce(0,+)
+
+// calculate the total amount of auction money
+let hitterAuctionMoney = numberOfHitters * hitterAuctionDollarsAvailable
+
+print("totalZScores - \(totalZScores)")
+print("hitterAuctionMoney - \(hitterAuctionMoney)")
+// adjustedBatters.forEach { batter in
+//     let batterZScore = batter.1
+//     let auctionAmount = batterZScore / totalZScores * Double(hitterAuctionMoney)
+//     print("\(batter.0) - \(batterZScore) - \(auctionAmount)")
+// }
+
+let playersAuctions: [PlayerAuction] = adjustedBatters.map { batter in
+    let batterZScore = batter.1
+    let auctionAmount = batterZScore / totalZScores * Double(hitterAuctionMoney)
+    return PlayerAuction(name: batter.0, zScore: batterZScore, auctionValue: auctionAmount)
+}
+
+playersAuctions.forEach { playerAuction in
+    print("\(playerAuction.name) - \(playerAuction.zScore) - \(playerAuction.auctionValue)")
+}
+
+let asdf = playersAuctions.map { $0.auctionValue}.reduce(0,+)
+print("playersAuctions: \(asdf)")
+
+// calculate the percentage of z-score a player has
+
+
+// use the percentage of z-score to determine the players total value (total-auction-pool & z-percentage)
+
+
+
+
 
 
 
