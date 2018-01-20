@@ -214,15 +214,10 @@ let adjustedBatters = zScores.map {
 let totalZScores = adjustedBatters.map { $0.1}.reduce(0,+)
 
 // calculate the total amount of auction money
-let hitterAuctionMoney = numberOfHitters * hitterAuctionDollarsAvailable
+let hitterAuctionMoney = numberOfTeams * hitterAuctionDollarsAvailable
 
 print("totalZScores - \(totalZScores)")
 print("hitterAuctionMoney - \(hitterAuctionMoney)")
-// adjustedBatters.forEach { batter in
-//     let batterZScore = batter.1
-//     let auctionAmount = batterZScore / totalZScores * Double(hitterAuctionMoney)
-//     print("\(batter.0) - \(batterZScore) - \(auctionAmount)")
-// }
 
 let playersAuctions: [PlayerAuction] = adjustedBatters.map { batter in
     let batterZScore = batter.1
