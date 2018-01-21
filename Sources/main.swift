@@ -66,21 +66,6 @@ func calculateZScore(value: Double, mean: Double, standardDeviation:Double ) -> 
     return (value - mean) / standardDeviation
 }
 
-// func calculateZScore(for batter: Batter, mean: Double, standardDeviation: Double) {
-//     return calculateZScore(value: batter.homeRuns, mean: mean, standardDeviation: standardDeviation) +
-//     calculateZScore(value: batter.runsBattedIn, mean: mean, standardDeviation: standardDeviation) +
-//     calculateZScore(value: batter.runs, mean: mean, standardDeviation: standardDeviation) +
-//     calculateZScore(value: batter.onBasePercentage, mean: mean, standardDeviation: standardDeviation) +
-//     calculateZScore(value: batter.stolenBases, mean: mean, standardDeviation: standardDeviation)
-// }
-
-
-//let drop = try Droplet()
-
-//let query = "Wat!!"
-//let spotifyResponse = try drop.client.get("https://api.spotify.com/v1/search?type=artist&q=\(query)")
-//print(spotifyResponse)
-
 let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
 
 let playerDataCSV = try String(contentsOfFile: filename, encoding: String.Encoding.ascii)
@@ -96,8 +81,6 @@ enum batterFields: String {
     case onBasePercentage = "OBP"
     case steals = "SB"
 }
-
-//const let HR = "HR"
 
 let headerRow = csv.headerRow!
 
