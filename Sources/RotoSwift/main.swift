@@ -11,63 +11,6 @@ print("Hello, world!")
 
 print("Yo!")
 
-struct Batter {
-    let name: String
-    let homeRuns: Int
-    let runs: Int
-    let onBasePercentage: Double
-    let stolenBases: Int
-    let runsBattedIn: Int
-}
-
-struct PlayerAuction {
-    let name: String
-    let zScore: Double
-    let auctionValue: Double
-}
-
-func standardDeviation(for array: [Int]) -> Double {
-    let sum = array.reduce(0,+)
-    let mean = Double(sum) / Double(array.count)
-    let adjustedArray = array.map { (value) -> Double in
-        return pow(Double(value) - mean, 2)
-    }
-    let adjustedSum = adjustedArray.reduce(0,+)
-    let adjustedMean = Double(adjustedSum) / Double(adjustedArray.count)
-    
-    return adjustedMean.squareRoot()
-}
-
-func calculateMean(for array: [Int]) -> Double {
-    let total = array.reduce(0,+)
-    return Double(total) / Double(array.count)
-}
-
-func calculateMean(for array: [Double]) -> Double {
-    let total = array.reduce(0,+)
-    return total / Double(array.count)
-}
-
-func standardDeviation(for array: [Double]) -> Double {
-    let sum = array.reduce(0,+)
-    let mean = Double(sum) / Double(array.count)
-    let adjustedArray = array.map { (value) -> Double in
-        return pow(Double(value) - mean, 2)
-    }
-    let adjustedSum = adjustedArray.reduce(0,+)
-    let adjustedMean = Double(adjustedSum) / Double(adjustedArray.count)
-    
-    return adjustedMean.squareRoot()
-}
-
-func calculateZScore(value: Int, mean: Double, standardDeviation:Double ) -> Double {
-    return (Double(value) - mean) / standardDeviation
-}
-
-func calculateZScore(value: Double, mean: Double, standardDeviation:Double ) -> Double {
-    return (value - mean) / standardDeviation
-}
-
 let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
 
 let playerDataCSV = try String(contentsOfFile: filename, encoding: String.Encoding.ascii)
