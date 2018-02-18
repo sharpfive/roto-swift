@@ -2,3 +2,4 @@
 /.build
 /Packages
 /*.xcodeproj
+command-line-tool.xcworkspace/xcuserdata/
