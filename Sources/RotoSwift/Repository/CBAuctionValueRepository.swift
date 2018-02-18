@@ -33,7 +33,15 @@ public class CBAuctionValueRepository
 	}
 
 	func extractName(from nameTeamPosition: String) -> String? {
-		return ""
+        let separatedArray = nameTeamPosition.components(separatedBy: ",")
+        
+        if let firstValue = separatedArray.first {
+            
+            // trim non alpha-numerics
+            return firstValue.trimmingCharacters(in: .punctuationCharacters)
+        }
+        
+		return nil
 	}
 
 
