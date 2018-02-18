@@ -1,5 +1,5 @@
 
-struct NameAuction {
-    let name: String
-    let auctionValue: Double
+struct PlayerKeeperPrice {
+    let player: String
+    let keeperPrice: Int
 }
