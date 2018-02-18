@@ -130,6 +130,9 @@ let hittersPerTeam = 12
 let auctionDollarsAvailable = 260
 let hitterAuctionDollarsAvailable = 130
 
+// Estimate of the player position that will be drafted at league minimum
+let replacementLevelBatterPosition = numberOfHitters - 3*numberOfTeams
+
 let batterPoolCount = hittersPerTeam * numberOfTeams
 
 let endIndex = min(batterPoolCount, batters.count)
@@ -184,12 +187,14 @@ guard let worstBatter = zScores.last else {
 //    throw Error(domain:"", code:0, userInfo:nil)
 }
 
-let worstZScore = worstBatter.1
+let replacementBatter = zScores[replacementLevelBatterPosition]
+
+let replacementZScore = replacementBatter.1
 
 // subtract total-z-scores for each player from the replacement-z-score
 let adjustedBatters = zScores.map {
     ($0.0,
-     $0.1 - worstZScore
+     $0.1 - replacementZScore
     )
 }
 
