@@ -9,6 +9,15 @@ import Darwin
 
 print("Hello, world!")
 
+let auctionRepository = CBAuctionValueRepository()
+var values = auctionRepository.getAuctionValues()
+
+values.forEach { nameKeeperValue in
+    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
+}
+
+exit(0)
+
 print("Yo!")
 
 let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
