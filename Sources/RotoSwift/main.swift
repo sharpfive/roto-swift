@@ -10,11 +10,19 @@ import Darwin
 print("Hello, world!")
 
 let auctionRepository = CBAuctionValueRepository()
-var values = auctionRepository.getAuctionValues()
+let keeperValues = auctionRepository.getAuctionValues()
 
-values.forEach { nameKeeperValue in
-    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
+let fangraphsRepository = FanGraphsAuctionRepository()
+let projectedValues = fangraphsRepository.getAuctionValues()
+
+//print("projectedValues: \(String(describing:projectedValues))")
+projectedValues.forEach { playerAuction in
+    print("player: \(playerAuction.name) - \(playerAuction.auctionValue)")
 }
+
+//keeperValues.forEach { nameKeeperValue in
+//    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
+//}
 
 exit(0)
 
