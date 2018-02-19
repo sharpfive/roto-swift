@@ -20,15 +20,20 @@ let projectedValues = fangraphsRepository.getAuctionValues()
 //    print("player: \(playerAuction.name) - \(playerAuction.auctionValue)")
 //}
 
+var playerRelativeValues = [PlayerRelativeValue]()
+
 keeperValues.forEach { nameKeeperValue in
     
     let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.player})
     
     if let fangraphPlayer = fangraphPlayer {
+        let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.player, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
         
+        playerRelativeValues.append(playerRelativeValue)
     } else {
         print("Can't find \(String(describing: nameKeeperValue))")
     }
+    
 //    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
 }
 

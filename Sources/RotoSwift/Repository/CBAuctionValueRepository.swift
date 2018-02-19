@@ -37,8 +37,9 @@ public class CBAuctionValueRepository
         
         if let firstValue = separatedArray.first {
             
+            let trimCharacterSet = CharacterSet(charactersIn:"*")
             // trim non alpha-numerics
-            return firstValue.trimmingCharacters(in: .punctuationCharacters)
+            return firstValue.trimmingCharacters(in: trimCharacterSet)
         }
         
 		return nil
