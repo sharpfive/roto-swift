@@ -16,13 +16,21 @@ let fangraphsRepository = FanGraphsAuctionRepository()
 let projectedValues = fangraphsRepository.getAuctionValues()
 
 //print("projectedValues: \(String(describing:projectedValues))")
-projectedValues.forEach { playerAuction in
-    print("player: \(playerAuction.name) - \(playerAuction.auctionValue)")
-}
-
-//keeperValues.forEach { nameKeeperValue in
-//    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
+//projectedValues.forEach { playerAuction in
+//    print("player: \(playerAuction.name) - \(playerAuction.auctionValue)")
 //}
+
+keeperValues.forEach { nameKeeperValue in
+    
+    let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
+    
+    if let fangraphPlayer == fangraphPlayer {
+        
+    } else {
+        print("Can't find \(String(containing: nameKeeperValue))")"
+    }
+//    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
+}
 
 exit(0)
 
