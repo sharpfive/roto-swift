@@ -37,6 +37,11 @@ keeperValues.forEach { nameKeeperValue in
 //    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
 }
 
+playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
+    print("\(playerRelativeValue.name) auction: \(playerRelativeValue.projectedAuctionValue) keeperPrice: \(playerRelativeValue.keeperPrice) relativeValue: \(playerRelativeValue.relativeValue)")
+    
+}
+
 exit(0)
 
 print("Yo!")
