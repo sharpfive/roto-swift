@@ -22,12 +22,12 @@ let projectedValues = fangraphsRepository.getAuctionValues()
 
 keeperValues.forEach { nameKeeperValue in
     
-    let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
+    let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.player})
     
-    if let fangraphPlayer == fangraphPlayer {
+    if let fangraphPlayer = fangraphPlayer {
         
     } else {
-        print("Can't find \(String(containing: nameKeeperValue))")"
+        print("Can't find \(String(describing: nameKeeperValue))")
     }
 //    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
 }
