@@ -81,7 +81,13 @@ public class CBAuctionValueRepository
             
             let trimCharacterSet = CharacterSet(charactersIn:"*")
             // trim non alpha-numerics
-            return firstValue.trimmingCharacters(in: trimCharacterSet)
+            let trimmedName = firstValue.trimmingCharacters(in: trimCharacterSet)
+            
+            if trimmedName.count == 0 {
+                return nil
+            } else {
+                return trimmedName
+            }
         }
         
 		return nil
