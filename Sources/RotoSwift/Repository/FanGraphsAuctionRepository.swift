@@ -18,9 +18,17 @@ public class FanGraphsAuctionRepository
         case projectedAuctionValue = "Dollars"
     }
     
+    func getHitterValues() -> [PlayerAuction] {
+        return getAuctionValues(for: hitterFileName)
+    }
+    
+    func getPitcherValues() -> [PlayerAuction] {
+        return getAuctionValues(for:pitcherFileNamae)
+    }
+    
     func getAuctionValues() -> [PlayerAuction] {
         
-        return getAuctionValues(for: hitterFileName) + getAuctionValues(for:pitcherFileNamae)
+        return getHitterValues() + getPitcherValues()
     }
 
     func getAuctionValues(for filename: String) -> [PlayerAuction] {
