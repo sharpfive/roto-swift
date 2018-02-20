@@ -17,7 +17,7 @@ func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions:
     
     playerKeeperPrices.forEach { nameKeeperValue in
         
-        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
+        let fangraphPlayer = playerAuctions.first(where: { $0.name == nameKeeperValue.name})
         
         if let fangraphPlayer = fangraphPlayer {
             let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
@@ -38,20 +38,7 @@ func processRelativeValues() {
     let fangraphsRepository = FanGraphsAuctionRepository()
     let projectedValues = fangraphsRepository.getAuctionValues()
     
-    var playerRelativeValues = [PlayerRelativeValue]()
-    
-    keeperValues.forEach { nameKeeperValue in
-        
-        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
-        
-        if let fangraphPlayer = fangraphPlayer {
-            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
-            
-            playerRelativeValues.append(playerRelativeValue)
-        } else {
-            print("Can't find \(String(describing: nameKeeperValue))")
-        }
-    }
+    var playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
     
     // Output to csv
     let csvOutputFilename = "/Users/jaim/Dropbox/roto/2018/projections/relative-values-2018.csv"
