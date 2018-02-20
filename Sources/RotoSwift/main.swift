@@ -50,6 +50,16 @@ func processRelativeValues() {
     csvWriter.stream.close()
 }
 
+func processTeams() {
+    let auctionRepository = CBAuctionValueRepository()
+    let teams = auctionRepository.getTeams()
+    
+    teams.forEach {
+        print("\($0)")
+    }
+}
+
+processTeams()
 
 exit(0)
 
