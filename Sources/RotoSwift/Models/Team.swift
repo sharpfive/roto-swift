@@ -11,3 +11,8 @@ struct Team {
     let name: String
     let players: [PlayerKeeperPrice]
 }
+
+struct TeamPlayerRelativeValue {
+    let name: String
+    let players: [PlayerRelativeValue]
+}

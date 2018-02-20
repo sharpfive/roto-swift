@@ -66,10 +66,7 @@ func processTeams() {
     let auctionRepository = CBAuctionValueRepository()
     let teams = auctionRepository.getTeams()
     
-    let fangraphsRepository = FanGraphsAuctionRepository()
-    let projectedValues = fangraphsRepository.getAuctionValues()
     
-    var playerRelativeValues = [PlayerRelativeValue]()
     
     teams.forEach {
         print("\($0)")
@@ -79,6 +76,14 @@ func processTeams() {
 func processTeamsWithRelativeValues() -> [Team] {
     let auctionRepository = CBAuctionValueRepository()
     let teams = auctionRepository.getTeams()
+    
+    let fangraphsRepository = FanGraphsAuctionRepository()
+    let projectedValues = fangraphsRepository.getAuctionValues()
+    
+    teams.forEach {
+        // convert to relative value and add to team
+        //aiai
+    }
     return teams
 }
 
