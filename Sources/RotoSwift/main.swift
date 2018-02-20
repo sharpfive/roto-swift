@@ -17,10 +17,10 @@ func processRelativeValues() {
     
     keeperValues.forEach { nameKeeperValue in
         
-        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.player})
+        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
         
         if let fangraphPlayer = fangraphPlayer {
-            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.player, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
+            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
             
             playerRelativeValues.append(playerRelativeValue)
         } else {

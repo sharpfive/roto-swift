@@ -25,7 +25,7 @@ public class CBAuctionValueRepository
 			if let keeperPrice = Int(row[auctionValueRow]),
 				let name = extractName(from: nameTeamPosition)
 				{
-                    let playerKeeperPrice = PlayerKeeperPrice(player: name, keeperPrice: keeperPrice)
+                    let playerKeeperPrice = PlayerKeeperPrice(name: name, keeperPrice: keeperPrice)
 					playerKeeperPrices.append(playerKeeperPrice)
 				}
 		}
@@ -41,7 +41,7 @@ public class CBAuctionValueRepository
                                  hasHeaderRow: false)
         
         var teams = [Team]()
-        var players = [Player]()
+        var players = [PlayerKeeperPrice]()
         
         var currentTeamName: String?
         
@@ -53,13 +53,14 @@ public class CBAuctionValueRepository
                 if let currentTeamName = currentTeamName {
                     let newTeam = Team(name:currentTeamName, players: players)
                     teams.append(newTeam)
-                    players = [Player]()
+                    players = [PlayerKeeperPrice]()
                 }
                 currentTeamName = row[nameTeamPositionRow]
             } else {
                 
-                if let playerName = extractName(from: row[nameTeamPositionRow]) {
-                    let newPlayer = Player(name: playerName)
+                if let playerName = extractName(from: row[nameTeamPositionRow]),
+                    let keeperPrice = Int(row[auctionValueRow]){
+                    let newPlayer = PlayerKeeperPrice(name: playerName, keeperPrice: keeperPrice)
                     players.append(newPlayer)
                 }
             }
@@ -68,7 +69,7 @@ public class CBAuctionValueRepository
         if let currentTeamName = currentTeamName {
             let newTeam = Team(name:currentTeamName, players: players)
             teams.append(newTeam)
-            players = [Player]()
+            players = [PlayerKeeperPrice]()
         }
         
         return teams

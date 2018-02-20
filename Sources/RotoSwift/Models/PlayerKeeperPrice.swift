@@ -1,5 +1,5 @@
 
 struct PlayerKeeperPrice {
-    let player: String
+    let name: String
     let keeperPrice: Int
 }
