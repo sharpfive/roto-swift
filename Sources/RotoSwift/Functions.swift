@@ -11,6 +11,26 @@ import CSV
 // import Glibc (for linux builds)
 import Darwin
 
+func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
+    
+    var playerRelativeValues = [PlayerRelativeValue]()
+    
+    playerKeeperPrices.forEach { nameKeeperValue in
+        
+        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.name})
+        
+        if let fangraphPlayer = fangraphPlayer {
+            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
+            
+            playerRelativeValues.append(playerRelativeValue)
+        } else {
+            print("Can't find \(String(describing: nameKeeperValue))")
+        }
+    }
+    
+    return playerRelativeValues
+}
+
 func processRelativeValues() {
     let auctionRepository = CBAuctionValueRepository()
     let keeperValues = auctionRepository.getAuctionValues()
@@ -58,6 +78,11 @@ func processRelativeValues() {
 func processTeams() {
     let auctionRepository = CBAuctionValueRepository()
     let teams = auctionRepository.getTeams()
+    
+    let fangraphsRepository = FanGraphsAuctionRepository()
+    let projectedValues = fangraphsRepository.getAuctionValues()
+    
+    var playerRelativeValues = [PlayerRelativeValue]()
     
     teams.forEach {
         print("\($0)")
