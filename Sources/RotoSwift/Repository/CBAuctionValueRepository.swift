@@ -58,9 +58,8 @@ public class CBAuctionValueRepository
                 currentTeamName = row[nameTeamPositionRow]
             } else {
                 
-                let playerName = row[nameTeamPositionRow]
-                if playerName.count > 0 {
-                    let newPlayer = Player(name: row[nameTeamPositionRow])
+                if let playerName = extractName(from: row[nameTeamPositionRow]) {
+                    let newPlayer = Player(name: playerName)
                     players.append(newPlayer)
                 }
             }
