@@ -6,58 +6,50 @@ import Darwin
 
 print("Hello, world!")
 
-let auctionRepository = CBAuctionValueRepository()
-let keeperValues = auctionRepository.getAuctionValues()
-
-let fangraphsRepository = FanGraphsAuctionRepository()
-let projectedValues = fangraphsRepository.getAuctionValues()
-
-//print("projectedValues: \(String(describing:projectedValues))")
-//projectedValues.forEach { playerAuction in
-//    print("player: \(playerAuction.name) - \(playerAuction.auctionValue)")
-//}
-
-var playerRelativeValues = [PlayerRelativeValue]()
-
-keeperValues.forEach { nameKeeperValue in
+func processRelativeValues() {
+    let auctionRepository = CBAuctionValueRepository()
+    let keeperValues = auctionRepository.getAuctionValues()
     
-    let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.player})
+    let fangraphsRepository = FanGraphsAuctionRepository()
+    let projectedValues = fangraphsRepository.getAuctionValues()
     
-    if let fangraphPlayer = fangraphPlayer {
-        let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.player, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
+    var playerRelativeValues = [PlayerRelativeValue]()
+    
+    keeperValues.forEach { nameKeeperValue in
         
-        playerRelativeValues.append(playerRelativeValue)
-    } else {
-        print("Can't find \(String(describing: nameKeeperValue))")
+        let fangraphPlayer = projectedValues.first(where: { $0.name == nameKeeperValue.player})
+        
+        if let fangraphPlayer = fangraphPlayer {
+            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.player, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
+            
+            playerRelativeValues.append(playerRelativeValue)
+        } else {
+            print("Can't find \(String(describing: nameKeeperValue))")
+        }
     }
     
-//    print("player: \(nameKeeperValue.player) - value \(nameKeeperValue.keeperPrice)")
-}
-
-let csvOutputFilename = "/Users/jaim/Dropbox/roto/2018/projections/relative-values-2018.csv"
-let stream = OutputStream(toFileAtPath:csvOutputFilename, append:false)!
-let csvWriter = try! CSVWriter(stream: stream)
-
-try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
-
-playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
-    //print("\(playerRelativeValue.name) auction: \(playerRelativeValue.projectedAuctionValue) keeperPrice: \(playerRelativeValue.keeperPrice) relativeValue: \(playerRelativeValue.relativeValue)")
-
-    // output to CSV
-    csvWriter.beginNewRow()
-    try! csvWriter.write(row: [
+    // Output to csv
+    let csvOutputFilename = "/Users/jaim/Dropbox/roto/2018/projections/relative-values-2018.csv"
+    let stream = OutputStream(toFileAtPath:csvOutputFilename, append:false)!
+    let csvWriter = try! CSVWriter(stream: stream)
+    
+    try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
+    
+    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
+        
+        // output to CSV
+        csvWriter.beginNewRow()
+        try! csvWriter.write(row: [
             playerRelativeValue.name,
             String(playerRelativeValue.keeperPrice),
             String(playerRelativeValue.projectedAuctionValue),
             String(playerRelativeValue.relativeValue)
-        ])
-//    try! csv.write(field: playerRelativeValue.name)
-//    try! csv.write(field: String(playerRelativeValue.projectedAuctionValue))
-//    try! csv.write(field: String(playerRelativeValue.keeperPrice))
-//    try! csv.write(field: String(playerRelativeValue.relativeValue))
+            ])
+    }
+    
+    csvWriter.stream.close()
 }
 
-csvWriter.stream.close()
 
 exit(0)
 
