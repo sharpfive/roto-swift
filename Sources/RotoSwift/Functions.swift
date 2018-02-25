@@ -8,8 +8,11 @@
 import Foundation
 import CSV
 
-// import Glibc (for linux builds)
-import Darwin
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin.C
+#endif
 
 func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
     
