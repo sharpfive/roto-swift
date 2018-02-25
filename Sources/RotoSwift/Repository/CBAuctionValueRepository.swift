@@ -13,7 +13,7 @@ public class CBAuctionValueRepository
         self.filename = filename
     }
     
-	func getAuctionValues() -> [PlayerKeeperPrice] {
+	public func getAuctionValues() -> [PlayerKeeperPrice] {
         
 		let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 

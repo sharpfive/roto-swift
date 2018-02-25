@@ -16,7 +16,11 @@ import CSV
 
 let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
 
-func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
+let hitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
+
+let pitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+
+public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
     
     var playerRelativeValues = [PlayerRelativeValue]()
     
@@ -40,7 +44,7 @@ func processRelativeValues() {
     let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let keeperValues = auctionRepository.getAuctionValues()
     
-    let fangraphsRepository = FanGraphsAuctionRepository()
+    let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
     
     let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
@@ -82,7 +86,7 @@ func processTeamsWithRelativeValues() -> [Team] {
     let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let teams = auctionRepository.getTeams()
     
-    let fangraphsRepository = FanGraphsAuctionRepository()
+    let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
     
     let valueTeams: [TeamPlayerRelativeValue] = teams.map { team in

@@ -10,8 +10,13 @@ import CSV
 
 public class FanGraphsAuctionRepository
 {
-    let hitterFileName = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
-    let pitcherFileNamae = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+    let hitterFilename: String // = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
+    let pitcherFilename: String // = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+    
+    public init(hitterFilename: String, pitcherFilename: String) {
+        self.hitterFilename = hitterFilename
+        self.pitcherFilename = pitcherFilename
+    }
     
     enum auctionFields: String {
         case name = "ï»¿\"PlayerName\""
@@ -19,14 +24,14 @@ public class FanGraphsAuctionRepository
     }
     
     func getHitterValues() -> [PlayerAuction] {
-        return getAuctionValues(for: hitterFileName)
+        return getAuctionValues(for: hitterFilename)
     }
     
     func getPitcherValues() -> [PlayerAuction] {
-        return getAuctionValues(for:pitcherFileNamae)
+        return getAuctionValues(for:pitcherFilename)
     }
     
-    func getAuctionValues() -> [PlayerAuction] {
+    public func getAuctionValues() -> [PlayerAuction] {
         
         return getHitterValues() + getPitcherValues()
     }

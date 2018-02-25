@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlayerAuction {
+public struct PlayerAuction {
     let name: String
     let zScore: Double
     let auctionValue: Double

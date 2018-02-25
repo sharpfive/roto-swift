@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct PlayerRelativeValue {
-    let name: String
-    let keeperPrice: Int
-    let projectedAuctionValue: Double
+public struct PlayerRelativeValue {
+    public let name: String
+    public let keeperPrice: Int
+    public let projectedAuctionValue: Double
     
-    var relativeValue: Double {
+    public var relativeValue: Double {
         return projectedAuctionValue - (Double(keeperPrice))
     }
 }
