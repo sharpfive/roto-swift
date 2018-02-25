@@ -6,7 +6,7 @@ import Darwin
 
 print("Hello, world!")
 
-processTeams()
+processTeamsWithRelativeValues()
 
 print("Yo!")
 
