@@ -82,7 +82,7 @@ func processTeams() {
     }
 }
 
-func processTeamsWithRelativeValues() -> [Team] {
+public func processTeamsWithRelativeValues() -> [Team] {
     let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let teams = auctionRepository.getTeams()
     

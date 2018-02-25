@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct Team {
+public struct Team {
     let name: String
     let players: [PlayerKeeperPrice]
 }
 
-struct TeamPlayerRelativeValue {
+public struct TeamPlayerRelativeValue {
     let name: String
     let players: [PlayerRelativeValue]
 }
