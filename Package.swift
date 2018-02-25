@@ -1,11 +1,20 @@
-// swift-tools-version:3.1
+// swift-tools-version:4.0
 
 import PackageDescription
 
 let package = Package(
-    name: "command-line-tool",
+    name: "RotoSwift",
     dependencies: [
-        //.Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2),
-        .Package(url: "https://github.com/yaslab/CSV.swift.git", majorVersion: 2, minor: 0)
+    .package(url: "https://github.com/yaslab/CSV.swift.git", from: "2.0.0")
+    ],
+    targets: [
+        .target(
+            name: "RotoSwift",
+            dependencies: ["CSV"]
+        ),
+        .target(
+            name: "PlayerRelativeValues",
+            dependencies: ["RotoSwift"]
+        ),
     ]
 )
