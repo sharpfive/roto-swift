@@ -14,6 +14,8 @@ import CSV
     import Darwin.C
 #endif
 
+let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
+
 func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
     
     var playerRelativeValues = [PlayerRelativeValue]()
@@ -35,7 +37,7 @@ func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions:
 }
 
 func processRelativeValues() {
-    let auctionRepository = CBAuctionValueRepository()
+    let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let keeperValues = auctionRepository.getAuctionValues()
     
     let fangraphsRepository = FanGraphsAuctionRepository()
@@ -66,7 +68,7 @@ func processRelativeValues() {
 }
 
 func processTeams() {
-    let auctionRepository = CBAuctionValueRepository()
+    let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let teams = auctionRepository.getTeams()
     
     
@@ -77,7 +79,7 @@ func processTeams() {
 }
 
 func processTeamsWithRelativeValues() -> [Team] {
-    let auctionRepository = CBAuctionValueRepository()
+    let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let teams = auctionRepository.getTeams()
     
     let fangraphsRepository = FanGraphsAuctionRepository()

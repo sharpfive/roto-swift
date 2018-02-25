@@ -4,9 +4,14 @@ import CSV
 /* Gets auction values for players from the C&B format */
 public class CBAuctionValueRepository
 {
-	let filename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
+    let filename: String
+    
     let nameTeamPositionRow = 0
     let auctionValueRow = 1
+    
+    public init(filename: String) {
+        self.filename = filename
+    }
     
 	func getAuctionValues() -> [PlayerKeeperPrice] {
         
