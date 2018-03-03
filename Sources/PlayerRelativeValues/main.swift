@@ -2,7 +2,7 @@ import Foundation
 import CSV
 import RotoSwift
 
-func processRelativeValues(cbPathString: String, fangraphsHitterPathString: String, fangraphsPitcherPathString: String) {
+func processRelativeValues(cbPathString: String, fangraphsHitterPathString: String, fangraphsPitcherPathString: String, outputPathString: String) {
     let auctionRepository = CBAuctionValueRepository(filename: cbPathString)
     let keeperValues = auctionRepository.getAuctionValues()
     
@@ -12,8 +12,7 @@ func processRelativeValues(cbPathString: String, fangraphsHitterPathString: Stri
     let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
     
     // Output to csv
-    let csvOutputFilename = "/Users/jaim/Dropbox/roto/2018/projections/relative-values-2018.csv"
-    let stream = OutputStream(toFileAtPath:csvOutputFilename, append:false)!
+    let stream = OutputStream(toFileAtPath:outputPathString, append:false)!
     let csvWriter = try! CSVWriter(stream: stream)
     
     try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
@@ -33,12 +32,26 @@ func processRelativeValues(cbPathString: String, fangraphsHitterPathString: Stri
     csvWriter.stream.close()
 }
 
+extension Date
+{
+    func toString( dateFormat format  : String ) -> String
+    {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}
+
 print("PlayerRelativeValues")
 
 let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
 
-let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
+let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-03.fangraphs.batters.csv"
 
-let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-03.fangraphs.pitchers.csv"
 
-processRelativeValues(cbPathString: cbFilename, fangraphsHitterPathString: fangraphsHitterFilename, fangraphsPitcherPathString: fangraphsPitcherFilename)
+let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
+
+let outputFile = "/Users/jaim/Dropbox/roto/2018/projections/\(dateString)-relative-values-2018.csv"
+
+processRelativeValues(cbPathString: cbFilename, fangraphsHitterPathString: fangraphsHitterFilename, fangraphsPitcherPathString: fangraphsPitcherFilename, outputPathString: outputFile)

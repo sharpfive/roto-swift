@@ -10,10 +10,10 @@ import CSV
 
 public class FanGraphsAuctionRepository
 {
-    let hitterFilename: String // = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
-    let pitcherFilename: String // = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+    let hitterFilename: String?
+    let pitcherFilename: String?
     
-    public init(hitterFilename: String, pitcherFilename: String) {
+    public init(hitterFilename: String?, pitcherFilename: String?) {
         self.hitterFilename = hitterFilename
         self.pitcherFilename = pitcherFilename
     }
@@ -23,17 +23,19 @@ public class FanGraphsAuctionRepository
         case projectedAuctionValue = "Dollars"
     }
     
-    func getHitterValues() -> [PlayerAuction] {
-        return getAuctionValues(for: hitterFilename)
-    }
-    
-    func getPitcherValues() -> [PlayerAuction] {
-        return getAuctionValues(for:pitcherFilename)
-    }
-    
     public func getAuctionValues() -> [PlayerAuction] {
         
-        return getHitterValues() + getPitcherValues()
+        var players = [PlayerAuction]()
+        
+        if let hitterFilename = hitterFilename {
+            players += getAuctionValues(for: hitterFilename)
+        }
+        
+        if let pitcherFilename = pitcherFilename {
+            players += getAuctionValues(for: pitcherFilename)
+        }
+        
+        return players
     }
 
     func getAuctionValues(for filename: String) -> [PlayerAuction] {
