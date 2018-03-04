@@ -20,5 +20,9 @@ let package = Package(
             name: "TeamRelativeValues",
             dependencies: ["RotoSwift"]
         ),
+        .target(
+            name: "LeagueScrape",
+            dependencies: ["RotoSwift"]
+        )
     ]
 )
