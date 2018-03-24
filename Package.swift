@@ -23,6 +23,10 @@ let package = Package(
         .target(
             name: "ESPNScrape",
             dependencies: ["RotoSwift"]
+        ),
+        .target(
+            name: "LeagueRostersScrape",
+            dependencies: ["RotoSwift"]
         )
     ]
 )

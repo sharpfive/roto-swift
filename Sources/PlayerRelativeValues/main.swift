@@ -46,9 +46,9 @@ print("PlayerRelativeValues")
 
 let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
 
-let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-03.fangraphs.batters.csv"
+let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-10.fangraphs.batters-60.csv"
 
-let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-03.fangraphs.pitchers.csv"
+let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-10.fangraphs.pitchers-60.csv"
 
 let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
 
