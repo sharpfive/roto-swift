@@ -27,6 +27,11 @@ let package = Package(
         .target(
             name: "LeagueRostersScrape",
             dependencies: ["RotoSwift"]
+        ),
+        .testTarget(
+            name: "LeagueRostersScrapeTests",
+            dependencies: ["LeagueRostersScrape", "RotoSwift"],
+            path: "Tests"
         )
     ]
 )

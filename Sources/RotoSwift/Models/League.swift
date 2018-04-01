@@ -13,6 +13,7 @@ public struct League {
     
     public struct Team {
         public let name: String
+        public let players: [Player]
     }
     
     public struct Player {
