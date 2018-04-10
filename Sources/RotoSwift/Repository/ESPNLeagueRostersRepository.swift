@@ -9,11 +9,22 @@ import Foundation
 
 
 
-class ESPNLeagueRostersRepository {
+public class ESPNLeagueRostersRepository {
+    
+    enum ParseState {
+        case BeforeLeague
+        case TeamName
+        case AfterTeamName
+        case Player
+    }
     
     let leagueRostersToken = "League Rosters"
     
-    func getLeagueRosters(for filename: String) -> League {
+    public init() {
+        
+    }
+    
+    public func getLeagueRosters(for filename: String) -> League {
         
         var parseState: ParseState = ParseState.BeforeLeague
         
@@ -23,6 +34,8 @@ class ESPNLeagueRostersRepository {
         // open file and read text
         let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
         
+        var lineCount = 0
+        
         leagueRostersDataString.enumerateLines { (lineString, boolean) in
             lineCount += 1
             
@@ -30,7 +43,7 @@ class ESPNLeagueRostersRepository {
             switch parseState {
             case .BeforeLeague:
                 print(lineString)
-                if lineString == leagueRostersToken {
+                if lineString == self.leagueRostersToken {
                     parseState = .TeamName
                 }
             case .TeamName:
@@ -54,9 +67,14 @@ class ESPNLeagueRostersRepository {
                 }
             }
         }
+        
+        let teams = [League.Team]()
+        let league = League(teams: teams)
+        
+        return league
     }
     
-    func parsePlayer(from playerString: String) -> League.Player? {
+    public func parsePlayer(from playerString: String) -> League.Player? {
         let playerComponents = playerString.components(separatedBy:"\t")
         
         playerComponents.forEach {
@@ -81,5 +99,4 @@ class ESPNLeagueRostersRepository {
         
         return player
     }
-
 }

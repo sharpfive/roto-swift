@@ -10,19 +10,11 @@ let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: St
 
 var lineCount = 0
 
-enum ParseState {
-    case BeforeLeague
-    case TeamName
-    case AfterTeamName
-    case Player
-}
-
-
-
-
-
-
 print("LineCount: \(String(describing:lineCount))")
+
+let repository = ESPNLeagueRostersRepository()
+
+let leagueRosters = repository.getLeagueRosters(for: filename)
 
 // look for "League Rosters" text
 // Next line is a Team Name
