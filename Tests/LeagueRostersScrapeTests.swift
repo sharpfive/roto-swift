@@ -11,12 +11,8 @@ import XCTest
 import RotoSwift
 
 class LeagueRostersScrapeTests: XCTestCase {
-    func testCreatingFile() throws {
-        
-        XCTAssertNotNil(nil)
-    }
     
-    func testCreatingFile2() throws {
+    func testNumberOfTeamsIsTwelve() throws {
         let filename = "/Users/jaim/code/roto-swift/data/2017-espn.roster.txt"
         
         let repository = ESPNLeagueRostersRepository()
