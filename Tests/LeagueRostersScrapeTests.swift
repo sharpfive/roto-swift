@@ -8,6 +8,8 @@
 import Foundation
 import XCTest
 
+import RotoSwift
+
 class LeagueRostersScrapeTests: XCTestCase {
     func testCreatingFile() throws {
         
@@ -20,6 +22,6 @@ class LeagueRostersScrapeTests: XCTestCase {
         let repository = ESPNLeagueRostersRepository()
         let league = repository.getLeagueRosters(for: filename)
         
-        XCTAssertEquals(league.teams, 12)
+        XCTAssertEqual(league.teams.count, 12)
     }
 }

@@ -16,9 +16,11 @@ public class ESPNLeagueRostersRepository {
         case TeamName
         case AfterTeamName
         case Player
+        case Complete
     }
     
     let leagueRostersToken = "League Rosters"
+    let endOfTeamsToken = "Need Help?"
     
     public init() {
         
@@ -42,12 +44,17 @@ public class ESPNLeagueRostersRepository {
             
             switch parseState {
             case .BeforeLeague:
-                print(lineString)
+                // print(lineString)
                 if lineString == self.leagueRostersToken {
                     parseState = .TeamName
                 }
             case .TeamName:
-                print("Found Team: \(lineString)")
+                // print("Found Team: \(lineString)")
+                if lineString == self.endOfTeamsToken {
+                    print("end of teams")
+                    parseState = .Complete
+                    break
+                }
                 teamName = lineString
                 parseState = .AfterTeamName
             case .AfterTeamName:
@@ -60,13 +67,17 @@ public class ESPNLeagueRostersRepository {
                 }
                 // Parse the player info
                 if let player = self.parsePlayer(from: lineString) {
-                    print("Found Player: \(player.name)")
+                    // print("Found Player: \(player.name)")
                     players.append(player)
                 } else {
                     print("Can't parse line: \(lineString)")
                 }
+            case .Complete:
+                break
             }
         }
+        
+        print("Ready to return")
         
         let teams = [League.Team]()
         let league = League(teams: teams)
@@ -77,9 +88,9 @@ public class ESPNLeagueRostersRepository {
     public func parsePlayer(from playerString: String) -> League.Player? {
         let playerComponents = playerString.components(separatedBy:"\t")
         
-        playerComponents.forEach {
-            print($0)
-        }
+//        playerComponents.forEach {
+//            print($0)
+//        }
         var endOfNameIndex = 1
         repeat  {
             endOfNameIndex+=1
