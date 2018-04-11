@@ -77,8 +77,6 @@ public class ESPNLeagueRostersRepository {
                 if let player = self.parsePlayer(from: lineString) {
                     // print("Found Player: \(player.name)")
                     players.append(player)
-                } else {
-                    print("Can't parse line: \(lineString)")
                 }
             case .Complete:
                 break
