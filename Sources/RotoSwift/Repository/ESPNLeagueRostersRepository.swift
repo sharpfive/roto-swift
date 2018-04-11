@@ -95,9 +95,6 @@ public class ESPNLeagueRostersRepository {
     public func parsePlayer(from playerString: String) -> League.Player? {
         let playerComponents = playerString.components(separatedBy:"\t")
         
-//        playerComponents.forEach {
-//            print($0)
-//        }
         var endOfNameIndex = 1
         repeat  {
             endOfNameIndex+=1
