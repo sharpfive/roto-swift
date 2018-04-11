@@ -110,6 +110,11 @@ public class ESPNLeagueRostersRepository {
         
         let playerName = playerNameComponents.reduce("", { "\($0) \($1)"})
         
+        if (playerName.lengthOfBytes(using: .ascii) <= 3) {
+            // empty position
+            return nil
+        }
+        
         let player = League.Player(name: playerName)
         
         return player

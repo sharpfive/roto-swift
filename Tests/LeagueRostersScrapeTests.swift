@@ -38,6 +38,6 @@ class LeagueRostersScrapeTests: XCTestCase {
         
         let westCalhoun = league.teams.first(where: {$0.name == "WEST CALHOUN FADEAWAY"})
         
-        XCTAssertEqual(westCalhoun?.players.count, 23)
+        XCTAssertEqual(westCalhoun?.players.count, 24)
     }
 }
