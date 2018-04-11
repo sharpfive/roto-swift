@@ -31,6 +31,7 @@ public class ESPNLeagueRostersRepository {
         var parseState: ParseState = ParseState.BeforeLeague
         
         var teamName = ""
+        var teams = [League.Team]()
         var players = [League.Player]()
         
         // open file and read text
