@@ -62,6 +62,13 @@ public class ESPNLeagueRostersRepository {
                 parseState = .Player
             case .Player:
                 if lineString.isEmpty {
+                    // team is complete
+                    let team = League.Team(name: teamName, players: players)
+                    teams.append(team)
+                    // reset player list and team name
+                    players = [League.Player]()
+                    teamName = ""
+                    
                     parseState = .TeamName
                     break
                 }
@@ -79,7 +86,6 @@ public class ESPNLeagueRostersRepository {
         
         print("Ready to return")
         
-        let teams = [League.Team]()
         let league = League(teams: teams)
         
         return league
