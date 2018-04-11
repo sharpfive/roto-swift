@@ -37,6 +37,11 @@ class LeagueRostersScrapeTests: XCTestCase {
         XCTAssertEqual(team.name, "SOUTHWEST SNAKE OILERS")
     }
     
+    func testSouthwestHas27Players() throws {
+        let team = getTeam(named: "SOUTHWEST SNAKE OILERS")
+        XCTAssertEqual(team.players.count, 27)
+    }
+    
     func getTeam(named name: String) -> League.Team {
         let league = createLeague()
         return league.teams.first(where: {$0.name == name})!
