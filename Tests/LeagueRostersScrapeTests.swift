@@ -48,7 +48,7 @@ class LeagueRostersScrapeTests: XCTestCase {
     }
     
     func createLeague() -> League {
-        let filename = "/Users/jaim/code/roto-swift/data/2017-espn.roster.txt"
+        let filename = "/Users/jaim/code/xcode/roto-swift/data/2017-espn.roster.txt"
         
         let repository = ESPNLeagueRostersRepository()
         let league = repository.getLeagueRosters(for: filename)
