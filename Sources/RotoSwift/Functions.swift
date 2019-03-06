@@ -14,11 +14,11 @@ import CSV
     import Darwin.C
 #endif
 
-let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
+let cbFilename = "/Users/jaim/Dropbox/roto/2019/projections/C&B-Keeper-Values-2019-Sheet1.csv"
 
-let hitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
+let hitterFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-batters-2019-03-05.csv"
 
-let pitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
+let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitchers-2019-03-05.csv"
 
 public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
     
@@ -50,7 +50,7 @@ func processRelativeValues() {
     let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
     
     // Output to csv
-    let csvOutputFilename = "/Users/jaim/Dropbox/roto/2018/projections/relative-values-2018.csv"
+    let csvOutputFilename = "/Users/jaim/Dropbox/roto/2019/projections/relative-values-2019.csv"
     let stream = OutputStream(toFileAtPath:csvOutputFilename, append:false)!
     let csvWriter = try! CSVWriter(stream: stream)
     

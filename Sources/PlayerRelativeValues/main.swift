@@ -44,14 +44,14 @@ extension Date
 
 print("PlayerRelativeValues")
 
-let cbFilename = "/Users/jaim/Dropbox/roto/2018/projections/CB-auction-values-2018.csv"
+let cbFilename = "/Users/jaim/Dropbox/roto/2019/projections/C&B-Keeper-Values-2019-Sheet1.csv"
 
-let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-10.fangraphs.batters-60.csv"
+let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-batters-2019-03-05.csv"
 
-let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-03-10.fangraphs.pitchers-60.csv"
+let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitchers-2019-03-05.csv"
 
 let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
 
-let outputFile = "/Users/jaim/Dropbox/roto/2018/projections/\(dateString)-relative-values-2018.csv"
+let outputFile = "/Users/jaim/Dropbox/roto/2019/projections/\(dateString)-relative-values-2018.csv"
 
 processRelativeValues(cbPathString: cbFilename, fangraphsHitterPathString: fangraphsHitterFilename, fangraphsPitcherPathString: fangraphsPitcherFilename, outputPathString: outputFile)
