@@ -29,7 +29,9 @@ public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAu
         let fangraphPlayer = playerAuctions.first(where: { $0.name == nameKeeperValue.name})
         
         if let fangraphPlayer = fangraphPlayer {
-            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name, keeperPrice: nameKeeperValue.keeperPrice, projectedAuctionValue: fangraphPlayer.auctionValue )
+            let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name,
+                                                          keeperPrice: nameKeeperValue.keeperPrice,
+                                                          projectedAuctionValue: fangraphPlayer.auctionValue)
             
             playerRelativeValues.append(playerRelativeValue)
         } else {
@@ -99,9 +101,13 @@ public func processTeamsWithRelativeValues() -> [Team] {
     let teamKeeperRankings: [(String, Double)] = valueTeams.map { valueTeam in
         print("name:\(valueTeam.name)")
         
-        let valueablePlayers = valueTeam.players.filter { player in
-            player.relativeValue > 0
-        }
+        // Show all players
+        let valueablePlayers = valueTeam.players
+
+        // only show players with positive value
+        // let valueablePlayers = valueTeam.players.filter { player in
+        //     player.relativeValue > 0
+        // }
         
         valueablePlayers.sorted(by: {$0.relativeValue > $1.relativeValue})
             .forEach { player in
