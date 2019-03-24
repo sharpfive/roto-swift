@@ -114,8 +114,9 @@ public func processTeamsWithRelativeValues() -> [Team] {
             print("   player:\(player.name) - value: \(player.relativeValue)")
             }
         
-        let totalTeamValue: Double = valueablePlayers.map{ player in
-            return player.relativeValue
+        let totalTeamValue: Double = valueablePlayers.map { player in
+            // limit the penalty for a keeper to their keeper price
+            return max(player.relativeValue, Double(player.keeperPrice * -1))
         }.reduce(0.0, +)
         
         //print("total team value: \(totalTeamValue)")
