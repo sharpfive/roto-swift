@@ -27,6 +27,7 @@ public struct League {
         case Outfield = "OF"
         case StartingPitcher = "SP"
         case ReliefPitcher = "RP"
+        case Bench = "Bench"
     }
 }
 
@@ -194,6 +195,7 @@ let repository = ESPNLeagueRostersRepository2019()
 let league = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print(league.teams.count)
+print(league.teams)
 
 
 
