@@ -48,7 +48,8 @@ class ESPNLeagueRostersRepository2019 {
 
     let leagueRostersToken = "League Rosters"
     let endOfTeamsToken = "Fantasy Baseball Support"
-    let endOfTeamToken = "Propose Trade"
+    let endOfTeamToken = "View Team"
+    let proposeTradeToken = "Propose Trade"
     let emptyToken = "Empty"
 
     public func getLeagueRosters(from string: String) -> League {
@@ -66,7 +67,7 @@ class ESPNLeagueRostersRepository2019 {
         string.enumerateLines { (lineString, boolean) in
             lineCount += 1
 
-            if lineString.isEmpty {
+            if lineString.isEmpty || lineString == self.proposeTradeToken {
                 return
             }
 
@@ -195,7 +196,9 @@ let repository = ESPNLeagueRostersRepository2019()
 let league = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print(league.teams.count)
-print(league.teams)
+//print(league.teams)
+
+//where is the illuminati
 
 
 
