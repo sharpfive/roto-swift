@@ -123,10 +123,18 @@ class ESPNLeagueRostersRepository2019 {
 //                players.append(player)
 //            }
             case .Positions:
+                var positionIsValid = false
+                if let _ = League.Position(rawValue: lineString) {
+                    positionIsValid = true
+                }
+
                 // should be a comma separated string with the elligible positions C,1B,3B
-                let positionArray = lineString.components(separatedBy: ",")
-                guard let firstPosition = positionArray.first,
-                    let _ = League.Position(rawValue: firstPosition) else { return }
+                if !positionIsValid {
+                    // check for comma delimited array
+                    let positionArray = lineString.components(separatedBy: ",")
+                    guard let firstPosition = positionArray.first,
+                        let _ = League.Position(rawValue: firstPosition) else { return }
+                }
 
                 // Player is complete
                 guard let playerName = playerName,
