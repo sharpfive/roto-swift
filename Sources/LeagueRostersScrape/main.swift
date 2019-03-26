@@ -13,8 +13,6 @@ let repository = ESPNLeagueRostersRepository2019()
 
 let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 
-print("leagueRosters: \(leagueRosters)")
-// look for "League Rosters" text
-// Next line is a Team Name
+print("leagueRosters: \(leagueRosters.teams.count)")
 
 

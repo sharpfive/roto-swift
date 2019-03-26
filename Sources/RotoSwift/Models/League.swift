@@ -36,5 +36,12 @@ public struct League {
         case StartingPitcher = "SP"
         case ReliefPitcher = "RP"
         case Bench = "Bench"
+        case Utility = "UTIL"
+        case DH = "DH"
+        case Pitcher = "P"
+        case Injured = "IL"
+        //aiai some of these are field positions
+        //aiai others are roster positions IL, P, Bench
+        //aiai how to split them up?
     }
 }
