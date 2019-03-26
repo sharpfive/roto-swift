@@ -111,12 +111,22 @@ class ESPNLeagueRostersRepository2019 {
             case .Positions:
                 let positions: [League.Position]
 
+                print("positions: \(lineString)")
+
                 // If the entire linestring converts to a Position, the player only has 1 position elligible
                 if let singlePosition = League.Position(rawValue: lineString) {
                     positions = [singlePosition]
                 } else {
                     // Otherwise it is a comma-delimited list
                     let positionArray = lineString.components(separatedBy: ",").compactMap { League.Position(rawValue: $0 )}
+
+                    if positionArray.isEmpty {
+                        return
+                    }
+//                    guard let firstPosition = positionArray.first,
+//                        let _ = League.Position(rawValue: firstPosition) else {
+//                            return
+//                    }
                     positions = positionArray
                 }
 
