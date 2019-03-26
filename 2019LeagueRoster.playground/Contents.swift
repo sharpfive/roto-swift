@@ -36,14 +36,9 @@ class ESPNLeagueRostersRepository2019 {
     enum ParseState {
         case BeforeLeague
         case TeamName
-        //case AfterTeamName
         case ActivePosition
         case Name
-        //case Team
         case Positions
-        //case HowAcquired
-
-        //case Player
         case Complete
     }
 
@@ -79,7 +74,7 @@ class ESPNLeagueRostersRepository2019 {
                 }
             case .TeamName:
                 if lineString == self.endOfTeamsToken {
-                    print("end of teams")
+                    // print("end of teams")
                     parseState = .Complete
                     break
                 }
@@ -88,7 +83,7 @@ class ESPNLeagueRostersRepository2019 {
                 parseState = .ActivePosition
             case .ActivePosition:
                 if lineString == self.endOfTeamToken {
-                    print("end of single team")
+                    // print("end of single team")
                     let newTeam = League.Team(name: teamName, players: players)
                     teams.append(newTeam)
                     teamName = ""
@@ -111,8 +106,6 @@ class ESPNLeagueRostersRepository2019 {
             case .Positions:
                 let positions: [League.Position]
 
-                print("positions: \(lineString)")
-
                 // If the entire linestring converts to a Position, the player only has 1 position elligible
                 if let singlePosition = League.Position(rawValue: lineString) {
                     positions = [singlePosition]
@@ -123,10 +116,6 @@ class ESPNLeagueRostersRepository2019 {
                     if positionArray.isEmpty {
                         return
                     }
-//                    guard let firstPosition = positionArray.first,
-//                        let _ = League.Position(rawValue: firstPosition) else {
-//                            return
-//                    }
                     positions = positionArray
                 }
 
@@ -174,7 +163,7 @@ let dirs = NSSearchPathForDirectoriesInDomains(
 
 import PlaygroundSupport
 // let valuePercentage = winningAuctionValue / Double(auctionDollarsPerTeam)
-let filename = "2019-03-24-espn.rosters.txt"
+let filename = "2019-03-25-espn.rosters.txt"
 
 print(playgroundSharedDataDirectory)
 
@@ -188,9 +177,8 @@ let repository = ESPNLeagueRostersRepository2019()
 let league = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print(league.teams.count)
-print(league.teams)
+//print(league.teams)
 
-//where is the illuminati
 
 
 
