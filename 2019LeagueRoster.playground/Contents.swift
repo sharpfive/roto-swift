@@ -11,11 +11,12 @@ public struct League {
 
     public struct Player {
         public let name: String
+        public let eligiblePositions: [Position]
 
-        public init(name: String) {
+        public init(name: String, eligiblePositions: [Position]) {
             self.name = name
+            self.eligiblePositions = eligiblePositions
         }
-        //        let positions: [Position]
     }
 
     public enum Position : String {
@@ -62,7 +63,6 @@ class ESPNLeagueRostersRepository2019 {
         var players = [League.Player]()
         var activePosition: League.Position?
         var playerName: String?
-        var currentTeam: League.Team?
 
         string.enumerateLines { (lineString, boolean) in
             lineCount += 1
@@ -108,34 +108,16 @@ class ESPNLeagueRostersRepository2019 {
                 } else {
                     parseState = .ActivePosition
                 }
-//                if lineString.isEmpty {
-//                    // team is complete
-//                    let team = League.Team(name: teamName, players: players)
-//                    teams.append(team)
-//                    // reset player list and team name
-//                    players = [League.Player]()
-//                    teamName = ""
-//
-//                    parseState = .TeamName
-//                    break
-//                }
-//            // Parse the player info
-//            if let player = self.parsePlayer(from: lineString) {
-//                // print("Found Player: \(player.name)")
-//                players.append(player)
-//            }
             case .Positions:
-                var positionIsValid = false
-                if let _ = League.Position(rawValue: lineString) {
-                    positionIsValid = true
-                }
+                let positions: [League.Position]
 
-                // should be a comma separated string with the elligible positions C,1B,3B
-                if !positionIsValid {
-                    // check for comma delimited array
-                    let positionArray = lineString.components(separatedBy: ",")
-                    guard let firstPosition = positionArray.first,
-                        let _ = League.Position(rawValue: firstPosition) else { return }
+                // If the entire linestring converts to a Position, the player only has 1 position elligible
+                if let singlePosition = League.Position(rawValue: lineString) {
+                    positions = [singlePosition]
+                } else {
+                    // Otherwise it is a comma-delimited list
+                    let positionArray = lineString.components(separatedBy: ",").compactMap { League.Position(rawValue: $0 )}
+                    positions = positionArray
                 }
 
                 // Player is complete
@@ -145,7 +127,7 @@ class ESPNLeagueRostersRepository2019 {
                         return
                     }
 
-                players.append(League.Player(name: playerName))
+                players.append(League.Player(name: playerName, eligiblePositions: positions))
                 parseState = .ActivePosition
             case .Complete:
             break
@@ -196,7 +178,7 @@ let repository = ESPNLeagueRostersRepository2019()
 let league = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print(league.teams.count)
-//print(league.teams)
+print(league.teams)
 
 //where is the illuminati
 
