@@ -57,7 +57,7 @@ public class ESPNLeagueRostersRepository2019 {
                     parseState = .Complete
                     break
                 }
-                print("Found Team: \(lineString)")
+                // print("Found Team: \(lineString)")
                 teamName = lineString
                 parseState = .ActivePosition
             case .ActivePosition:
@@ -77,7 +77,7 @@ public class ESPNLeagueRostersRepository2019 {
             case .Name:
                 if lineString != self.emptyToken {
                     playerName = lineString
-                    print("found player: \(String(describing: playerName))")
+                    //print("found player: \(String(describing: playerName))")
                     parseState = .Positions
                 } else {
                     parseState = .ActivePosition

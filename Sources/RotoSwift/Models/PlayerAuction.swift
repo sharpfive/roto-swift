@@ -8,7 +8,7 @@
 import Foundation
 
 public struct PlayerAuction {
-    let name: String
-    let zScore: Double
-    let auctionValue: Double
+    public let name: String
+    public let zScore: Double
+    public let auctionValue: Double
 }
