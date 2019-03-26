@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ESPNLeagueRostersRepository2019 {
+public class ESPNLeagueRostersRepository2019 {
     enum ParseState {
         case BeforeLeague
         case TeamName
@@ -23,6 +23,10 @@ class ESPNLeagueRostersRepository2019 {
     let proposeTradeToken = "Propose Trade"
     let emptyToken = "Empty"
 
+    public init() {
+
+    }
+    
     public func getLeagueRosters(from string: String) -> League {
         var teams = [League.Team]()
 

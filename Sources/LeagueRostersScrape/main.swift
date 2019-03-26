@@ -3,19 +3,17 @@ import RotoSwift
 
 print("LeagueRostersScrape")
 
-let filename = "/Users/jaim/code/roto-swift/data/2017-espn.roster.txt"
+let filename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-03-25.txt"
 
 // open file and read text
 let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
-var lineCount = 0
 
-print("LineCount: \(String(describing:lineCount))")
+let repository = ESPNLeagueRostersRepository2019()
 
-let repository = ESPNLeagueRostersRepository()
+let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 
-let leagueRosters = repository.getLeagueRosters(for: filename)
-
+print("leagueRosters: \(leagueRosters)")
 // look for "League Rosters" text
 // Next line is a Team Name
 
