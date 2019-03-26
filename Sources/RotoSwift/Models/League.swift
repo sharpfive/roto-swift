@@ -8,23 +8,24 @@
 import Foundation
 
 public struct League {
-    
+
     public let teams: [Team]
-    
+
     public struct Team {
         public let name: String
         public let players: [Player]
     }
-    
+
     public struct Player {
         public let name: String
-        
-        public init(name: String) {
+        public let eligiblePositions: [Position]
+
+        public init(name: String, eligiblePositions: [Position] = [Position]()) { //aiai
             self.name = name
+            self.eligiblePositions = eligiblePositions
         }
-//        let positions: [Position]
     }
-    
+
     public enum Position : String {
         case Catcher = "C"
         case FirstBase = "1B"
@@ -34,5 +35,6 @@ public struct League {
         case Outfield = "OF"
         case StartingPitcher = "SP"
         case ReliefPitcher = "RP"
+        case Bench = "Bench"
     }
 }
