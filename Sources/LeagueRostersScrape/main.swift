@@ -1,6 +1,39 @@
 import Foundation
 import RotoSwift
 
+func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top: Int) {
+    var teamValues = [(name: String, value: Double)]()
+
+    leagueRosters.teams.forEach { team in
+        var teamValue = 0.0
+
+        let players: [PlayerAuction] = team.players.compactMap { player in
+            if let auctionPlayer = auctionValues.first(where: { $0.name == player.name }) {
+                return auctionPlayer
+            } else {
+                print("\(player.name) not found")
+                return nil
+            }
+        }
+
+        let playerPool = players.sorted(by: { $0.auctionValue > $1.auctionValue })
+            //.filter({ $0.auctionValue > 0.0})
+            .prefix(top)
+
+        teamValue = playerPool.map({ $0.auctionValue}).reduce(0,+)
+
+        teamValues.append((name: team.name, value: teamValue))
+    }
+
+    let orderedTeamValues = teamValues.sorted(by: { $0.value > $1.value } )
+
+    orderedTeamValues.forEach {
+        print("team: \($0.name): \($0.value)")
+    }
+
+
+}
+
 print("LeagueRostersScrape")
 
 let filename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-03-25.txt"
@@ -23,46 +56,11 @@ let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitch
 let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
 let projectedValues = fangraphsRepository.getAuctionValues()
 
-var teamValues = [(name: String, value: Double)]()
+print("All Players")
+printValues(for: leagueRosters, auctionValues: projectedValues, top: 30)
 
-leagueRosters.teams.forEach { team in
-    var teamValue = 0.0
+print("Top 15")
+printValues(for: leagueRosters, auctionValues: projectedValues, top: 15)
 
-    let players: [PlayerAuction] = team.players.compactMap { player in
-        if let auctionPlayer = projectedValues.first(where: { $0.name == player.name }) {
-            return auctionPlayer
-        } else {
-            print("\(player.name) not found")
-            return nil
-        }
-    }
-
-    let playerPool = players.sorted(by: { $0.auctionValue > $1.auctionValue })
-                            .filter({ $0.auctionValue > 0.0})
-                            .prefix(15)
-
-    teamValue = playerPool.map({ $0.auctionValue}).reduce(0,+)
-
-
-    //team.players.sorted(by: { player. })
-//    team.players.forEach { player in
-//        // find player.name in projectedValues
-//        if let playerProjection = projectedValues.first(where: { $0.name == player.name }) {
-//            //print("player: \(playerProjection.name) = \(playerProjection.auctionValue)")
-//            if playerProjection.auctionValue > 0 {
-//                teamValue = teamValue + playerProjection.auctionValue
-//            }
-//        }
-//    }
-
-    teamValues.append((name: team.name, value: teamValue))
-}
-
-let orderedTeamValues = teamValues.sorted(by: { $0.value > $1.value } )
-orderedTeamValues.forEach {
-    print("team: \($0.name): \($0.value)")
-}
-
-//print("\(orderedTeamValues)")
-
-
+print("Top 10")
+printValues(for: leagueRosters, auctionValues: projectedValues, top: 10)
