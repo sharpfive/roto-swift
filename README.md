@@ -1,12 +1,12 @@
 
 Thes are some swift command line apps I use to hack on my roto baseball league.
 
-No warranty or claim of usability what-so-ever.
+No warranty or claim of usability what-so-ever. This represents work I did in my free time for my own enjoyment. It is not intended to represent production quality work. That said, here are the apps:
 
 
 ### ESPNScrape
 
-Aborted attempt to log in to my ESPN site and scrape data. Not much interestin here.
+Aborted attempt to log in to my ESPN site and scrape data. Not much interesting here.
 
 ### LeagueRostersScrape
 
