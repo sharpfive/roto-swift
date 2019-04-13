@@ -111,9 +111,9 @@ func printValues2(for leagueRosters: League, auctionValues: [PlayerAuction], top
 //        print("team: \($0.name): \($0.value)")
 //    }
 }
-
-printValues2(for: leagueRosters, auctionValues: projectedValues, top: 30)
-
-leagueRosters.teams.map { $0.players.reduce(0, { (result, player) -> Double in
-    return result + player.auctionValue
-})}
+//
+//printValues2(for: leagueRosters, auctionValues: projectedValues, top: 30)
+//
+//leagueRosters.teams.map { $0.players.reduce(0, { (result, player) -> Double in
+//    return result + player.auctionValue
+//})}
