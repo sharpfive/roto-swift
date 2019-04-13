@@ -22,3 +22,35 @@ Scrapes a csv of team rosters and compares them to csv's of project Fangraphs au
 ### TeamRelativeValues
 
 An attempt to calculate rotisserie auction values from a csv of projections.
+
+
+
+You need to have Swift installed on your machine to run this. Most people do this by downloading Xcode and installing the command line tools. Consult google for more directions.
+
+#### How do I compile the apps?
+_swift build_
+
+#### How do I run one of the apps?
+* Change the filename variables in the swift app to point to something on your local machine
+* _.build/debug/TeamRelativeValues_ to run a file from your working directory
+
+To build and run an app in one command
+
+_swift build && .build/debug/PlayerRelativeValues_
+
+Run unit tests (not there are many... shame on me)
+
+_swift test_
+
+
+### How can I hack on this?
+
+Go ahead. You can edit the files in your text editor of choice. If you use Xcode and add new files, you'll need to have swift update the xcodeproj 
+
+_swift package generate-xcodeproj_
+
+Note: this isn't needed for other editors than don't use the xcodeproj.
+
+
+
+
