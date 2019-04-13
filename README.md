@@ -52,5 +52,10 @@ _swift package generate-xcodeproj_
 Note: this isn't needed for other editors than don't use the xcodeproj.
 
 
+### What is aiai?
+
+Something that should be cleaned up. If something like that was committed to a production repository I'd feel ashamed, but this is not one of those...
+
+
 
 
