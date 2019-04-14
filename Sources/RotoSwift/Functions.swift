@@ -154,6 +154,10 @@ public enum BatterFields: String {
     case steals = "SB"
 }
 
+func calculateProjectsion(with: [Batter]) {
+
+}
+
 public func calculateProjections(with filename: String) {
 
     let batters = convertFileToBatters(filename: filename)
@@ -161,26 +165,20 @@ public func calculateProjections(with filename: String) {
     let numberOfTeams = 12
     let playersPerTeam = 24
     let numberOfPlayers = numberOfTeams * playersPerTeam
-    let numberOfHitters = numberOfPlayers / 2
     let hittersPerTeam = 12
     
     // let auctionDollarsAvailable = 260
     let hitterAuctionDollarsAvailable = 130
     
     // Estimate of the player position that will be drafted at league minimum
-    let replacementLevelBatterPosition = numberOfHitters - 3*numberOfTeams
-    
-    let batterPoolCount = hittersPerTeam * numberOfTeams
-    
-    let endIndex = min(batterPoolCount, batters.count)
-    
+    let replacementLevelBatterPosition = hittersPerTeam * numberOfTeams
+
+    let endIndex = batters.count
+
+    print("endIndex: \(endIndex)")
     
     let batterPool = Array(batters[0..<endIndex])
-    
-    batterPool.forEach { (batter) in
-        //print(batter)
-    }
-    
+
     print("\(batterPool.count) batters found")
     let homeRunsStandardDeviation = standardDeviation(for: batterPool.map{ $0.homeRuns})
     let meanHomeRuns = calculateMean(for: batterPool.map{ $0.homeRuns})
@@ -219,15 +217,20 @@ public func calculateProjections(with filename: String) {
     }
     
     // The lowest total z-score player is replacement level
-    if zScores.last == nil {
+    if let worstBatter = zScores.last {
+        print("worstBatter: \(worstBatter)")
+    } else {
         print("Unable to get worst batter")
         return
     }
     
     let replacementBatter = zScores[replacementLevelBatterPosition]
+
+    print("replacement batter is: \(replacementBatter)")
     
     let replacementZScore = replacementBatter.1
-    
+
+    let numberOfBatterResults = min(replacementLevelBatterPosition*2, batters.count)
     // subtract total-z-scores for each player from the replacement-z-score
     let adjustedBatters = zScores.map {
         ($0.0,
@@ -235,8 +238,8 @@ public func calculateProjections(with filename: String) {
         )
     }
     
-    // calculate and add z scores for all positions (total z-score)
-    let totalZScores = adjustedBatters.map { $0.1}.reduce(0,+)
+    // calculate and add (all positive) z scores for all positions (total z-score)
+    let totalZScores = adjustedBatters.filter({ $0.1 > 0 }).map { $0.1}.reduce(0,+)
     
     // calculate the total amount of auction money
     let hitterAuctionMoney = numberOfTeams * hitterAuctionDollarsAvailable
@@ -249,13 +252,15 @@ public func calculateProjections(with filename: String) {
         let auctionAmount = batterZScore / totalZScores * Double(hitterAuctionMoney)
         return PlayerAuction(name: batter.0, zScore: batterZScore, auctionValue: auctionAmount)
     }
-    
-    playersAuctions.forEach { playerAuction in
-        print("\(playerAuction.name) - \(playerAuction.zScore) - \(playerAuction.auctionValue)")
+
+    for (index, playerAuction) in playersAuctions.enumerated() {
+        print("\(index) - \(playerAuction.name) - \(playerAuction.zScore) - \(playerAuction.auctionValue)")
+
     }
-    
-    let asdf = playersAuctions.map { $0.auctionValue}.reduce(0,+)
-    print("playersAuctions: \(asdf)")
+
+    // Check out work, this should be roughly the number of teams * the auction $$$
+    let totalAuctionValues = playersAuctions.filter({$0.auctionValue > 0}).map { $0.auctionValue}.reduce(0,+)
+    print("Total auction amount: $\(totalAuctionValues)")
     
     // calculate the percentage of z-score a player has
     
