@@ -154,8 +154,37 @@ public enum BatterFields: String {
     case steals = "SB"
 }
 
-func calculateProjectsion(with: [Batter]) {
 
+func calculateZScore(with filename: String) -> [BatterZScores] {
+    let batters = convertFileToBatters(filename: filename)
+    return calculateZScores(for: batters)
+}
+
+func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
+    let homeRunsStandardDeviation = standardDeviation(for: batters.map{ $0.homeRuns})
+    let meanHomeRuns = calculateMean(for: batters.map{ $0.homeRuns})
+
+    let runsStandardDeviation = standardDeviation(for: batters.map {$0.runs})
+    let meanRuns = calculateMean(for: batters.map{ $0.runs})
+
+    let runsBattedInStandardDeviation = standardDeviation(for: batters.map {$0.runsBattedIn})
+    let meanRunsBattedIn = calculateMean(for: batters.map{ $0.runsBattedIn})
+
+    let onBasePercentageStandardDeviation = standardDeviation(for: batters.map {$0.onBasePercentage})
+    let meanOnBasePercentage = calculateMean(for: batters.map{ $0.onBasePercentage})
+
+    let stolenBasesStandardDeviation = standardDeviation(for: batters.map {$0.stolenBases})
+    let meanStolenBases = calculateMean(for: batters.map {$0.stolenBases})
+
+    return batters.map { batter in
+        return BatterZScores(name: batter.name,
+                      homeRuns: calculateZScore(value: batter.homeRuns, mean: meanHomeRuns, standardDeviation: homeRunsStandardDeviation),
+                      runs: calculateZScore(value: batter.runs, mean: meanRuns, standardDeviation: runsStandardDeviation),
+                      onBasePercentage: calculateZScore(value: batter.onBasePercentage, mean: meanOnBasePercentage, standardDeviation: onBasePercentageStandardDeviation),
+                      stolenBases: calculateZScore(value: batter.stolenBases, mean: meanStolenBases, standardDeviation: stolenBasesStandardDeviation),
+                      runsBattedIn: calculateZScore(value: batter.runsBattedIn, mean: meanRunsBattedIn, standardDeviation: runsBattedInStandardDeviation)
+        )
+    }
 }
 
 public func calculateProjections(with filename: String) {
@@ -173,58 +202,25 @@ public func calculateProjections(with filename: String) {
     // Estimate of the player position that will be drafted at league minimum
     let replacementLevelBatterPosition = hittersPerTeam * numberOfTeams
 
-    let endIndex = batters.count
+    let zScores = calculateZScores(for: batters)
 
-    print("endIndex: \(endIndex)")
-    
-    let batterPool = Array(batters[0..<endIndex])
-
-    print("\(batterPool.count) batters found")
-    let homeRunsStandardDeviation = standardDeviation(for: batterPool.map{ $0.homeRuns})
-    let meanHomeRuns = calculateMean(for: batterPool.map{ $0.homeRuns})
-    print("HR standard deviation = \(homeRunsStandardDeviation) - Mean \(meanHomeRuns)")
-    
-    let runsStandardDeviation = standardDeviation(for: batterPool.map {$0.runs})
-    let meanRuns = calculateMean(for: batterPool.map{ $0.runs})
-    print("Runs standard deviation = \(runsStandardDeviation) - Mean \(meanRuns)")
-    
-    let runsBattedInStandardDeviation = standardDeviation(for: batterPool.map {$0.runsBattedIn})
-    let meanRunsBattedIn = calculateMean(for: batterPool.map{ $0.runsBattedIn})
-    print("RBI's deviation = \(runsBattedInStandardDeviation) - Mean \(meanRunsBattedIn)")
-    
-    let onBasePercentageStandardDeviation = standardDeviation(for: batterPool.map {$0.onBasePercentage})
-    let meanOnBasePercentage = calculateMean(for: batterPool.map{ $0.onBasePercentage})
-    print("OBP deviation = \(onBasePercentageStandardDeviation) - Mean \(meanOnBasePercentage)")
-    
-    let stolenBasesStandardDeviation = standardDeviation(for: batterPool.map {$0.stolenBases})
-    let meanStolenBases = calculateMean(for: batterPool.map {$0.stolenBases})
-    print("SB deviation = \(stolenBasesStandardDeviation) - Mean \(meanStolenBases)")
-    
     //calculate Z scores
-    let zScores = batterPool.map { batter in
-        (batter.name,
-         calculateZScore(value: batter.homeRuns, mean: meanHomeRuns, standardDeviation: homeRunsStandardDeviation) + // HR
-            calculateZScore(value: batter.runs, mean: meanRuns, standardDeviation: runsStandardDeviation) + // R
-            calculateZScore(value: batter.runsBattedIn, mean: meanRunsBattedIn, standardDeviation: runsBattedInStandardDeviation) + // RBI
-            calculateZScore(value: batter.onBasePercentage, mean: meanOnBasePercentage, standardDeviation: onBasePercentageStandardDeviation),
-         calculateZScore(value: batter.stolenBases, mean: meanStolenBases, standardDeviation: stolenBasesStandardDeviation) //SB
-        )
-        }.sorted(by: { return $0.1 > $1.1 })
-    
+    let combinedZScores = zScores.map{ ($0.name, $0.totalZScore) }.sorted(by: { $0.1 > $1.1 })
+
     enum IntParsingError: Error {
         case overflow
         case invalidInput(String)
     }
     
     // The lowest total z-score player is replacement level
-    if let worstBatter = zScores.last {
+    if let worstBatter = combinedZScores.last {
         print("worstBatter: \(worstBatter)")
     } else {
         print("Unable to get worst batter")
         return
     }
     
-    let replacementBatter = zScores[replacementLevelBatterPosition]
+    let replacementBatter = combinedZScores[replacementLevelBatterPosition]
 
     print("replacement batter is: \(replacementBatter)")
     
@@ -232,7 +228,7 @@ public func calculateProjections(with filename: String) {
 
     let numberOfBatterResults = min(replacementLevelBatterPosition*2, batters.count)
     // subtract total-z-scores for each player from the replacement-z-score
-    let adjustedBatters = zScores.map {
+    let adjustedBatters = combinedZScores.map {
         ($0.0,
          $0.1 - replacementZScore
         )

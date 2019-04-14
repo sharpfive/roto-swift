@@ -16,3 +16,15 @@ struct Batter {
     let runsBattedIn: Int
 }
 
+struct BatterZScores {
+    let name: String
+    let homeRuns: Double
+    let runs: Double
+    let onBasePercentage: Double
+    let stolenBases: Double
+    let runsBattedIn: Double
+
+    var totalZScore: Double {
+        return homeRuns + runs + onBasePercentage + stolenBases + runsBattedIn
+    }
+}
