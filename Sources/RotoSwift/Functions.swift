@@ -155,7 +155,7 @@ public enum BatterFields: String {
 }
 
 
-func calculateZScore(with filename: String) -> [BatterZScores] {
+func calculateZScores(with filename: String) -> [BatterZScores] {
     let batters = convertFileToBatters(filename: filename)
     return calculateZScores(for: batters)
 }
@@ -187,6 +187,32 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
     }
 }
 
+public func saveZScores(from sourceFilename: String, to outputFilename: String) {
+    let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
+
+    let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
+    let csvWriter = try! CSVWriter(stream: stream)
+
+    let rows: [[String]] = batters.map { batterZScore in
+        let stringArray: [String] = [batterZScore.name,
+         String(batterZScore.runs),
+         String(batterZScore.homeRuns),
+         String(batterZScore.runsBattedIn),
+         String(batterZScore.onBasePercentage),
+         String(batterZScore.stolenBases),
+         String(batterZScore.totalZScore)]
+        return stringArray
+    }
+
+    rows.forEach { row in
+        // output to CSV
+        csvWriter.beginNewRow()
+        try! csvWriter.write(row: row)
+    }
+
+    csvWriter.stream.close()
+}
+
 public func calculateProjections(with filename: String) {
 
     let batters = convertFileToBatters(filename: filename)
@@ -194,7 +220,7 @@ public func calculateProjections(with filename: String) {
     let numberOfTeams = 12
     let playersPerTeam = 24
     let numberOfPlayers = numberOfTeams * playersPerTeam
-    let hittersPerTeam = 9
+    let hittersPerTeam = 7
     
     // let auctionDollarsAvailable = 260
     let hitterAuctionDollarsAvailable = 130
