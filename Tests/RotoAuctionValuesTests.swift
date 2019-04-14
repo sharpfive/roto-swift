@@ -14,12 +14,6 @@ class RotoAuctionValuesTests: XCTestCase {
 
     let batters = convertFileToBatters(filename: filename)
 
-    override func setUp() {
-    }
-
-    override func tearDown() {
-    }
-
     func testNumberOfPlayersIsX() {
         XCTAssert(batters.count == 405)
     }
