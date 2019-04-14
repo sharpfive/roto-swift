@@ -190,19 +190,26 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
 public func saveZScores(from sourceFilename: String, to outputFilename: String) {
     let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
 
+    let valuablePlayers = batters.filter { $0.totalZScore > 0}
+    let totalAuctionMoney = 130*12
+
+
     let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
     let csvWriter = try! CSVWriter(stream: stream)
 
     let rows: [[String]] = batters.map { batterZScore in
-        let stringArray: [String] = [batterZScore.name,
-         String(batterZScore.runs),
-         String(batterZScore.homeRuns),
-         String(batterZScore.runsBattedIn),
-         String(batterZScore.onBasePercentage),
-         String(batterZScore.stolenBases),
-         String(batterZScore.totalZScore)]
+        let stringArray: [String] = [
+            batterZScore.name,
+            String(format: "%.2f", batterZScore.runs),
+            String(format: "%.2f", batterZScore.homeRuns),
+            String(format: "%.2f", batterZScore.runsBattedIn),
+            String(format: "%.2f", batterZScore.onBasePercentage),
+            String(format: "%.2f", batterZScore.stolenBases),
+            String(format: "%.2f", batterZScore.totalZScore)]
         return stringArray
     }
+
+    try! csvWriter.write(row: ["name", "R", "HR", "RBI", "OBP", "SB", "Total"])
 
     rows.forEach { row in
         // output to CSV

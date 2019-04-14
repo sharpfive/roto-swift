@@ -16,7 +16,7 @@ func processRelativeValues(cbPathString: String, fangraphsHitterPathString: Stri
     let csvWriter = try! CSVWriter(stream: stream)
     
     try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
-    
+
     playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
         
         // output to CSV
