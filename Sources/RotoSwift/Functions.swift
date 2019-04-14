@@ -190,26 +190,52 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
 public func saveZScores(from sourceFilename: String, to outputFilename: String) {
     let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
 
-    let valuablePlayers = batters.filter { $0.totalZScore > 0}
+    let replacementPosition = 9 * 12 // 9 players for 12 teams
+
+    let replacementZScore = batters[replacementPosition].totalZScore
+
+    //TODO need to offset so the last person has a score of 0
+
+    let adjustedBatterZScores = batters.map {
+        ($0, $0.totalZScore - replacementZScore)
+    }
+
+
     let totalAuctionMoney = 130*12
+
+    let totalZScores = adjustedBatterZScores.reduce(0) { (previousResult, tuple) -> Double in
+        if tuple.1 < 0 {
+            return previousResult
+        }
+
+        return previousResult + tuple.1
+    }
+
+    print("total Z Scores :\(totalZScores)")
+
+    let auctionArray = adjustedBatterZScores.map { tuple in
+        (tuple.0, tuple.1 / totalZScores * Double(totalAuctionMoney))
+    }
 
 
     let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
     let csvWriter = try! CSVWriter(stream: stream)
 
-    let rows: [[String]] = batters.map { batterZScore in
+    let rows: [[String]] = auctionArray.map { tuple in
         let stringArray: [String] = [
-            batterZScore.name,
-            String(format: "%.2f", batterZScore.runs),
-            String(format: "%.2f", batterZScore.homeRuns),
-            String(format: "%.2f", batterZScore.runsBattedIn),
-            String(format: "%.2f", batterZScore.onBasePercentage),
-            String(format: "%.2f", batterZScore.stolenBases),
-            String(format: "%.2f", batterZScore.totalZScore)]
+            tuple.0.name,
+            String(format: "%.2f", tuple.0.runs),
+            String(format: "%.2f", tuple.0.homeRuns),
+            String(format: "%.2f", tuple.0.runsBattedIn),
+            String(format: "%.2f", tuple.0.onBasePercentage),
+            String(format: "%.2f", tuple.0.stolenBases),
+            String(format: "%.2f", tuple.0.totalZScore),
+            String(format: "%.2f", tuple.1)
+        ]
         return stringArray
     }
 
-    try! csvWriter.write(row: ["name", "R", "HR", "RBI", "OBP", "SB", "Total"])
+    try! csvWriter.write(row: ["name", "R", "HR", "RBI", "OBP", "SB", "Total", "$$$"])
 
     rows.forEach { row in
         // output to CSV
