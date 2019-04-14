@@ -49,21 +49,21 @@ class LeagueRostersScrapeTests: XCTestCase {
         XCTAssert(auctionValues.count > 0)
     }
     
-    func testFindBestFreeAgent() throws {
-        let league = createLeague(with: "/Users/jaim/code/xcode/roto-swift/data/2018-08-12-espn-roster-cb.txt")
-        
-        //let auctionValues = getProjections()
-        
-//        XCTAssertTrue(league.teams.count > 0)
-        print("Team Count: \(league.teams.count)")
-        let _ = league.teams.forEach( {
-            print("team - \($0)")
-            //$0.players
-            
-        } )
-        //data/fg-2017-projections.csv
-        //let projections =
-    }
+//    func testFindBestFreeAgent() throws {
+//        let league = createLeague(with: "/Users/jaim/code/xcode/roto-swift/data/2018-08-12-espn-roster-cb.txt")
+//        
+//        //let auctionValues = getProjections()
+//        
+////        XCTAssertTrue(league.teams.count > 0)
+//        print("Team Count: \(league.teams.count)")
+//        let _ = league.teams.forEach( {
+//            print("team - \($0)")
+//            //$0.players
+//            
+//        } )
+//        //data/fg-2017-projections.csv
+//        //let projections =
+//    }
     
     func getProjections() -> [PlayerAuction] {
         let hitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"

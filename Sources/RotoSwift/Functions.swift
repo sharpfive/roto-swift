@@ -130,60 +130,34 @@ public func processTeamsWithRelativeValues() -> [Team] {
     return teams
 }
 
-public func calculateProjections() {
-//    let filename = "/Users/jaim/code/xcode/roto-swift/data/fg-2017-projections.csv"
-    let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-12/Zips-projections-ros-batters.csv"
-    
-    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
-    
-    let csv = try! CSVReader(string: playerDataCSV,
-                             hasHeaderRow: true) // It must be true.
-    
-    enum batterFields: String {
-        case homeRuns = "HR"
-        case name = "Name"
-        case runs = "R"
-        case runsBattedIn = "RBI"
-        case onBasePercentage = "OBP"
-        case steals = "SB"
+public func covertFileToArray(with filename: String, dataFormat: [BatterFields]) {
+
+}
+
+public struct DataFormat {
+    public let identifier: String
+    public let dataValues: [BatterFields]
+
+    public init(identifier: String, dataValues: [BatterFields]) {
+        self.identifier = identifier
+        self.dataValues = dataValues
     }
-    
-    let headerRow = csv.headerRow!
-    
-    print(headerRow)
-    let homeRunsRowOptional = headerRow.index(of: batterFields.homeRuns.rawValue)
-    let nameRowOptional:Int? = 0
-    let runsRowOptional = headerRow.index(of: batterFields.runs.rawValue)
-    let onBasePercentageRowOptional = headerRow.index(of: batterFields.onBasePercentage.rawValue)
-    let stolenBasesRowOptional = headerRow.index(of: batterFields.steals.rawValue)
-    let runsBattedInRowOptional = headerRow.index(of: batterFields.runsBattedIn.rawValue)
-    
-    guard let homeRunsRow = homeRunsRowOptional,
-        let nameRow = nameRowOptional,
-        let runsRow = runsRowOptional,
-        let stolenBasesRow = stolenBasesRowOptional,
-        let onBasePercentageRow = onBasePercentageRowOptional,
-        let runsBattedInRow = runsBattedInRowOptional else {
-            print("Unable to determine rows")
-            //print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
-            exit(0)
-    }
-    
-    var batters = [Batter]()
-    
-    while let row = csv.next() {
-        if let homeRuns = Int(row[homeRunsRow]),
-            let runs = Int(row[runsRow]),
-            let onBasePercentage = Double(row[onBasePercentageRow]),
-            let stolenBases = Int(row[stolenBasesRow]),
-            let runsBattedIn = Int(row[runsBattedInRow])
-        {
-            let batter = Batter(name: row[nameRow], homeRuns: homeRuns, runs: runs, onBasePercentage: onBasePercentage, stolenBases: stolenBases, runsBattedIn: runsBattedIn)
-            batters.append(batter)
-        }
-        
-    }
-    
+}
+
+// aiai halfway thought through, the name is an identifier, but we need to store type info to be able to calculate fields like OBP
+public enum BatterFields: String {
+    case homeRuns = "HR"
+    case name = "Name"
+    case runs = "R"
+    case runsBattedIn = "RBI"
+    case onBasePercentage = "OBP"
+    case steals = "SB"
+}
+
+public func calculateProjections(with filename: String) {
+
+    let batters = convertFileToBatters(filename: filename)
+
     let numberOfTeams = 12
     let playersPerTeam = 24
     let numberOfPlayers = numberOfTeams * playersPerTeam
@@ -289,4 +263,50 @@ public func calculateProjections() {
     // use the percentage of z-score to determine the players total value (total-auction-pool & z-percentage)
 
 }
+
+func convertFileToBatters(filename: String) -> [Batter] {
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+
+    let csv = try! CSVReader(string: playerDataCSV,
+                             hasHeaderRow: true) // It must be true.
+
+    let headerRow = csv.headerRow!
+
+    print(headerRow)
+    let homeRunsRowOptional = headerRow.index(of: BatterFields.homeRuns.rawValue)
+    let nameRowOptional:Int? = 0
+    let runsRowOptional = headerRow.index(of: BatterFields.runs.rawValue)
+    let onBasePercentageRowOptional = headerRow.index(of: BatterFields.onBasePercentage.rawValue)
+    let stolenBasesRowOptional = headerRow.index(of: BatterFields.steals.rawValue)
+    let runsBattedInRowOptional = headerRow.index(of: BatterFields.runsBattedIn.rawValue)
+
+    guard let homeRunsRow = homeRunsRowOptional,
+        let nameRow = nameRowOptional,
+        let runsRow = runsRowOptional,
+        let stolenBasesRow = stolenBasesRowOptional,
+        let onBasePercentageRow = onBasePercentageRowOptional,
+        let runsBattedInRow = runsBattedInRowOptional else {
+            print("Unable to find all specified rows")
+            //print("hrRow:\(String(describing:hrRowOptional)) - nameRow:\(String(describing:nameRowOptional))")
+            exit(0)
+    }
+
+    var batters = [Batter]()
+
+    while let row = csv.next() {
+        if let homeRuns = Int(row[homeRunsRow]),
+            let runs = Int(row[runsRow]),
+            let onBasePercentage = Double(row[onBasePercentageRow]),
+            let stolenBases = Int(row[stolenBasesRow]),
+            let runsBattedIn = Int(row[runsBattedInRow])
+        {
+            let batter = Batter(name: row[nameRow], homeRuns: homeRuns, runs: runs, onBasePercentage: onBasePercentage, stolenBases: stolenBases, runsBattedIn: runsBattedIn)
+            batters.append(batter)
+        }
+
+    }
+
+    return batters
+}
+
 
