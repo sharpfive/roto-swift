@@ -12,7 +12,7 @@ class RotoAuctionValuesTests: XCTestCase {
 
     static let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-12/Zips-projections-ros-batters.csv"
 
-    var batters = convertFileToBatters(filename: filename)
+    let batters = convertFileToBatters(filename: filename)
 
     override func setUp() {
     }
