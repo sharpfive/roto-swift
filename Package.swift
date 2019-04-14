@@ -28,6 +28,10 @@ let package = Package(
             name: "LeagueRostersScrape",
             dependencies: ["RotoSwift"]
         ),
+        .target(
+            name: "RotoAuctionValues",
+            dependencies: ["RotoSwift"]
+        ),
         .testTarget(
             name: "LeagueRostersScrapeTests",
             dependencies: ["LeagueRostersScrape", "RotoSwift"],

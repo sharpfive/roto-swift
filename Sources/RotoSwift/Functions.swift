@@ -130,8 +130,8 @@ public func processTeamsWithRelativeValues() -> [Team] {
     return teams
 }
 
-func calculateProjections() {
-    let filename = "/Users/jaim/code/roto-swift/data/fg-2017-projections.csv"
+public func calculateProjections() {
+    let filename = "/Users/jaim/code/xcode/roto-swift/data/fg-2017-projections.csv"
     
     let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
     
