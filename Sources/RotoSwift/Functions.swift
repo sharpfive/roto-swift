@@ -194,7 +194,7 @@ public func calculateProjections(with filename: String) {
     let numberOfTeams = 12
     let playersPerTeam = 24
     let numberOfPlayers = numberOfTeams * playersPerTeam
-    let hittersPerTeam = 12
+    let hittersPerTeam = 9
     
     // let auctionDollarsAvailable = 260
     let hitterAuctionDollarsAvailable = 130
