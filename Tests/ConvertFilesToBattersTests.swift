@@ -8,7 +8,7 @@
 import XCTest
 @testable import RotoSwift
 
-class RotoAuctionValuesTests: XCTestCase {
+class ConvertFilesToBattersTests: XCTestCase {
 
     static let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-12/Zips-projections-ros-batters.csv"
 
