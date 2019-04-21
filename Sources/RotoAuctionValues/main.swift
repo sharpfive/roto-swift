@@ -9,8 +9,8 @@ import RotoSwift
 #endif
 
 //let filename = "/Users/jaim/code/xcode/roto-swift/data/fg-2017-projections.csv"
-let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-12/Zips-projections-ros-batters.csv"
-let outputFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-12/Zips-projections-ros-batters-zscores.csv"
+let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters.csv"
+let outputFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
 
 
 //let batterData: [BatterFields] = [

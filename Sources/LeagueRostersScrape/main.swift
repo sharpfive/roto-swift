@@ -34,7 +34,7 @@ func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top:
 
 print("LeagueRostersScrape")
 
-let filename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-03-25.txt"
+let filename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-04-20.txt"
 
 // open file and read text
 let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
@@ -47,9 +47,9 @@ let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 print("leagueRosters: \(leagueRosters.teams.count)")
 
 
-let hitterFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-batters-2019-03-23.csv"
+let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
 
-let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitchers-2019-03-23.csv"
+let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
 
 let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
 let projectedValues = fangraphsRepository.getAuctionValues()
