@@ -6,7 +6,11 @@
 //
 
 import Foundation
-import RotoSwift
+
+public enum CSVFormat {
+    case fangraphs
+    case rotoswift
+}
 
 public func buildLeague(with filename: String) -> League {
     let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
@@ -15,8 +19,13 @@ public func buildLeague(with filename: String) -> League {
     return leagueRosters
 }
 
-public func buildPlayerAuctionValuesArray(hitterFilename: String?, pitcherFilename: String?) -> [PlayerAuction] {
+public func buildPlayerAuctionValuesArray(hitterFilename: String?, pitcherFilename: String?, csvFormat: CSVFormat = .fangraphs) -> [PlayerAuction] {
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
+
+    if csvFormat == .rotoswift {
+        fangraphsRepository.auctionFieldValue = "AuctionValue"
+        fangraphsRepository.nameFieldValue = "name"
+    }
     let projectedValues = fangraphsRepository.getAuctionValues()
     return projectedValues
 }

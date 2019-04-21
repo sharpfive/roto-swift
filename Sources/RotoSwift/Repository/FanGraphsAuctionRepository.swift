@@ -12,17 +12,20 @@ public class FanGraphsAuctionRepository
 {
     let hitterFilename: String?
     let pitcherFilename: String?
+
+    var nameFieldValue = "ï»¿\"PlayerName\""
+    var auctionFieldValue = "Dollars"
     
     public init(hitterFilename: String?, pitcherFilename: String?) {
         self.hitterFilename = hitterFilename
         self.pitcherFilename = pitcherFilename
     }
     
-    enum auctionFields: String {
-        case name = "ï»¿\"PlayerName\""
-        case projectedAuctionValue = "Dollars"
-    }
-    
+//    enum auctionFields: String {
+//        case name = "ï»¿\"PlayerName\""
+//        case projectedAuctionValue = "Dollars"
+//    }
+
     public func getAuctionValues() -> [PlayerAuction] {
         
         var players = [PlayerAuction]()
@@ -39,52 +42,53 @@ public class FanGraphsAuctionRepository
     }
 
     func getAuctionValues(for filename: String) -> [PlayerAuction] {
-        
-            let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
-        
-            let csv = try! CSVReader(string: playerDataCSV,
-                                     hasHeaderRow: true) // It must be true.
-            let headerRow = csv.headerRow!
-            let nameRowOptional = headerRow.index(of: auctionFields.name.rawValue)
-        
-            let projectedAuctionValueRowOptional = headerRow.index(of: auctionFields.projectedAuctionValue.rawValue)
-        
-            guard let nameRow = nameRowOptional,
-                let projectedAuctionValueRow = projectedAuctionValueRowOptional
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
-                else {
-                    print("Unable to find rows")
-                    exit(0)
-                }
-        
-            var playerAuctions = [PlayerAuction]()
-        
-            while let row = csv.next() {
-                let projectedAuctionValueString = row[projectedAuctionValueRow]
+        let csv = try! CSVReader(string: playerDataCSV,
+                                 hasHeaderRow: true) // It must be true.
+        let headerRow = csv.headerRow!
+        let nameRowOptional = headerRow.index(of: nameFieldValue)
 
-                // check if the string is negative
-                let isNegative = projectedAuctionValueString.contains("(")
+        let projectedAuctionValueRowOptional = headerRow.index(of: auctionFieldValue)
 
-                let nonAlphaNumericCharactedSet = CharacterSet(charactersIn: "$()")
-                let trimmedString = projectedAuctionValueString.trimmingCharacters(in: nonAlphaNumericCharactedSet)
-                
-                
-                
-                if let projectedAuctionAbsoluteValue = Double(trimmedString) {
-                    let name = row[nameRow]
-                    
-                    let projectedAuctionValue: Double
-                    if isNegative {
-                        projectedAuctionValue = projectedAuctionAbsoluteValue * -1.0
-                    } else {
-                        projectedAuctionValue = projectedAuctionAbsoluteValue
-                    }
-                    
-                    playerAuctions.append( PlayerAuction(name: name, zScore: 0.0, auctionValue: projectedAuctionValue))
+        guard let nameRow = nameRowOptional else {
+            print("Unable to find name row")
+            exit(0)
+        }
+
+        guard let projectedAuctionValueRow = projectedAuctionValueRowOptional else {
+            print("Unable to find auction value row")
+            exit(0)
+        }
+        
+        var playerAuctions = [PlayerAuction]()
+
+        while let row = csv.next() {
+            let projectedAuctionValueString = row[projectedAuctionValueRow]
+
+            // check if the string is negative
+            let isNegative = projectedAuctionValueString.contains("(")
+
+            let nonAlphaNumericCharactedSet = CharacterSet(charactersIn: "$()")
+            let trimmedString = projectedAuctionValueString.trimmingCharacters(in: nonAlphaNumericCharactedSet)
+
+
+
+            if let projectedAuctionAbsoluteValue = Double(trimmedString) {
+                let name = row[nameRow]
+
+                let projectedAuctionValue: Double
+                if isNegative {
+                    projectedAuctionValue = projectedAuctionAbsoluteValue * -1.0
                 } else {
-                    print("rejecting: \(trimmedString)")
+                    projectedAuctionValue = projectedAuctionAbsoluteValue
                 }
+
+                playerAuctions.append( PlayerAuction(name: name, zScore: 0.0, auctionValue: projectedAuctionValue))
+            } else {
+                print("rejecting: \(trimmedString)")
             }
+        }
         
         return playerAuctions
     }

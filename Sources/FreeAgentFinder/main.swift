@@ -5,11 +5,16 @@ import RotoSwift
 // This will take projections and determine the best available free-agents
 
 let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
+
+let hitterFilename2020 = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2020-batters-auctionvalues.csv"
+
+
 let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
 let rosterFilename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-04-20.txt"
 
 var hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename, pitcherFilename: nil)
-var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: nil)
+var hitterValuesIn2020 = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename2020, pitcherFilename: nil, csvFormat: .rotoswift)
+var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 let league = buildLeague(with: rosterFilename)
 
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
@@ -31,8 +36,9 @@ totalPlayerNames.forEach { name in
 
 //print("totalPLayerNames: \(totalPlayerNames)")
 print("Here are the best available hitters")
-sortedHitterValues.prefix(upTo: 20).forEach {
-    print($0)
+sortedHitterValues.prefix(upTo: 20).forEach { hitter in
+    let valueIn2020 = hitterValuesIn2020.first(where: { $0.name == hitter.name })
+    print("\(hitter) - 2020: \(valueIn2020)")
 }
 
 print("Here are the best available pitchers")

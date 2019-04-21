@@ -235,7 +235,7 @@ public func saveZScores(from sourceFilename: String, to outputFilename: String) 
         return stringArray
     }
 
-    try! csvWriter.write(row: ["name", "R", "HR", "RBI", "OBP", "SB", "Total", "$$$"])
+    try! csvWriter.write(row: ["name", "R", "HR", "RBI", "OBP", "SB", "Total", "AuctionValue"])
 
     rows.forEach { row in
         // output to CSV
