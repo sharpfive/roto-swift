@@ -15,7 +15,7 @@ public func buildLeague(with filename: String) -> League {
     return leagueRosters
 }
 
-public func buildPlayerAuctionValuesArray(hitterFilename: String, pitcherFilename: String) -> [PlayerAuction] {
+public func buildPlayerAuctionValuesArray(hitterFilename: String?, pitcherFilename: String?) -> [PlayerAuction] {
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
     return projectedValues
