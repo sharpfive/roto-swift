@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "RotoSwift",
     dependencies: [
-    .package(url: "https://github.com/yaslab/CSV.swift.git", from: "2.0.0")
+    .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1"))
     ],
     targets: [
         .target(
