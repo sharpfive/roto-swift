@@ -84,6 +84,7 @@ let followingYearProjectionFilenameString = "Zips-projections-2021-batters.csv"
 
 let nextYearAuctionValuesFilenameString = "Zips-auction-values-2020-batters.csv"
 let followingYearAuctionValuesFilenameString = "Zips-auction-values-2021-batters.csv"
+let futureRelativeValuesFilenameString = "Zips-future-values.csv"
 
 
 let keeperValuesFullPathString = inputDirectoryString + keeperValuesFilenameString
@@ -92,6 +93,9 @@ let followingYearProjectionsFullPathString = inputDirectoryString + followingYea
 
 let nextYearAuctionValuesFullPathString = outputDirectoryString + nextYearAuctionValuesFilenameString
 let followingYearAuctionValuesFullPathString = outputDirectoryString + followingYearAuctionValuesFilenameString
+let futureRelativeValuesFullPathString = outputDirectoryString + futureRelativeValuesFilenameString
+
+
 
 // Convert the projectsion to projected auction values
 convertProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
@@ -124,9 +128,36 @@ let rankedFutureActualValueHitters: [PlayerKeeperAuctionValue] = rankedFutureVal
     return PlayerKeeperAuctionValue(playerKeeperValue: playerKeeperValue, currentAuctionCost: keeperPrice)
 }
 
-rankedFutureActualValueHitters.sorted(by: { $0.totalRelativeValue > $1.totalRelativeValue }) .prefix(100).forEach {
-    print("\($0.playerKeeperValue.name) - relativeValue: \($0.totalRelativeValue) - totalValue: \($0.playerKeeperValue.totalValue)")
+//rankedFutureActualValueHitters.sorted(by: { $0.totalRelativeValue > $1.totalRelativeValue }) .prefix(100).forEach {
+//    print("\($0.playerKeeperValue.name) - relativeValue: \($0.totalRelativeValue) - totalValue: \($0.playerKeeperValue.totalValue)")
+//}
+
+let stream = OutputStream(toFileAtPath:futureRelativeValuesFullPathString, append:false)!
+let csvWriter = try! CSVWriter(stream: stream)
+
+try! csvWriter.write(row: ["name", "Total", "Cost", "Relative", "Next Year", "Following Year"])
+
+let rows: [[String]] = rankedFutureActualValueHitters.map { playerKeeperAuctionValue in
+    let stringArray: [String] = [
+        playerKeeperAuctionValue.playerKeeperValue.name,
+        String(format: "%.2f", playerKeeperAuctionValue.playerKeeperValue.totalValue),
+        String(format: "%.2f", playerKeeperAuctionValue.currentAuctionCost),
+        String(format: "%.2f", playerKeeperAuctionValue.totalRelativeValue),
+        String(format: "%.2f", playerKeeperAuctionValue.nextYearRelativeValue),
+        String(format: "%.2f", playerKeeperAuctionValue.followingRelativeValue),
+    ]
+    return stringArray
 }
+
+rows.forEach { row in
+    // output to CSV
+    csvWriter.beginNewRow()
+    try! csvWriter.write(row: row)
+}
+
+csvWriter.stream.close()
+
+
 
 
 
