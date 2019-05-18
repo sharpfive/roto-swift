@@ -45,20 +45,47 @@ struct PlayerKeeperValue {
     let followingYearValue: Double
 
     var totalValue: Double {
-        return value + nextYearValue + followingYearValue
+        return value + futureValue
+    }
+
+    var futureValue: Double {
+        return nextYearValue + followingYearValue
     }
 }
+
+struct PlayerKeeperAuctionValue {
+    let auctionIncrement = 5
+    let playerKeeperValue: PlayerKeeperValue
+    let currentAuctionCost: Int
+
+    var nextYearValue: Double {
+        return playerKeeperValue.nextYearValue - Double(nextYearAuctionValue)
+    }
+
+    var followingYearValue: Double {
+        return playerKeeperValue.followingYearValue - Double(followingYearAuctionValue)
+    }
+
+    var nextYearAuctionValue: Int {
+        return currentAuctionCost + auctionIncrement
+    }
+
+    var followingYearAuctionValue: Int {
+        return currentAuctionCost + auctionIncrement*2
+    }
+}
+
 //print("totalPLayerNames: \(totalPlayerNames)")
 print("Here are the best available hitters")
 
-let asdf: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo:100).map { hitter in
+let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo:100).map { hitter in
     let valueIn2020 = hitterValuesIn2020.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
     let valueIn2021 = hitterValuesIn2021.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
     return PlayerKeeperValue(name: hitter.name, value: hitter.auctionValue, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
 }
 
-asdf.sorted(by: { $0.totalValue > $1.totalValue }).forEach {
-    print("\($0) - total: \($0.totalValue)")
+nextTwoYearsHitters.sorted(by: { $0.futureValue > $1.futureValue }).forEach {
+    print("\($0) - total: \($0.totalValue) - future: \($0.futureValue)")
 }
 
 //sortedHitterValues.prefix(upTo: 20).forEach { hitter in
