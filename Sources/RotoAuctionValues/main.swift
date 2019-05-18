@@ -25,4 +25,4 @@ let outputFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-project
 //
 ////calculateProjections(with: filename)
 
-saveZScores(from: filename, to: outputFilename)
+convertProjectionsFileToActionValues(from: filename, to: outputFilename)

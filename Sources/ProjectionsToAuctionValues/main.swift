@@ -50,23 +50,7 @@ let nextYearAuctionValuesFullPathString = outputDirectoryString + nextYearAuctio
 let followingYearAuctionValuesFullPathString = outputDirectoryString + followingYearAuctionValuesFilenameString
 
 
-//let auctionRepository = CBAuctionValueRepository(filename: cbPathString)
-//let keeperValues = auctionRepository.getAuctionValues()
-
-
-//let batterData: [BatterFields] = [
-//    .runs,
-//    .runsBattedIn,
-//    .homeRuns,
-//    .steals,
-//    .onBasePercentage
-//]
-//
-//let dataFormat = DataFormat(identifier: "Name", dataValues: batterData)
-//
-////calculateProjections(with: filename)
-
-saveZScores(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
-saveZScores(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
+convertProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
+convertProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
 
 
