@@ -36,7 +36,10 @@ let package = Package(
             name: "FreeAgentFinder",
             dependencies: ["RotoSwift"]
         ),
-
+        .target(
+            name: "ProjectionsToAuctionValues",
+            dependencies: ["RotoSwift"]
+        ),
         .testTarget(
             name: "LeagueRostersScrapeTests",
             dependencies: ["LeagueRostersScrape", "RotoSwift"],
