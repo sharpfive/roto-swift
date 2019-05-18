@@ -117,7 +117,7 @@ let futureValueHitters: [PlayerKeeperValue] = nextYearHitterValues.map { hitter 
 let auctionRepository = CBAuctionValueRepository(filename: keeperValuesFullPathString)
 let keeperPrices = auctionRepository.getAuctionValues()
 
-let rankedFutureValueHitters = futureValueHitters.sorted(by: { $0.futureValue > $1.futureValue }).prefix(100)
+let rankedFutureValueHitters = futureValueHitters.sorted(by: { $0.futureValue > $1.futureValue })
 
 let rankedFutureActualValueHitters: [PlayerKeeperAuctionValue] = rankedFutureValueHitters.map { playerKeeperValue in
     // get the future value with the auction values
@@ -141,7 +141,7 @@ let rows: [[String]] = rankedFutureActualValueHitters.map { playerKeeperAuctionV
     let stringArray: [String] = [
         playerKeeperAuctionValue.playerKeeperValue.name,
         String(format: "%.2f", playerKeeperAuctionValue.playerKeeperValue.totalValue),
-        String(format: "%.2f", playerKeeperAuctionValue.currentAuctionCost),
+        "\(playerKeeperAuctionValue.currentAuctionCost)",
         String(format: "%.2f", playerKeeperAuctionValue.totalRelativeValue),
         String(format: "%.2f", playerKeeperAuctionValue.nextYearRelativeValue),
         String(format: "%.2f", playerKeeperAuctionValue.followingRelativeValue),
