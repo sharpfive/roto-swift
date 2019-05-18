@@ -48,7 +48,17 @@ struct PlayerKeeperAuctionValue {
     let currentAuctionCost: Int
 
     var totalRelativeValue: Double {
-        return Double(nextYearRelativeValue) + Double(followingRelativeValue)
+        if currentAuctionCost == 0 {
+            // Max value from either year
+            let eitherYearValue = max(playerKeeperValue.nextYearValue, playerKeeperValue.followingYearValue)
+
+            // Player is kept the first year
+            let firstYearKeptValue = playerKeeperValue.nextYearValue + playerKeeperValue.followingYearValue - 1.0
+
+            return max(eitherYearValue, firstYearKeptValue)
+        } else {
+            return max(nextYearRelativeValue + followingRelativeValue, nextYearRelativeValue)
+        }
     }
 
     var nextYearRelativeValue: Double {
@@ -60,10 +70,17 @@ struct PlayerKeeperAuctionValue {
     }
 
     var nextYearAuctionCost: Int {
+        if currentAuctionCost == 0 {
+            return 0
+        }
         return currentAuctionCost + auctionIncrement
     }
 
     var followingYearAuctionCost: Int {
+        if currentAuctionCost == 0 {
+            return 0
+        }
+
         return currentAuctionCost + auctionIncrement*2
     }
 }
@@ -123,7 +140,7 @@ let rankedFutureActualValueHitters: [PlayerKeeperAuctionValue] = rankedFutureVal
     // get the future value with the auction values
     let keeperCostInfo = keeperPrices.first(where: { $0.name == playerKeeperValue.name })
 
-    let keeperPrice: Int = keeperCostInfo?.keeperPrice ?? 1
+    let keeperPrice: Int = keeperCostInfo?.keeperPrice ?? 0
 
     return PlayerKeeperAuctionValue(playerKeeperValue: playerKeeperValue, currentAuctionCost: keeperPrice)
 }
