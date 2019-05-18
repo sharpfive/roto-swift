@@ -190,7 +190,7 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
 public func convertProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
     let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
 
-    let replacementPosition = 9 * 12 // 9 players for 12 teams
+    let replacementPosition = 10 * 12 // 10 players for 12 teams
 
     let replacementZScore = batters[replacementPosition].totalZScore
 
@@ -200,8 +200,12 @@ public func convertProjectionsFileToActionValues(from sourceFilename: String, to
         ($0, $0.totalZScore - replacementZScore)
     }
 
+    let hitterPercentage = 0.7
+    let numberOfTeams = 12
+    let auctionMoneyPerTeam = 260
+    let totalAuctionMoney = numberOfTeams * auctionMoneyPerTeam
+    let totalMoneyForHitters = Double(totalAuctionMoney) * hitterPercentage
 
-    let totalAuctionMoney = 130*12
 
     let totalZScores = adjustedBatterZScores.reduce(0) { (previousResult, tuple) -> Double in
         if tuple.1 < 0 {
@@ -214,7 +218,7 @@ public func convertProjectionsFileToActionValues(from sourceFilename: String, to
     // print("total Z Scores :\(totalZScores)")
 
     let auctionArray = adjustedBatterZScores.map { tuple in
-        (tuple.0, tuple.1 / totalZScores * Double(totalAuctionMoney))
+        (tuple.0, tuple.1 / totalZScores * totalMoneyForHitters)
     }
 
 
