@@ -49,6 +49,18 @@ let followingYearProjectionsFullPathString = inputDirectoryString + followingYea
 let nextYearAuctionValuesFullPathString = outputDirectoryString + nextYearAuctionValuesFilenameString
 let followingYearAuctionValuesFullPathString = outputDirectoryString + followingYearAuctionValuesFilenameString
 
-
+// Convert the projectsion to projected auction values
 convertProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
 convertProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
+
+
+// Get the keeper values
+let auctionRepository = CBAuctionValueRepository(filename: keeperValuesFullPathString)
+let keeperValues = auctionRepository.getAuctionValues()
+
+print("keeperValues: \(keeperValues.count)")
+
+
+// take the keeper values and create value
+
+

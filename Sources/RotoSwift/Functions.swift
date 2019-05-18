@@ -211,7 +211,7 @@ public func convertProjectionsFileToActionValues(from sourceFilename: String, to
         return previousResult + tuple.1
     }
 
-    print("total Z Scores :\(totalZScores)")
+    // print("total Z Scores :\(totalZScores)")
 
     let auctionArray = adjustedBatterZScores.map { tuple in
         (tuple.0, tuple.1 / totalZScores * Double(totalAuctionMoney))
