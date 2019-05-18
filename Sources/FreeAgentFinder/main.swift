@@ -25,18 +25,18 @@ var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionV
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 
 
-let totalPlayerNames = league.teams.flatMap { $0.players.map { $0.name} }
-
-// slow way to do this
-totalPlayerNames.forEach { name in
-    if let matchedHitter = sortedHitterValues.first(where: { $0.name == name } ) {
-        sortedHitterValues = sortedHitterValues.filter( { $0.name != matchedHitter.name} )
-    }
-
-    if let matchedPitcher = sortedPitcherValues.first(where: { $0.name == name } ) {
-        sortedPitcherValues = sortedPitcherValues.filter( { $0.name != matchedPitcher.name} )
-    }
-}
+//let totalPlayerNames = league.teams.flatMap { $0.players.map { $0.name} }
+//
+//// slow way to do this
+//totalPlayerNames.forEach { name in
+//    if let matchedHitter = sortedHitterValues.first(where: { $0.name == name } ) {
+//        sortedHitterValues = sortedHitterValues.filter( { $0.name != matchedHitter.name} )
+//    }
+//
+//    if let matchedPitcher = sortedPitcherValues.first(where: { $0.name == name } ) {
+//        sortedPitcherValues = sortedPitcherValues.filter( { $0.name != matchedPitcher.name} )
+//    }
+//}
 
 struct PlayerKeeperValue {
     let name: String
