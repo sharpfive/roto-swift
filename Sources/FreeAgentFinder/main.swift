@@ -53,7 +53,7 @@ struct PlayerKeeperValue {
     }
 }
 
-struct PlayerKeeperAuctionValue {
+struct PlayerKeeperActualValue {
     let auctionIncrement = 5
     let playerKeeperValue: PlayerKeeperValue
     let currentAuctionCost: Int

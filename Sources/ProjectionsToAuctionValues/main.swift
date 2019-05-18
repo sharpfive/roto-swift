@@ -27,6 +27,50 @@ import Darwin.C
 //
 
 
+struct PlayerKeeperValue {
+    let name: String
+    let value: Double
+    let nextYearValue: Double
+    let followingYearValue: Double
+
+    var totalValue: Double {
+        return value + futureValue
+    }
+
+    var futureValue: Double {
+        return nextYearValue + followingYearValue
+    }
+}
+
+struct PlayerKeeperAuctionValue {
+    let auctionIncrement = 5
+    let playerKeeperValue: PlayerKeeperValue
+    let currentAuctionCost: Int
+
+    var totalRelativeValue: Double {
+        return Double(nextYearRelativeValue) + Double(followingRelativeValue)
+    }
+
+    var nextYearRelativeValue: Double {
+        return playerKeeperValue.nextYearValue - Double(nextYearAuctionCost)
+    }
+
+    var followingRelativeValue: Double {
+        return playerKeeperValue.followingYearValue - Double(followingYearAuctionCost)
+    }
+
+    var nextYearAuctionCost: Int {
+        return currentAuctionCost + auctionIncrement
+    }
+
+    var followingYearAuctionCost: Int {
+        return currentAuctionCost + auctionIncrement*2
+    }
+}
+
+
+
+
 
 let dateString = "2019-05-18"
 
@@ -54,13 +98,41 @@ convertProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to
 convertProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
 
 
-// Get the keeper values
+var nextYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nextYearAuctionValuesFullPathString, pitcherFilename: nil, csvFormat: .rotoswift)
+var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: followingYearAuctionValuesFullPathString, pitcherFilename: nil, csvFormat: .rotoswift)
+
+// Take next and following values and add them
+// Note: current value is zero
+let futureValueHitters: [PlayerKeeperValue] = nextYearHitterValues.map { hitter in
+    let valueIn2020 = nextYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
+    let valueIn2021 = followingYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
+    return PlayerKeeperValue(name: hitter.name, value: 0.0, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
+}
+
+// Get the list of keeper values
 let auctionRepository = CBAuctionValueRepository(filename: keeperValuesFullPathString)
-let keeperValues = auctionRepository.getAuctionValues()
+let keeperPrices = auctionRepository.getAuctionValues()
 
-print("keeperValues: \(keeperValues.count)")
+let rankedFutureValueHitters = futureValueHitters.sorted(by: { $0.futureValue > $1.futureValue }).prefix(100)
+
+let rankedFutureActualValueHitters: [PlayerKeeperAuctionValue] = rankedFutureValueHitters.map { playerKeeperValue in
+    // get the future value with the auction values
+    let keeperCostInfo = keeperPrices.first(where: { $0.name == playerKeeperValue.name })
+
+    let keeperPrice: Int = keeperCostInfo?.keeperPrice ?? 1
+
+    return PlayerKeeperAuctionValue(playerKeeperValue: playerKeeperValue, currentAuctionCost: keeperPrice)
+}
+
+rankedFutureActualValueHitters.sorted(by: { $0.totalRelativeValue > $1.totalRelativeValue }) .prefix(100).forEach {
+    print("\($0.playerKeeperValue.name) - relativeValue: \($0.totalRelativeValue) - totalValue: \($0.playerKeeperValue.totalValue)")
+}
 
 
-// take the keeper values and create value
+
+
+
+
+
 
 
