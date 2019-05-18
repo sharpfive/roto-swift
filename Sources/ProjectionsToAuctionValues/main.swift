@@ -52,5 +52,3 @@ let followingYearAuctionValuesFullPathString = outputDirectoryString + following
 
 convertProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
 convertProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
-
-
