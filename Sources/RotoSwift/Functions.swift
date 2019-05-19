@@ -163,7 +163,9 @@ public enum PitcherFields: String {
 
 func calculatePitcherZScores(with filename: String) -> [PitcherZScores] {
     let pitchers = convertFileToPitchers(filename: filename)
-    return calculatePitcherZScores(for: pitchers)
+    let startingPitchers = pitchers.filter { $0.inningsPitched > 100 }
+    print("Starting pitchers")
+    return calculatePitcherZScores(for: startingPitchers)
 }
 
 func calculateZScores(with filename: String) -> [BatterZScores] {
@@ -219,7 +221,8 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
 public func convertPitcherProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
     let pitchers = calculatePitcherZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
 
-    let replacementPosition = 12 * 12 // 10 players for 12 teams
+    print("# of pitchers: \(pitchers.count)")
+    let replacementPosition = 6 * 12 // # of pitchers for 12 teams
 
     let replacementZScore = pitchers[replacementPosition].totalZScore
 
@@ -493,7 +496,7 @@ func convertFileToPitchers(filename: String) -> [Pitcher] {
         if let strikeouts = Int(row[strikeoutsRow]),
             let WHIP = Double(row[whipRow]),
             let ERA = Double(row[eraRow]),
-            let inningsPitched = Int(row[inningsPitchedRow])
+            let inningsPitched = Double(row[inningsPitchedRow])
         {
             let pitcher = Pitcher(name: row[nameRow], strikeouts: strikeouts, WHIP: WHIP, ERA: ERA, inningsPitched: inningsPitched)
             pitchers.append(pitcher)
