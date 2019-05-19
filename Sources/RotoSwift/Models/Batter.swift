@@ -12,6 +12,7 @@ struct Pitcher {
     let strikeouts: Int
     let WHIP: Double
     let ERA: Double
+    let inningsPitched: Int
 }
 
 struct PitcherZScores {

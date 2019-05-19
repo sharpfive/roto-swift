@@ -158,6 +158,7 @@ public enum PitcherFields: String {
     case strikeouts = "SO"
     case ERA = "ERA"
     case WHIP = "WHIP"
+    case inningsPitched = "IP"
 }
 
 func calculatePitcherZScores(with filename: String) -> [PitcherZScores] {
@@ -474,11 +475,13 @@ func convertFileToPitchers(filename: String) -> [Pitcher] {
     let nameRowOptional:Int? = 0
     let eraRowOptional = headerRow.index(of: PitcherFields.ERA.rawValue)
     let whipRowOptional = headerRow.index(of: PitcherFields.WHIP.rawValue)
+    let inningsPitchedRowOptional = headerRow.index(of: PitcherFields.inningsPitched.rawValue)
 
     guard let strikeoutsRow = strikeoutsRowOptional,
         let nameRow = nameRowOptional,
         let eraRow = eraRowOptional,
-        let whipRow = whipRowOptional else {
+        let whipRow = whipRowOptional,
+        let inningsPitchedRow = inningsPitchedRowOptional else {
             print("Unable to find all specified rows")
             print("strikeOuts:\(String(describing:strikeoutsRowOptional)) - eraRow:\(String(describing:eraRowOptional))")
             exit(0)
@@ -489,9 +492,10 @@ func convertFileToPitchers(filename: String) -> [Pitcher] {
     while let row = csv.next() {
         if let strikeouts = Int(row[strikeoutsRow]),
             let WHIP = Double(row[whipRow]),
-            let ERA = Double(row[eraRow])
+            let ERA = Double(row[eraRow]),
+            let inningsPitched = Int(row[inningsPitchedRow])
         {
-            let pitcher = Pitcher(name: row[nameRow], strikeouts: strikeouts, WHIP: WHIP, ERA: ERA)
+            let pitcher = Pitcher(name: row[nameRow], strikeouts: strikeouts, WHIP: WHIP, ERA: ERA, inningsPitched: inningsPitched)
             pitchers.append(pitcher)
         }
     }
