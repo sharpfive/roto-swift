@@ -40,6 +40,10 @@ let package = Package(
             name: "ProjectionsToAuctionValues",
             dependencies: ["RotoSwift"]
         ),
+        .target(
+            name: "ProjectionsToAuctionValuesPitchers",
+            dependencies: ["RotoSwift"]
+        ),
         .testTarget(
             name: "LeagueRostersScrapeTests",
             dependencies: ["LeagueRostersScrape", "RotoSwift"],

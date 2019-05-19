@@ -7,6 +7,24 @@
 
 import Foundation
 
+struct Pitcher {
+    let name: String
+    let strikeouts: Int
+    let WHIP: Double
+    let ERA: Double
+}
+
+struct PitcherZScores {
+    let name: String
+    let strikeouts: Double
+    let WHIP: Double
+    let ERA: Double
+
+    var totalZScore: Double {
+        return strikeouts + WHIP + ERA
+    }
+}
+
 struct Batter {
     let name: String
     let homeRuns: Int

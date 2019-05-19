@@ -154,13 +154,41 @@ public enum BatterFields: String {
     case steals = "SB"
 }
 
+public enum PitcherFields: String {
+    case strikeouts = "SO"
+    case ERA = "ERA"
+    case WHIP = "WHIP"
+}
+
+func calculatePitcherZScores(with filename: String) -> [PitcherZScores] {
+    let pitchers = convertFileToPitchers(filename: filename)
+    return calculatePitcherZScores(for: pitchers)
+}
 
 func calculateZScores(with filename: String) -> [BatterZScores] {
     let batters = convertFileToBatters(filename: filename)
     return calculateZScores(for: batters)
 }
 
-func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
+func calculatePitcherZScores(for pitchers: [Pitcher]) -> [PitcherZScores] {
+    let strikeoutsStandardDeviation = standardDeviation(for: pitchers.map{ $0.strikeouts})
+    let meanStrikeouts = calculateMean(for: pitchers.map{ $0.strikeouts})
+
+    let eraStandardDeviation = standardDeviation(for: pitchers.map{ $0.ERA})
+    let meanERA = calculateMean(for: pitchers.map{ $0.ERA})
+
+    let whipStandardDeviation = standardDeviation(for: pitchers.map{ $0.WHIP})
+    let meanWHIP = calculateMean(for: pitchers.map{ $0.WHIP})
+
+    return pitchers.map { pitcher in
+        PitcherZScores(name: pitcher.name,
+                       strikeouts: calculateZScore(value: pitcher.strikeouts, mean: meanStrikeouts, standardDeviation: strikeoutsStandardDeviation),
+                       WHIP: calculateZScore(value: pitcher.WHIP, mean: meanWHIP, standardDeviation: whipStandardDeviation) * -1.0,
+                       ERA: calculateZScore(value: pitcher.ERA, mean: meanERA, standardDeviation: eraStandardDeviation) * -1.0)
+    }
+}
+
+func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
     let homeRunsStandardDeviation = standardDeviation(for: batters.map{ $0.homeRuns})
     let meanHomeRuns = calculateMean(for: batters.map{ $0.homeRuns})
 
@@ -186,6 +214,66 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores]{
         )
     }
 }
+
+public func convertPitcherProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
+    let pitchers = calculatePitcherZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
+
+    let replacementPosition = 12 * 12 // 10 players for 12 teams
+
+    let replacementZScore = pitchers[replacementPosition].totalZScore
+
+    let adjustedPitcherZScores = pitchers.map {
+        ($0, $0.totalZScore - replacementZScore)
+    }
+
+    let pitcherPercentage = 0.4
+    let numberOfTeams = 12
+    let auctionMoneyPerTeam = 260
+    let totalAuctionMoney = numberOfTeams * auctionMoneyPerTeam
+    let totalMoneyForPitchers = Double(totalAuctionMoney) * pitcherPercentage
+
+
+    let totalZScores = adjustedPitcherZScores.reduce(0) { (previousResult, tuple) -> Double in
+        if tuple.1 < 0 {
+            return previousResult
+        }
+
+        return previousResult + tuple.1
+    }
+
+    // print("total Z Scores :\(totalZScores)")
+
+    let auctionArray = adjustedPitcherZScores.map { tuple in
+        (tuple.0, tuple.1 / totalZScores * totalMoneyForPitchers)
+    }
+
+
+    let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
+    let csvWriter = try! CSVWriter(stream: stream)
+
+    let rows: [[String]] = auctionArray.map { tuple in
+        let stringArray: [String] = [
+            tuple.0.name,
+            String(format: "%.2f", tuple.0.strikeouts),
+            String(format: "%.2f", tuple.0.ERA),
+            String(format: "%.2f", tuple.0.WHIP),
+            String(format: "%.2f", tuple.0.totalZScore),
+            String(format: "%.2f", tuple.1)
+        ]
+        return stringArray
+    }
+
+    try! csvWriter.write(row: ["name", "SO", "ERA", "WHIP", "Total", "AuctionValue"])
+
+    rows.forEach { row in
+        // output to CSV
+        csvWriter.beginNewRow()
+        try! csvWriter.write(row: row)
+    }
+
+    csvWriter.stream.close()
+}
+
 
 public func convertProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
     let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
@@ -372,5 +460,44 @@ func convertFileToBatters(filename: String) -> [Batter] {
 
     return batters
 }
+
+func convertFileToPitchers(filename: String) -> [Pitcher] {
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+
+    let csv = try! CSVReader(string: playerDataCSV,
+                             hasHeaderRow: true) // It must be true.
+
+    let headerRow = csv.headerRow!
+
+    print(headerRow)
+    let strikeoutsRowOptional = headerRow.index(of: PitcherFields.strikeouts.rawValue)
+    let nameRowOptional:Int? = 0
+    let eraRowOptional = headerRow.index(of: PitcherFields.ERA.rawValue)
+    let whipRowOptional = headerRow.index(of: PitcherFields.WHIP.rawValue)
+
+    guard let strikeoutsRow = strikeoutsRowOptional,
+        let nameRow = nameRowOptional,
+        let eraRow = eraRowOptional,
+        let whipRow = whipRowOptional else {
+            print("Unable to find all specified rows")
+            print("strikeOuts:\(String(describing:strikeoutsRowOptional)) - eraRow:\(String(describing:eraRowOptional))")
+            exit(0)
+    }
+
+    var pitchers = [Pitcher]()
+
+    while let row = csv.next() {
+        if let strikeouts = Int(row[strikeoutsRow]),
+            let WHIP = Double(row[whipRow]),
+            let ERA = Double(row[eraRow])
+        {
+            let pitcher = Pitcher(name: row[nameRow], strikeouts: strikeouts, WHIP: WHIP, ERA: ERA)
+            pitchers.append(pitcher)
+        }
+    }
+
+    return pitchers
+}
+
 
 
