@@ -20,21 +20,20 @@ import Darwin.C
 //
 //
 // Keeper Values:
-// The amount paid for a play in a year
+// The amount paid for a player in a year
 //
 // Auction Values:
 // The output of this program. This program converts the projected stats into auction values
 //
 
-
 struct PlayerKeeperValue {
     let name: String
-    let value: Double
+    let currentValue: Double
     let nextYearValue: Double
     let followingYearValue: Double
 
     var totalValue: Double {
-        return value + futureValue
+        return currentValue + futureValue
     }
 
     var futureValue: Double {
@@ -127,7 +126,7 @@ var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: fo
 let futureValueHitters: [PlayerKeeperValue] = nextYearHitterValues.map { hitter in
     let valueIn2020 = nextYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
     let valueIn2021 = followingYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
-    return PlayerKeeperValue(name: hitter.name, value: 0.0, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
+    return PlayerKeeperValue(name: hitter.name, currentValue: 0.0, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
 }
 
 // Get the list of keeper values
