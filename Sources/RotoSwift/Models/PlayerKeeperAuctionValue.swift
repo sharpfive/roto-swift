@@ -23,7 +23,7 @@ public struct PlayerKeeperAuctionValue {
             let eitherYearValue = max(playerKeeperValue.nextYearValue, playerKeeperValue.followingYearValue)
 
             // Player is kept the first year
-            let firstYearKeptValue = playerKeeperValue.nextYearValue + playerKeeperValue.followingYearValue - 1.0
+            let firstYearKeptValue = playerKeeperValue.nextYearValue + playerKeeperValue.followingYearValue - Double(auctionIncrement)
 
             return max(eitherYearValue, firstYearKeptValue)
         } else {

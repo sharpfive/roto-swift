@@ -55,8 +55,8 @@ convertPitcherProjectionsFileToActionValues(from: nextYearProjectionsFullPathStr
 convertPitcherProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
 
 
-var nextYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nextYearAuctionValuesFullPathString, pitcherFilename: nil, csvFormat: .rotoswift)
-var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: followingYearAuctionValuesFullPathString, pitcherFilename: nil, csvFormat: .rotoswift)
+var nextYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: nextYearAuctionValuesFullPathString, csvFormat: .rotoswift)
+var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: followingYearAuctionValuesFullPathString, csvFormat: .rotoswift)
 
 // Take next and following values and add them
 // Note: current value is zero

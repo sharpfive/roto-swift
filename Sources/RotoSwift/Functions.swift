@@ -221,7 +221,6 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
 public func convertPitcherProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
     let pitchers = calculatePitcherZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
 
-    print("# of pitchers: \(pitchers.count)")
     let replacementPosition = 6 * 12 // # of pitchers for 12 teams
 
     let replacementZScore = pitchers[replacementPosition].totalZScore
