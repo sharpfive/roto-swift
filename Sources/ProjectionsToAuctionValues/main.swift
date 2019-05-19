@@ -26,68 +26,6 @@ import Darwin.C
 // The output of this program. This program converts the projected stats into auction values
 //
 
-struct PlayerKeeperValue {
-    let name: String
-    let currentValue: Double
-    let nextYearValue: Double
-    let followingYearValue: Double
-
-    var totalValue: Double {
-        return currentValue + futureValue
-    }
-
-    var futureValue: Double {
-        return nextYearValue + followingYearValue
-    }
-}
-
-struct PlayerKeeperAuctionValue {
-    let auctionIncrement = 5
-    let playerKeeperValue: PlayerKeeperValue
-    let currentAuctionCost: Int
-
-    var totalRelativeValue: Double {
-        if currentAuctionCost == 0 {
-            // Max value from either year
-            let eitherYearValue = max(playerKeeperValue.nextYearValue, playerKeeperValue.followingYearValue)
-
-            // Player is kept the first year
-            let firstYearKeptValue = playerKeeperValue.nextYearValue + playerKeeperValue.followingYearValue - 1.0
-
-            return max(eitherYearValue, firstYearKeptValue)
-        } else {
-            return max(nextYearRelativeValue + followingRelativeValue, nextYearRelativeValue)
-        }
-    }
-
-    var nextYearRelativeValue: Double {
-        return playerKeeperValue.nextYearValue - Double(nextYearAuctionCost)
-    }
-
-    var followingRelativeValue: Double {
-        return playerKeeperValue.followingYearValue - Double(followingYearAuctionCost)
-    }
-
-    var nextYearAuctionCost: Int {
-        if currentAuctionCost == 0 {
-            return 0
-        }
-        return currentAuctionCost + auctionIncrement
-    }
-
-    var followingYearAuctionCost: Int {
-        if currentAuctionCost == 0 {
-            return 0
-        }
-
-        return currentAuctionCost + auctionIncrement*2
-    }
-}
-
-
-
-
-
 let dateString = "2019-05-18"
 
 let baseDirectoryString = "/Users/jaim/Dropbox/roto/projections/\(dateString)"
