@@ -11,6 +11,7 @@ No warranty or claim of usability what-so-ever. This represents work I did in my
 - Duplicated code. This code has prioritized getting things done so I don't annoy my wife by hacking on Swift on my days off.
 - Non uniform output. Some scripts output to a csv file, some print to the standard output. So it goes.
 - Error handling non-existant. If the file formats change, things just don't work and you have to dig a bit to find out why.
+- Not many unit tests.
 
 
 
