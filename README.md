@@ -1,31 +1,73 @@
 
 Thes are some swift command line apps I use to hack on my roto baseball league.
 
-No warranty or claim of usability what-so-ever. This represents work I did in my free time for my own enjoyment. It is not intended to represent production quality work. That said, here are the apps:
+No warranty or claim of usability what-so-ever. This represents work I did in my free time for my own enjoyment. It is not intended to represent production quality work. Many sins lurk within, not the least of include:
+
+- Code standard are a bit off. I was working on a number of different code bases, including a bunch of mobile build scripts. Someday I'll install SwiftLint. But not today.
+- Domain logic not fully baked. This could be considered a decent start but I haven't examined enough actual use cases to determine how they should actually be constructed
+- Hard coded files names. These could eventually be legit command line tools, but that's a ways off. I'm the only person using this thing.
+- Comments, logs and debug code sprinkled throughout.
+- Hard coded files point to a directory on my dev machine. It would be cool if someone else could run the most recent projections, but not today.
+- Duplicated code. This code has prioritized getting things done so I don't annoy my wife by hacking on Swift on my days off.
+- Non uniform output. Some scripts output to a csv file, some print to the standard output. So it goes.
+- Error handling non-existant. If the file formats change, things just don't work and you have to dig a bit to find out why.
+
+
+
+You need to have Swift installed on your machine to run this. Most people do this by downloading Xcode and installing the command line tools. Consult google for more directions.
+
+
+That said, here are the apps:
 
 
 ### ESPNScrape
 
 Aborted attempt to log in to my ESPN site and scrape data. Not much interesting here.
 
+### FreeAgentFinder
+
+Scrape a list of the League's rosters and compare that to projected values to determine the best available free agent.
+
 ### LeagueRostersScrape
 
 * Scrape league roster data from a copied-and-saved text file from a **Rosters** page from an ESPN league.
 * Imports projected auction values for hitters and pitchers from a csv
-* Correlates the roster players with their auction and prints out a primitive power ranking.
+* Correlates the roster players with their auction value and prints out a primitive power ranking.
 
 See sample directory for expected formats. Downloadable and especially ESPN formats are likely to change in the future. They were last known to work March, 2019.
 
 ### PlayerRelativeValues
-Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values
+Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player.
+
+### ProjectionsToAuctionValues
+Takes a csv of raw stat projections and converts them to auction values. It uses an algorithm similar to [this site](https://www.friendswithfantasybenefits.com/2019-rankings-and-auction-values-using-z-score-and-steamers). Note: my code was written before this blog post, but I didn't invent the algorithm anyway.
+
+### ProjectionsToAuctionValuesPitchers
+Turns out things like ERA & WHIP need to be calculated differently (a lower value is better), so a different script is used to calculate pitcher values.
 
 ### TeamRelativeValues
 
-An attempt to calculate rotisserie auction values from a csv of projections.
+This takes a scrape of the league rosters and adds the values for all the players on their team. It is used to estimate which teams have the best chance of winning. Turns out I can often predict the league winners before the season even starts.
+
+### RotoSwift
+
+Common code that is shared between all the scripts.
+#### Math
+Some methods for calculating statistics like Mean, Z Score and Standard Deviation
+
+#### Models
+First pass at domain models. Mostly light weight swift structs.
+
+#### Repository
+Class used to turning data from various file formats to usable Models.
+
+#### Roster
+Code to build up the league rosters from a scraped text file. It's used by FreeAgentFinder.
 
 
 
-You need to have Swift installed on your machine to run this. Most people do this by downloading Xcode and installing the command line tools. Consult google for more directions.
+
+
 
 #### How do I compile the apps?
 _swift build_
