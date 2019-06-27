@@ -45,7 +45,6 @@ let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print("leagueRosters.teams.count: \(leagueRosters.teams.count)")
 
-
 let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
 
 let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
