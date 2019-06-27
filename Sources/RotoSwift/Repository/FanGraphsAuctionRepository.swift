@@ -8,36 +8,30 @@
 import Foundation
 import CSV
 
-public class FanGraphsAuctionRepository
-{
+public class FanGraphsAuctionRepository {
     let hitterFilename: String?
     let pitcherFilename: String?
 
     var nameFieldValue = "ï»¿\"PlayerName\""
     var auctionFieldValue = "Dollars"
-    
+
     public init(hitterFilename: String?, pitcherFilename: String?) {
         self.hitterFilename = hitterFilename
         self.pitcherFilename = pitcherFilename
     }
-    
-//    enum auctionFields: String {
-//        case name = "ï»¿\"PlayerName\""
-//        case projectedAuctionValue = "Dollars"
-//    }
 
     public func getAuctionValues() -> [PlayerAuction] {
-        
+
         var players = [PlayerAuction]()
-        
+
         if let hitterFilename = hitterFilename {
             players += getAuctionValues(for: hitterFilename)
         }
-        
+
         if let pitcherFilename = pitcherFilename {
             players += getAuctionValues(for: pitcherFilename)
         }
-        
+
         return players
     }
 
@@ -60,7 +54,7 @@ public class FanGraphsAuctionRepository
             print("Unable to find auction value row")
             exit(0)
         }
-        
+
         var playerAuctions = [PlayerAuction]()
 
         while let row = csv.next() {
@@ -71,8 +65,6 @@ public class FanGraphsAuctionRepository
 
             let nonAlphaNumericCharactedSet = CharacterSet(charactersIn: "$()")
             let trimmedString = projectedAuctionValueString.trimmingCharacters(in: nonAlphaNumericCharactedSet)
-
-
 
             if let projectedAuctionAbsoluteValue = Double(trimmedString) {
                 let name = row[nameRow]
@@ -89,7 +81,7 @@ public class FanGraphsAuctionRepository
                 print("rejecting: \(trimmedString)")
             }
         }
-        
+
         return playerAuctions
     }
 }

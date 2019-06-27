@@ -7,16 +7,14 @@
 
 import Foundation
 
-
-
 public class ESPNLeagueRostersRepository {
     
     enum ParseState {
-        case BeforeLeague
-        case TeamName
-        case AfterTeamName
-        case Player
-        case Complete
+        case beforeLeague
+        case teamName
+        case afterTeamName
+        case player
+        case complete
     }
     
     let leagueRostersToken = "League Rosters"
@@ -28,7 +26,7 @@ public class ESPNLeagueRostersRepository {
     
     public func getLeagueRosters(for filename: String) -> League {
         
-        var parseState: ParseState = ParseState.BeforeLeague
+        var parseState: ParseState = ParseState.beforeLeague
         
         var teamName = ""
         var teams = [League.Team]()
@@ -44,24 +42,24 @@ public class ESPNLeagueRostersRepository {
             
             
             switch parseState {
-            case .BeforeLeague:
+            case .beforeLeague:
                 // print(lineString)
                 if lineString == self.leagueRostersToken {
-                    parseState = .TeamName
+                    parseState = .teamName
                 }
-            case .TeamName:
+            case .teamName:
                 // print("Found Team: \(lineString)")
                 if lineString == self.endOfTeamsToken {
                     print("end of teams")
-                    parseState = .Complete
+                    parseState = .complete
                     break
                 }
                 teamName = lineString
-                parseState = .AfterTeamName
-            case .AfterTeamName:
+                parseState = .afterTeamName
+            case .afterTeamName:
                 // Header Info (throw away data)
-                parseState = .Player
-            case .Player:
+                parseState = .player
+            case .player:
                 if lineString.isEmpty {
                     // team is complete
                     let team = League.Team(name: teamName, players: players)
@@ -70,7 +68,7 @@ public class ESPNLeagueRostersRepository {
                     players = [League.Player]()
                     teamName = ""
                     
-                    parseState = .TeamName
+                    parseState = .teamName
                     break
                 }
                 // Parse the player info
@@ -78,7 +76,7 @@ public class ESPNLeagueRostersRepository {
                     // print("Found Player: \(player.name)")
                     players.append(player)
                 }
-            case .Complete:
+            case .complete:
                 break
             }
         }

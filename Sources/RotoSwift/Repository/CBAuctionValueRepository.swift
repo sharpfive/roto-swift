@@ -2,19 +2,18 @@ import Foundation
 import CSV
 
 /* Gets auction values for players from the C&B format */
-public class CBAuctionValueRepository
-{
+public class CBAuctionValueRepository {
     let filename: String
-    
+
     let nameTeamPositionRow = 0
     let auctionValueRow = 1
     
     public init(filename: String) {
         self.filename = filename
     }
-    
+
 	public func getAuctionValues() -> [PlayerKeeperPrice] {
-        
+
 		let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
 		let csv = try! CSVReader(string: playerDataCSV,
@@ -22,14 +21,11 @@ public class CBAuctionValueRepository
 
 		var playerKeeperPrices = [PlayerKeeperPrice]()
 
-		
-
 		while let row = csv.next() {
             let nameTeamPosition = row[nameTeamPositionRow]
             
 			if let keeperPrice = Int(row[auctionValueRow]),
-				let name = extractName(from: nameTeamPosition)
-				{
+				let name = extractName(from: nameTeamPosition) {
                     let playerKeeperPrice = PlayerKeeperPrice(name: name, keeperPrice: keeperPrice)
 					playerKeeperPrices.append(playerKeeperPrice)
 				}
@@ -64,7 +60,7 @@ public class CBAuctionValueRepository
             } else {
                 //print("not $$")
                 if let playerName = extractName(from: row[nameTeamPositionRow]),
-                    let keeperPrice = Int(row[auctionValueRow]){
+                    let keeperPrice = Int(row[auctionValueRow]) {
                     let newPlayer = PlayerKeeperPrice(name: playerName, keeperPrice: keeperPrice)
                     players.append(newPlayer)
                 }

@@ -9,12 +9,12 @@ import Foundation
 
 public class ESPNLeagueRostersRepository2019 {
     enum ParseState {
-        case BeforeLeague
-        case TeamName
-        case ActivePosition
-        case Name
-        case Positions
-        case Complete
+        case beforeLeague
+        case teamName
+        case activePosition
+        case name
+        case positions
+        case complete
     }
 
     let leagueRostersToken = "League Rosters"
@@ -23,14 +23,12 @@ public class ESPNLeagueRostersRepository2019 {
     let proposeTradeToken = "Propose Trade"
     let emptyToken = "Empty"
 
-    public init() {
-
-    }
+    public init() {}
     
     public func getLeagueRosters(from string: String) -> League {
         var teams = [League.Team]()
 
-        var parseState: ParseState = .BeforeLeague
+        var parseState: ParseState = .beforeLeague
         var lineCount = 0
 
         var teamName: String = ""
@@ -38,7 +36,7 @@ public class ESPNLeagueRostersRepository2019 {
         var activePosition: League.Position?
         var playerName: String?
 
-        string.enumerateLines { (lineString, boolean) in
+        string.enumerateLines { (lineString, _) in
             lineCount += 1
 
             if lineString.isEmpty || lineString == self.proposeTradeToken {
@@ -46,43 +44,43 @@ public class ESPNLeagueRostersRepository2019 {
             }
 
             switch parseState {
-            case .BeforeLeague:
+            case .beforeLeague:
                 // print(lineString)
                 if lineString.hasPrefix(self.leagueRostersToken) {
-                    parseState = .TeamName
+                    parseState = .teamName
                 }
-            case .TeamName:
+            case .teamName:
                 if lineString == self.endOfTeamsToken {
                     // print("end of teams")
-                    parseState = .Complete
+                    parseState = .complete
                     break
                 }
                 // print("Found Team: \(lineString)")
                 teamName = lineString
-                parseState = .ActivePosition
-            case .ActivePosition:
+                parseState = .activePosition
+            case .activePosition:
                 if lineString == self.endOfTeamToken {
                     // print("end of single team")
                     let newTeam = League.Team(name: teamName, players: players)
                     teams.append(newTeam)
                     teamName = ""
                     players = [League.Player]()
-                    parseState = .TeamName
+                    parseState = .teamName
                 }
                 // Wait for a line only consisting of a position
                 guard let position = League.Position(rawValue: lineString) else { return }
                 activePosition = position
-                parseState = .Name
+                parseState = .name
 
-            case .Name:
+            case .name:
                 if lineString != self.emptyToken {
                     playerName = lineString
                     //print("found player: \(String(describing: playerName))")
-                    parseState = .Positions
+                    parseState = .positions
                 } else {
-                    parseState = .ActivePosition
+                    parseState = .activePosition
                 }
-            case .Positions:
+            case .positions:
                 let positions: [League.Position]
 
                 // If the entire linestring converts to a Position, the player only has 1 position elligible
@@ -100,14 +98,14 @@ public class ESPNLeagueRostersRepository2019 {
 
                 // Player is complete
                 guard let playerName = playerName,
-                    let _ = activePosition else {
+                    activePosition != nil else {
                         print("aiai error")
                         return
                 }
 
                 players.append(League.Player(name: playerName, eligiblePositions: positions))
-                parseState = .ActivePosition
-            case .Complete:
+                parseState = .activePosition
+            case .complete:
                 break
             }
         }
@@ -116,4 +114,3 @@ public class ESPNLeagueRostersRepository2019 {
         return League(teams: teams)
     }
 }
-

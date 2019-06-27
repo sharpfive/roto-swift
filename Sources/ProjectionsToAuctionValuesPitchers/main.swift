@@ -81,7 +81,7 @@ let rankedFutureActualValueHitters: [PlayerKeeperAuctionValue] = rankedFutureVal
     return PlayerKeeperAuctionValue(playerKeeperValue: playerKeeperValue, currentAuctionCost: keeperPrice)
 }
 
-let stream = OutputStream(toFileAtPath:futureRelativeValuesFullPathString, append:false)!
+let stream = OutputStream(toFileAtPath: futureRelativeValuesFullPathString, append: false)!
 let csvWriter = try! CSVWriter(stream: stream)
 
 try! csvWriter.write(row: ["name", "Total", "Cost", "Relative", "Next Year", "Next Year Rel", "Following Year", "Following YearRel"])
@@ -95,7 +95,7 @@ let rows: [[String]] = rankedFutureActualValueHitters.map { playerKeeperAuctionV
         String(format: "%.2f", playerKeeperAuctionValue.playerKeeperValue.nextYearValue),
         String(format: "%.2f", playerKeeperAuctionValue.nextYearRelativeValue),
         String(format: "%.2f", playerKeeperAuctionValue.playerKeeperValue.followingYearValue),
-        String(format: "%.2f", playerKeeperAuctionValue.followingRelativeValue),
+        String(format: "%.2f", playerKeeperAuctionValue.followingRelativeValue)
     ]
     return stringArray
 }
@@ -107,14 +107,3 @@ rows.forEach { row in
 }
 
 csvWriter.stream.close()
-
-
-
-
-
-
-
-
-
-
-
