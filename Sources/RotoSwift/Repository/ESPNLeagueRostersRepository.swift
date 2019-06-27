@@ -35,9 +35,8 @@ public class ESPNLeagueRostersRepository {
 
         var lineCount = 0
 
-        leagueRostersDataString.enumerateLines { (lineString, boolean) in
+        leagueRostersDataString.enumerateLines { (lineString, _) in
             lineCount += 1
-
 
             switch parseState {
             case .beforeLeague:
@@ -65,7 +64,6 @@ public class ESPNLeagueRostersRepository {
                     // reset player list and team name
                     players = [League.Player]()
                     teamName = ""
-                    
                     parseState = .teamName
                     break
                 }
@@ -85,7 +83,7 @@ public class ESPNLeagueRostersRepository {
 
         return league
     }
-    
+
     public func parsePlayer(from playerString: String) -> League.Player? {
         let playerComponents = playerString.components(separatedBy: "\t")
 

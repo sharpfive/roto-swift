@@ -12,7 +12,6 @@ import RotoSwift
 let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters.csv"
 let outputFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
 
-
 //let batterData: [BatterFields] = [
 //    .runs,
 //    .runsBattedIn,

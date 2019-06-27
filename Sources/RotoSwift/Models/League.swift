@@ -26,7 +26,7 @@ public struct League {
         }
     }
 
-    public enum Position : String {
+    public enum Position: String {
         case catcher = "C"
         case firstBase = "1B"
         case secondBase = "2B"

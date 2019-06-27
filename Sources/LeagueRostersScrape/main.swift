@@ -20,12 +20,12 @@ func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top:
             .filter({ $0.auctionValue > 0.0})
             .prefix(top)
 
-        teamValue = playerPool.map({ $0.auctionValue}).reduce(0,+)
+        teamValue = playerPool.map({ $0.auctionValue}).reduce(0, +)
 
         teamValues.append((name: team.name, value: teamValue))
     }
 
-    let orderedTeamValues = teamValues.sorted(by: { $0.value > $1.value } )
+    let orderedTeamValues = teamValues.sorted(by: { $0.value > $1.value })
 
     orderedTeamValues.forEach {
         print("team: \($0.name): \($0.value)")
@@ -39,7 +39,6 @@ let filename = "/Users/jaim/Dropbox/roto/projections/2019-05-29/ESPN-rosters.txt
 // open file and read text
 let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
-
 let repository = ESPNLeagueRostersRepository2019()
 
 let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
@@ -47,8 +46,9 @@ let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 print("leagueRosters.teams.count: \(leagueRosters.teams.count)")
 
 
-let hitterFilename  = "/Users/jaim/Dropbox/roto/projections/2019-05-27/Steamer-batters-auction-values.csv"
-let pitcherFilename = "/Users/jaim/Dropbox/roto/projections/2019-05-27/Steamer-pitchers-auction-values.csv"
+let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
+
+let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
 
 let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
 let projectedValues = fangraphsRepository.getAuctionValues()
@@ -64,10 +64,25 @@ printValues(for: leagueRosters, auctionValues: projectedValues, top: 15)
 print("Top 10")
 printValues(for: leagueRosters, auctionValues: projectedValues, top: 10)
 
+func printValues2(for leagueRosters: League, auctionValues: [PlayerAuction], top: Int) {
+    //var teamValues = [(name: String, value: Double)]()
+    //var totalTeamValues = 0.0
 
-//func printValues2(for leagueRosters: League, auctionValues: [PlayerAuction], top: Int) {
-//    //var teamValues = [(name: String, value: Double)]()
-//    //var totalTeamValues = 0.0
+    let teamPlayerValues = leagueRosters.teams.map { team -> (String, [PlayerAuction]) in
+        let playerAuctionValues: [PlayerAuction] = team.players.compactMap { player in
+            if let auctionPlayer = auctionValues.first(where: { $0.name == player.name }) {
+                return auctionPlayer
+            } else {
+                print("\(player.name) not found")
+                return nil
+            }
+        }
+
+        return (team.name, playerAuctionValues)
+    }
+
+//    leagueRosters.teams.forEach { team in
+//        var teamValue = 0.0
 //
 //    let teamPlayerValues = leagueRosters.teams.map { team -> (String, [PlayerAuction]) in
 //        let playerAuctionValues: [PlayerAuction] = team.players.compactMap { player in

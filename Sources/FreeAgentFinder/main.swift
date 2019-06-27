@@ -1,15 +1,11 @@
-
 import Foundation
 import RotoSwift
 
 // This will take projections and determine the best available free-agents
-
 let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
 
 let hitterFilename2020 = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2020-batters-auctionvalues.csv"
 let hitterFilename2021 = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
-
-
 
 let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
 let rosterFilename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-04-20.txt"
@@ -23,7 +19,6 @@ let league = buildLeague(with: rosterFilename)
 
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
-
 
 //let totalPlayerNames = league.teams.flatMap { $0.players.map { $0.name} }
 //
@@ -75,10 +70,9 @@ struct PlayerKeeperActualValue {
     }
 }
 
-//print("totalPLayerNames: \(totalPlayerNames)")
 print("Here are the best available hitters")
 
-let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo:100).map { hitter in
+let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo: 100).map { hitter in
     let valueIn2020 = hitterValuesIn2020.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
     let valueIn2021 = hitterValuesIn2021.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
     return PlayerKeeperValue(name: hitter.name, value: hitter.auctionValue, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
@@ -103,10 +97,3 @@ nextTwoYearsHitters.sorted(by: { $0.futureValue > $1.futureValue }).forEach {
 //let hittersNames = hitterValues.map { $0.name }
 //let totalPlayersSet = Set(totalPlayerNames)
 //let hittersValuesSet = Set(hittersNames)
-
-
-
-
-
-
-

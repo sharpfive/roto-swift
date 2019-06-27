@@ -5,20 +5,20 @@ import RotoSwift
 func processRelativeValues(cbPathString: String, fangraphsHitterPathString: String, fangraphsPitcherPathString: String, outputPathString: String) {
     let auctionRepository = CBAuctionValueRepository(filename: cbPathString)
     let keeperValues = auctionRepository.getAuctionValues()
-    
+
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterPathString, pitcherFilename: fangraphsPitcherPathString)
     let projectedValues = fangraphsRepository.getAuctionValues()
-    
+
     let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
-    
+
     // Output to csv
-    let stream = OutputStream(toFileAtPath:outputPathString, append:false)!
+    let stream = OutputStream(toFileAtPath: outputPathString, append: false)!
     let csvWriter = try! CSVWriter(stream: stream)
-    
+
     try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
 
-    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
-        
+    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue }).forEach { playerRelativeValue in
+
         // output to CSV
         csvWriter.beginNewRow()
         try! csvWriter.write(row: [
@@ -28,14 +28,12 @@ func processRelativeValues(cbPathString: String, fangraphsHitterPathString: Stri
             String(playerRelativeValue.relativeValue)
             ])
     }
-    
+
     csvWriter.stream.close()
 }
 
-extension Date
-{
-    func toString( dateFormat format  : String ) -> String
-    {
+extension Date {
+    func toString(dateFormat format: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         return dateFormatter.string(from: self)
