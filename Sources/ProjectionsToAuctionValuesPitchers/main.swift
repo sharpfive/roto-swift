@@ -40,7 +40,6 @@ let nextYearAuctionValuesFilenameString = "Zips-auction-values-2020-pitchers.csv
 let followingYearAuctionValuesFilenameString = "Zips-auction-values-2021-pitchers.csv"
 let futureRelativeValuesFilenameString = "Zips-pitcher-future-values.csv"
 
-
 let keeperValuesFullPathString = inputDirectoryString + keeperValuesFilenameString
 let nextYearProjectionsFullPathString = inputDirectoryString + nextYearProjectionFilenameString
 let followingYearProjectionsFullPathString = inputDirectoryString + followingYearProjectionFilenameString
@@ -49,11 +48,9 @@ let nextYearAuctionValuesFullPathString = outputDirectoryString + nextYearAuctio
 let followingYearAuctionValuesFullPathString = outputDirectoryString + followingYearAuctionValuesFilenameString
 let futureRelativeValuesFullPathString = outputDirectoryString + futureRelativeValuesFilenameString
 
-
 // Convert the projectsion to projected auction values
 convertPitcherProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
 convertPitcherProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
-
 
 var nextYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: nextYearAuctionValuesFullPathString, csvFormat: .rotoswift)
 var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: followingYearAuctionValuesFullPathString, csvFormat: .rotoswift)

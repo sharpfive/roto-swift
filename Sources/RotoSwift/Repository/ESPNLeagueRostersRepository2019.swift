@@ -24,7 +24,7 @@ public class ESPNLeagueRostersRepository2019 {
     let emptyToken = "Empty"
 
     public init() {}
-    
+
     public func getLeagueRosters(from string: String) -> League {
         var teams = [League.Team]()
 

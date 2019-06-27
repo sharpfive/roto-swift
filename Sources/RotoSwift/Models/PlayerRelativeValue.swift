@@ -11,7 +11,7 @@ public struct PlayerRelativeValue {
     public let name: String
     public let keeperPrice: Int
     public let projectedAuctionValue: Double
-    
+
     public var relativeValue: Double {
         return projectedAuctionValue - (Double(keeperPrice))
     }

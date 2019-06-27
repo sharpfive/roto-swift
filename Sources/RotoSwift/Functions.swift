@@ -53,12 +53,12 @@ func processRelativeValues() {
     
     // Output to csv
     let csvOutputFilename = "/Users/jaim/Dropbox/roto/2019/projections/relative-values-2019.csv"
-    let stream = OutputStream(toFileAtPath:csvOutputFilename, append:false)!
+    let stream = OutputStream(toFileAtPath: csvOutputFilename, append: false)!
     let csvWriter = try! CSVWriter(stream: stream)
     
     try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
     
-    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue } ).forEach { playerRelativeValue in
+    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue }).forEach { playerRelativeValue in
         
         // output to CSV
         csvWriter.beginNewRow()
@@ -124,7 +124,7 @@ public func processTeamsWithRelativeValues() -> [Team] {
         return (valueTeam.name, totalTeamValue)
     }
     
-    teamKeeperRankings.sorted(by:{ $0.1 > $1.1 }).forEach { tuple in
+    teamKeeperRankings.sorted(by: { $0.1 > $1.1 }).forEach { tuple in
         print("team: \(tuple.0) - keeper ranking:\(tuple.1)")
     }
     return teams
@@ -219,7 +219,7 @@ func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
 }
 
 public func convertPitcherProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
-    let pitchers = calculatePitcherZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
+    let pitchers = calculatePitcherZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore})
 
     let replacementPosition = 6 * 12 // # of pitchers for 12 teams
 
@@ -251,7 +251,7 @@ public func convertPitcherProjectionsFileToActionValues(from sourceFilename: Str
     }
 
 
-    let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
+    let stream = OutputStream(toFileAtPath: outputFilename, append: false)!
     let csvWriter = try! CSVWriter(stream: stream)
 
     let rows: [[String]] = auctionArray.map { tuple in
@@ -279,7 +279,7 @@ public func convertPitcherProjectionsFileToActionValues(from sourceFilename: Str
 
 
 public func convertProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
-    let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore} )
+    let batters = calculateZScores(with: sourceFilename).sorted(by: {$0.totalZScore > $1.totalZScore})
 
     let replacementPosition = 12 * 12 // 10 players for 12 teams
 
@@ -313,7 +313,7 @@ public func convertProjectionsFileToActionValues(from sourceFilename: String, to
     }
 
 
-    let stream = OutputStream(toFileAtPath:outputFilename, append:false)!
+    let stream = OutputStream(toFileAtPath: outputFilename, append: false)!
     let csvWriter = try! CSVWriter(stream: stream)
 
     let rows: [[String]] = auctionArray.map { tuple in
@@ -429,7 +429,7 @@ func convertFileToBatters(filename: String) -> [Batter] {
 
     print(headerRow)
     let homeRunsRowOptional = headerRow.index(of: BatterFields.homeRuns.rawValue)
-    let nameRowOptional:Int? = 0
+    let nameRowOptional: Int? = 0
     let runsRowOptional = headerRow.index(of: BatterFields.runs.rawValue)
     let onBasePercentageRowOptional = headerRow.index(of: BatterFields.onBasePercentage.rawValue)
     let stolenBasesRowOptional = headerRow.index(of: BatterFields.steals.rawValue)
@@ -474,7 +474,7 @@ func convertFileToPitchers(filename: String) -> [Pitcher] {
 
     print(headerRow)
     let strikeoutsRowOptional = headerRow.index(of: PitcherFields.strikeouts.rawValue)
-    let nameRowOptional:Int? = 0
+    let nameRowOptional: Int? = 0
     let eraRowOptional = headerRow.index(of: PitcherFields.ERA.rawValue)
     let whipRowOptional = headerRow.index(of: PitcherFields.WHIP.rawValue)
     let inningsPitchedRowOptional = headerRow.index(of: PitcherFields.inningsPitched.rawValue)

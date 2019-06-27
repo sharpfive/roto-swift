@@ -8,7 +8,7 @@
 import Foundation
 
 public class ESPNLeagueRostersRepository {
-    
+
     enum ParseState {
         case beforeLeague
         case teamName
@@ -16,31 +16,29 @@ public class ESPNLeagueRostersRepository {
         case player
         case complete
     }
-    
+
     let leagueRostersToken = "League Rosters"
     let endOfTeamsToken = "Need Help?"
-    
-    public init() {
-        
-    }
-    
+
+    public init() {}
+
     public func getLeagueRosters(for filename: String) -> League {
-        
+
         var parseState: ParseState = ParseState.beforeLeague
-        
+
         var teamName = ""
         var teams = [League.Team]()
         var players = [League.Player]()
-        
+
         // open file and read text
         let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
-        
+
         var lineCount = 0
-        
+
         leagueRostersDataString.enumerateLines { (lineString, boolean) in
             lineCount += 1
-            
-            
+
+
             switch parseState {
             case .beforeLeague:
                 // print(lineString)
@@ -80,39 +78,37 @@ public class ESPNLeagueRostersRepository {
                 break
             }
         }
-        
+
         print("Ready to return")
-        
+
         let league = League(teams: teams)
-        
+
         return league
     }
     
     public func parsePlayer(from playerString: String) -> League.Player? {
-        let playerComponents = playerString.components(separatedBy:"\t")
-        
+        let playerComponents = playerString.components(separatedBy: "\t")
+
         var endOfNameIndex = 1
-        repeat  {
+        repeat {
             endOfNameIndex+=1
         } while endOfNameIndex < playerComponents.count-1 &&
             !playerComponents[endOfNameIndex].hasSuffix(",")
-        
+
         let beginningOfPlayerNameIndex = 1
-        
-        // let lengthOfPlayerName = endOfNameIndex - beginningOfPlayerNameIndex
-        
+
         // trim any commas
         let playerNameComponents = playerComponents[beginningOfPlayerNameIndex...endOfNameIndex].map { $0.replacingOccurrences(of: ",", with: "") }
-        
+
         let playerName = playerNameComponents.reduce("", { "\($0) \($1)"})
-        
-        if (playerName.lengthOfBytes(using: .ascii) <= 3) {
+
+        if playerName.lengthOfBytes(using: .ascii) <= 3 {
             // empty position
             return nil
         }
-        
+
         let player = League.Player(name: playerName)
-        
+
         return player
     }
 }
