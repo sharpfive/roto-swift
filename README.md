@@ -3,7 +3,6 @@ Thes are some swift command line apps I use to hack on my roto baseball league.
 
 No warranty or claim of usability what-so-ever. This represents work I did in my free time for my own enjoyment. It is not intended to represent production quality work. Many sins lurk within, not the least of include:
 
-- Code standard are a bit off. I was working on a number of different code bases, including a bunch of mobile build scripts. Someday I'll install SwiftLint. But not today.
 - Domain logic not fully baked. This could be considered a decent start but I haven't examined enough actual use cases to determine how they should actually be constructed
 - Hard coded files names. These could eventually be legit command line tools, but that's a ways off. I'm the only person using this thing.
 - Comments, logs and debug code sprinkled throughout.
