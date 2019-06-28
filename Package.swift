@@ -5,7 +5,8 @@ import PackageDescription
 let package = Package(
     name: "RotoSwift",
     dependencies: [
-    .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1"))
+    .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
+    .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.3.0"),
     ],
     targets: [
         .target(
@@ -14,7 +15,7 @@ let package = Package(
         ),
         .target(
             name: "PlayerRelativeValues",
-            dependencies: ["RotoSwift"]
+            dependencies: ["RotoSwift", "SPMUtility"]
         ),
         .target(
             name: "TeamRelativeValues",
