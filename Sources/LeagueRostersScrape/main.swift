@@ -79,6 +79,7 @@ func printValues2(for leagueRosters: League, auctionValues: [PlayerAuction], top
 
         return (team.name, playerAuctionValues)
     }
+}
 
 //    leagueRosters.teams.forEach { team in
 //        var teamValue = 0.0
