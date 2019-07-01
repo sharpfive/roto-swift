@@ -64,6 +64,20 @@ class LeagueRostersScrapeTests: XCTestCase {
 //        //let projections =
 //    }
 
+// Test version one
+    func testNumberOfTeamsIsTwelveVersionOne() throws {
+        let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
+
+        XCTAssertEqual(league.teams.count, 12)
+    }
+
+    func testAllTeamsHavePlayers() throws {
+        let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
+        league.teams.forEach { team in
+            XCTAssertFalse(team.players.isEmpty)
+        }
+    }
+
     func getProjections() -> [PlayerAuction] {
         let hitterFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-hitters-1.csv"
         let pitcherFilename = "/Users/jaim/Dropbox/roto/2018/projections/2018-pitchers.csv"
@@ -80,7 +94,7 @@ class LeagueRostersScrapeTests: XCTestCase {
         return league.teams.first(where: {$0.name == name})!
     }
 
-    func createLeague(with filename: String) -> League {
+    func createLeague(with filename: String, version: Int? = nil) -> League {
 
         let repository = ESPNLeagueRostersRepository()
         let league = repository.getLeagueRosters(for: filename)
