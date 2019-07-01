@@ -82,7 +82,7 @@ public class ESPNLeagueRostersRepository2019 {
                     parseState = .activePosition
                 }
             case .positions:
-                let positions = self.extractPositions(from: lineString)
+                guard let positions = self.extractPositions(from: lineString) else { break }
 
                 // Player is complete
                 guard let playerName = playerName,
@@ -101,7 +101,7 @@ public class ESPNLeagueRostersRepository2019 {
         return League(teams: teams)
     }
 
-    func extractPositions(from lineString: String) -> [League.Position] {
+    func extractPositions(from lineString: String) -> [League.Position]? {
         // If the entire linestring converts to a Position, the player only has 1 position elligible
         if let singlePosition = League.Position(rawValue: lineString) {
             return [singlePosition]
@@ -111,7 +111,7 @@ public class ESPNLeagueRostersRepository2019 {
                                           .compactMap { League.Position(rawValue: $0 ) }
 
             if positionArray.isEmpty {
-                return [League.Position]()
+                return nil
             } else {
                 return positionArray
             }
