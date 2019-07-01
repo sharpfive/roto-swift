@@ -3,17 +3,17 @@ import CSV
 import RotoSwift
 import SPMUtility
 
-func processRelativeValues(cbPathString: String, fangraphsHitterPathString: String, fangraphsPitcherPathString: String, outputPathString: String) {
-    let auctionRepository = CBAuctionValueRepository(filename: cbPathString)
+func processRelativeValues(auctionValuesFilename: String, fangraphsHitterFilename: String, fangraphsPitcherFilename: String, outputFilename: String) {
+    let auctionRepository = CBAuctionValueRepository(filename: auctionValuesFilename)
     let keeperValues = auctionRepository.getAuctionValues()
 
-    let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterPathString, pitcherFilename: fangraphsPitcherPathString)
+    let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
 
     let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
 
     // Output to csv
-    let stream = OutputStream(toFileAtPath: outputPathString, append: false)!
+    let stream = OutputStream(toFileAtPath: outputFilename, append: false)!
     let csvWriter = try! CSVWriter(stream: stream)
 
     try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
@@ -86,8 +86,6 @@ let hitterFilename = parsedArguments.get(hitterFilenameOption)
 let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
 let auctionValuesFilename = parsedArguments.get(auctionValuesFilenameOption)
 
-let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
-
 let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "PlayerRelativeValues", format: "csv")
 
 guard let hitterFilename = hitterFilename else {
@@ -105,4 +103,4 @@ guard let auctionValuesFilename = auctionValuesFilename else {
     exit(0)
 }
 
-processRelativeValues(cbPathString: auctionValuesFilename, fangraphsHitterPathString: hitterFilename, fangraphsPitcherPathString: pitcherFilename, outputPathString: outputFilename)
+processRelativeValues(auctionValuesFilename: auctionValuesFilename, fangraphsHitterFilename: hitterFilename, fangraphsPitcherFilename: pitcherFilename, outputFilename: outputFilename)
