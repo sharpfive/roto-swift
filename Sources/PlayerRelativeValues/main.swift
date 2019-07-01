@@ -46,11 +46,11 @@ struct PlayerRelativeValuesFields {
     let keeperValuesFilename: String
 }
 
-//func processArguments(arguments: ArgumentParser.Result) -> PlayerRelativeValuesFields? {
-//
-//}
+func defaultFilename(for application: String, format: String) -> String {
+    let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
 
-print("PlayerRelativeValues")
+    return "\(FileManager.default.currentDirectoryPath)/\(application)-\(dateString).\(format)"
+}
 
 let parser = ArgumentParser(commandName: "PlayerRelativeValues", usage: "filename [--input Keeper-Values-2019-Sheet1.csv]", overview: "Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player..")
 
@@ -88,7 +88,7 @@ let auctionValuesFilename = parsedArguments.get(auctionValuesFilenameOption)
 
 let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
 
-let outputFilename = parsedArguments.get(outputFilenameOption) ?? "\(FileManager.default.currentDirectoryPath)-\(dateString)-relative-values-2018.csv"
+let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "PlayerRelativeValues", format: "csv")
 
 guard let hitterFilename = hitterFilename else {
     print("Hitter filename is required")
@@ -105,13 +105,4 @@ guard let auctionValuesFilename = auctionValuesFilename else {
     exit(0)
 }
 
-//let fangraphsHitterFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-batters-2019-03-16.csv"
-//let fangraphsHitterFilename: OptionArgument<String> = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
-
-//let fangraphsPitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitchers-2019-03-16.csv"
-
-
-let outputFile = "/Users/jaim/Dropbox/roto/2019/projections/\(dateString)-relative-values-2018.csv"
-
-
-processRelativeValues(cbPathString: auctionValuesFilename, fangraphsHitterPathString: hitterFilename, fangraphsPitcherPathString: pitcherFilename, outputPathString: outputFile)
+processRelativeValues(cbPathString: auctionValuesFilename, fangraphsHitterPathString: hitterFilename, fangraphsPitcherPathString: pitcherFilename, outputPathString: outputFilename)
