@@ -33,12 +33,6 @@ func processRelativeValues(auctionValuesFilename: String, fangraphsHitterFilenam
     csvWriter.stream.close()
 }
 
-struct PlayerRelativeValuesFields {
-    let hitterFilename: String?
-    let pitcherFilename: String?
-    let keeperValuesFilename: String
-}
-
 let parser = ArgumentParser(commandName: "PlayerRelativeValues", usage: "filename [--input Keeper-Values-2019-Sheet1.csv]", overview: "Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player..")
 
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
@@ -62,10 +56,12 @@ catch let error {
     exit(0)
 }
 
+// Required fields
 let hitterFilename = parsedArguments.get(hitterFilenameOption)
 let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
 let auctionValuesFilename = parsedArguments.get(auctionValuesFilenameOption)
 
+// Not a required field, will default to the current directory
 let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "PlayerRelativeValues", format: "csv")
 
 guard let hitterFilename = hitterFilename else {
