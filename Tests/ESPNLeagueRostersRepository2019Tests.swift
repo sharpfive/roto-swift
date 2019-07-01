@@ -31,9 +31,16 @@ class ESPNLeagueRostersRepository2019Tests: XCTestCase {
         }
     }
 
+    func testTeamOneHasPeteAlonso() {
+        let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
+        XCTAssertTrue(league.teams.first?.players.contains { $0.name == "Pete Alonso" } == true)
+    }
+
     func createLeague(with filename: String, version: Int? = nil) -> League {
         let repository = ESPNLeagueRostersRepository2019()
-        let league = repository.getLeagueRosters(from: filename)
+        let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+
+        let league = repository.getLeagueRosters(from: leagueRostersDataString)
         return league
     }
 }

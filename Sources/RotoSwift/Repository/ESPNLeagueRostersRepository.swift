@@ -77,7 +77,7 @@ public class ESPNLeagueRostersRepository {
             }
         }
 
-        print("Ready to return")
+        // print("Ready to return")
 
         let league = League(teams: teams)
 
