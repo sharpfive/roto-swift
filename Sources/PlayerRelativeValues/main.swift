@@ -33,7 +33,9 @@ func processRelativeValues(auctionValuesFilename: String, fangraphsHitterFilenam
     csvWriter.stream.close()
 }
 
-let parser = ArgumentParser(commandName: "PlayerRelativeValues", usage: "filename [--input Keeper-Values-2019-Sheet1.csv]", overview: "Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player..")
+let parser = ArgumentParser(commandName: "PlayerRelativeValues",
+                            usage: "filename [--input Keeper-Values-2019-Sheet1.csv]",
+                            overview: "Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player..")
 
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
 let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitchers csv file.")
@@ -46,12 +48,10 @@ let parsedArguments: SPMUtility.ArgumentParser.Result
 
 do {
     parsedArguments = try parser.parse(arguments)
-}
-catch let error as ArgumentParserError {
+} catch let error as ArgumentParserError {
     print(error.description)
     exit(0)
-}
-catch let error {
+} catch let error {
     print(error.localizedDescription)
     exit(0)
 }

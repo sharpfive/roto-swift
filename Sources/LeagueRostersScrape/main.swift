@@ -35,7 +35,9 @@ func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top:
 
 print("LeagueRostersScrape")
 
-let parser = ArgumentParser(commandName: "LeagueRostersScrape", usage: "filename [--hitters  fangraphs-hitter-projections.csv --pitchers fangraphs-pitcher-projections.csv --rosters ESPN Rosters.txt]", overview: "Takes a scrape of the league rosters and adds the values for all the players on their team.")
+let parser = ArgumentParser(commandName: "LeagueRostersScrape",
+                            usage: "filename [--hitters  fangraphs-hitter-projections.csv --pitchers fangraphs-pitcher-projections.csv --rosters ESPN Rosters.txt]",
+                            overview: "Takes a scrape of the league rosters and adds the values for all the players on their team.")
 
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
 let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitchers csv file.")
@@ -47,12 +49,10 @@ let parsedArguments: SPMUtility.ArgumentParser.Result
 
 do {
     parsedArguments = try parser.parse(arguments)
-}
-catch let error as ArgumentParserError {
+} catch let error as ArgumentParserError {
     print(error.description)
     exit(0)
-}
-catch let error {
+} catch let error {
     print(error.localizedDescription)
     exit(0)
 }

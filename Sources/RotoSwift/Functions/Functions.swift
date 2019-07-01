@@ -190,8 +190,6 @@ public func convertProjectionsFileToActionValues(from sourceFilename: String, to
 
     let replacementZScore = batters[replacementPosition].totalZScore
 
-    //TODO need to offset so the last person has a score of 0
-
     let adjustedBatterZScores = batters.map {
         ($0, $0.totalZScore - replacementZScore)
     }

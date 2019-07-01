@@ -54,4 +54,3 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
     }
     return teams
 }
-
