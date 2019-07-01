@@ -1,5 +1,6 @@
 import Foundation
 import RotoSwift
+import SPMUtility
 
 func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top: Int) {
     var teamValues = [(name: String, value: Double)]()
@@ -34,10 +35,52 @@ func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top:
 
 print("LeagueRostersScrape")
 
-let filename = "/Users/jaim/Dropbox/roto/projections/2019-05-29/ESPN-rosters.txt"
+let parser = ArgumentParser(commandName: "LeagueRostersScrape", usage: "filename [--hitters  fangraphs-hitter-projections.csv --pitchers fangraphs-pitcher-projections.csv --rosters ESPN Rosters.txt]", overview: "Takes a scrape of the league rosters and adds the values for all the players on their team.")
+
+let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
+let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitchers csv file.")
+let rostersFilenameOption = parser.add(option: "--rosters", shortName: "-r", kind: String.self, usage: "Filename for the rosters file.")
+
+let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
+
+let parsedArguments: SPMUtility.ArgumentParser.Result
+
+do {
+    parsedArguments = try parser.parse(arguments)
+}
+catch let error as ArgumentParserError {
+    print(error.description)
+    exit(0)
+}
+catch let error {
+    print(error.localizedDescription)
+    exit(0)
+}
+
+// Required fields
+let hitterFilename = parsedArguments.get(hitterFilenameOption)
+let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
+let rostersFilename = parsedArguments.get(rostersFilenameOption)
+
+guard let hitterFilename = hitterFilename else {
+    print("Hitter filename is required")
+    exit(0)
+}
+
+guard let pitcherFilename = pitcherFilename else {
+    print("Pitcher filename is required")
+    exit(0)
+}
+
+guard let rostersFilename = rostersFilename else {
+    print("Rosters filename is required")
+    exit(0)
+}
+
+//let filename = "/Users/jaim/Dropbox/roto/projections/2019-05-29/ESPN-rosters.txt"
 
 // open file and read text
-let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+let leagueRostersDataString = try! String(contentsOfFile: rostersFilename, encoding: String.Encoding.ascii)
 
 let repository = ESPNLeagueRostersRepository2019()
 
@@ -45,9 +88,9 @@ let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
 
 print("leagueRosters.teams.count: \(leagueRosters.teams.count)")
 
-let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
-
-let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
+//let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
+//
+//let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
 
 let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
 let projectedValues = fangraphsRepository.getAuctionValues()

@@ -27,7 +27,7 @@ let package = Package(
         ),
         .target(
             name: "LeagueRostersScrape",
-            dependencies: ["RotoSwift"]
+            dependencies: ["RotoSwift", "SPMUtility"]
         ),
         .target(
             name: "RotoAuctionValues",

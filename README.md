@@ -36,6 +36,8 @@ Scrape a list of the League's rosters and compare that to projected values to de
 
 See sample directory for expected formats. Downloadable and especially ESPN formats are likely to change in the future. They were last known to work March, 2019.
 
+swift run LeagueRostersScrape --hitters data/FanGraphs-batters-2019-03-16.csv --pitchers data/FanGraphs-pitchers-2019-03-16.csv --rosters data/ESPN-rosters-2019-05-29.txt
+
 ### PlayerRelativeValues
 Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player.
 
