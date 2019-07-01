@@ -42,46 +42,6 @@ public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAu
     return playerRelativeValues
 }
 
-func processRelativeValues() {
-    let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
-    let keeperValues = auctionRepository.getAuctionValues()
-
-    let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: hitterFilename, pitcherFilename: pitcherFilename)
-    let projectedValues = fangraphsRepository.getAuctionValues()
-
-    let playerRelativeValues = joinRelativeValues(playerKeeperPrices: keeperValues, playerAuctions: projectedValues)
-
-    // Output to csv
-    let csvOutputFilename = "/Users/jaim/Dropbox/roto/2019/projections/relative-values-2019.csv"
-    let stream = OutputStream(toFileAtPath: csvOutputFilename, append: false)!
-    let csvWriter = try! CSVWriter(stream: stream)
-
-    try! csvWriter.write(row: ["name", "keeperPrice", "projectedAuctionValue", "relativeValue"])
-
-    playerRelativeValues.sorted(by: { $0.relativeValue > $1.relativeValue }).forEach { playerRelativeValue in
-
-        // output to CSV
-        csvWriter.beginNewRow()
-        try! csvWriter.write(row: [
-            playerRelativeValue.name,
-            String(playerRelativeValue.keeperPrice),
-            String(playerRelativeValue.projectedAuctionValue),
-            String(playerRelativeValue.relativeValue)
-            ])
-    }
-
-    csvWriter.stream.close()
-}
-
-func processTeams() {
-    let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
-    let teams = auctionRepository.getTeams()
-
-    teams.forEach {
-        print("\($0)")
-    }
-}
-
 public func processTeamsWithRelativeValues() -> [Team] {
     let auctionRepository = CBAuctionValueRepository(filename: cbFilename)
     let teams = auctionRepository.getTeams()
