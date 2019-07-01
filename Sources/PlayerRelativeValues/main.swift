@@ -33,23 +33,10 @@ func processRelativeValues(auctionValuesFilename: String, fangraphsHitterFilenam
     csvWriter.stream.close()
 }
 
-extension Date {
-    func toString(dateFormat format: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        return dateFormatter.string(from: self)
-    }
-}
 struct PlayerRelativeValuesFields {
     let hitterFilename: String?
     let pitcherFilename: String?
     let keeperValuesFilename: String
-}
-
-func defaultFilename(for application: String, format: String) -> String {
-    let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
-
-    return "\(FileManager.default.currentDirectoryPath)/\(application)-\(dateString).\(format)"
 }
 
 let parser = ArgumentParser(commandName: "PlayerRelativeValues", usage: "filename [--input Keeper-Values-2019-Sheet1.csv]", overview: "Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player..")
@@ -57,14 +44,7 @@ let parser = ArgumentParser(commandName: "PlayerRelativeValues", usage: "filenam
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters csv file.")
 let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitchers csv file.")
 let auctionValuesFilenameOption = parser.add(option: "--auction", shortName: "-a", kind: String.self, usage: "Filename for the auction values file.")
-
 let outputFilenameOption = parser.add(option: "--output", shortName: "-o", kind: String.self, usage: "Location of output csv")
-
-let argumentArray = [
-    hitterFilenameOption,
-    pitcherFilenameOption,
-    auctionValuesFilenameOption
-]
 
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 
