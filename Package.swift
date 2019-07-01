@@ -19,7 +19,7 @@ let package = Package(
         ),
         .target(
             name: "TeamRelativeValues",
-            dependencies: ["RotoSwift"]
+            dependencies: ["RotoSwift", "SPMUtility"]
         ),
         .target(
             name: "ESPNScrape",
