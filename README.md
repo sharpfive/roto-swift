@@ -49,6 +49,8 @@ Turns out things like ERA & WHIP need to be calculated differently (a lower valu
 
 This takes a scrape of the league rosters and adds the values for all the players on their team. It is used to estimate which teams have the best chance of winning. Turns out I can often predict the league winners before the season even starts.
 
+swift run TeamRelativeValues --hitters data/FanGraphs-batters-2019-03-16.csv  --pitchers data/FanGraphs-pitchers-2019-03-16.csv --auction data/TeamRelativeValues.auctionvalues.csv
+
 ### RotoSwift
 
 Common code that is shared between all the scripts.
