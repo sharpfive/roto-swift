@@ -51,4 +51,4 @@ guard let auctionValuesFilename = auctionValuesFilename else {
     exit(0)
 }
 
-_ = processTeamsWithRelativeValues(auctionValuesFilename:auctionValuesFilename, fangraphsHitterFilename: hitterFilename, fangraphsPitcherFilename: pitcherFilename)
+_ = processTeamsWithRelativeValues(auctionValuesFilename: auctionValuesFilename, fangraphsHitterFilename: hitterFilename, fangraphsPitcherFilename: pitcherFilename)
