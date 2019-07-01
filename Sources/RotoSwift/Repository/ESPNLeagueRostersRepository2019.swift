@@ -101,14 +101,14 @@ public class ESPNLeagueRostersRepository2019 {
         return League(teams: teams)
     }
 
-    func extractPositions(from lineString: String) -> [League.RosterPosition]? {
+    func extractPositions(from lineString: String) -> [League.FieldPosition]? {
         // If the entire linestring converts to a Position, the player only has 1 position elligible
-        if let singlePosition = League.RosterPosition(rawValue: lineString) {
+        if let singlePosition = League.FieldPosition(rawValue: lineString) {
             return [singlePosition]
         } else {
             // Otherwise it is a comma-delimited list
             let positionArray = lineString.components(separatedBy: ",")
-                                          .compactMap { League.RosterPosition(rawValue: $0 ) }
+                                          .compactMap { League.FieldPosition(rawValue: $0 ) }
 
             if positionArray.isEmpty {
                 return nil

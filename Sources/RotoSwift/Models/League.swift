@@ -18,12 +18,24 @@ public struct League {
 
     public struct Player {
         public let name: String
-        public let eligiblePositions: [RosterPosition]
+        public let eligiblePositions: [FieldPosition]
 
-        public init(name: String, eligiblePositions: [RosterPosition] = [RosterPosition]()) {
+        public init(name: String, eligiblePositions: [FieldPosition] = [FieldPosition]()) {
             self.name = name
             self.eligiblePositions = eligiblePositions
         }
+    }
+
+    public enum FieldPosition: String {
+        case catcher = "C"
+        case firstBase = "1B"
+        case secondBase = "2B"
+        case thirdBase = "3B"
+        case shortStop = "SS"
+        case outfield = "OF"
+        case startingPitcher = "SP"
+        case reliefPitcher = "RP"
+        case designatedHitter = "DH"
     }
 
     public enum RosterPosition: String {
@@ -40,8 +52,5 @@ public struct League {
         case designatedHitter = "DH"
         case pitcher = "P"
         case injured = "IL"
-        //aiai some of these are field positions
-        //aiai others are roster positions IL, P, Bench
-        //aiai how to split them up?
     }
 }
