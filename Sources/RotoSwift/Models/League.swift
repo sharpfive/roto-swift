@@ -18,15 +18,15 @@ public struct League {
 
     public struct Player {
         public let name: String
-        public let eligiblePositions: [Position]
+        public let eligiblePositions: [RosterPosition]
 
-        public init(name: String, eligiblePositions: [Position] = [Position]()) { //aiai
+        public init(name: String, eligiblePositions: [RosterPosition] = [RosterPosition]()) {
             self.name = name
             self.eligiblePositions = eligiblePositions
         }
     }
 
-    public enum Position: String {
+    public enum RosterPosition: String {
         case catcher = "C"
         case firstBase = "1B"
         case secondBase = "2B"

@@ -70,11 +70,6 @@ Class used to turning data from various file formats to usable Models.
 #### Roster
 Code to build up the league rosters from a scraped text file. It's used by FreeAgentFinder.
 
-
-
-
-
-
 #### How do I compile the apps?
 _swift build_
 

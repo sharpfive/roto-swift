@@ -32,7 +32,7 @@ public class ESPNLeagueRostersRepository2019 {
 
         var teamName: String = ""
         var players = [League.Player]()
-        var activePosition: League.Position?
+        var activePosition: League.RosterPosition?
         var playerName: String?
 
         string.enumerateLines { (lineString, _) in
@@ -65,7 +65,7 @@ public class ESPNLeagueRostersRepository2019 {
                     parseState = .teamName
                 }
                 // Wait for a line only consisting of a position
-                guard let position = League.Position(rawValue: lineString) else { return }
+                guard let position = League.RosterPosition(rawValue: lineString) else { return }
                 activePosition = position
                 parseState = .name
 
@@ -101,14 +101,14 @@ public class ESPNLeagueRostersRepository2019 {
         return League(teams: teams)
     }
 
-    func extractPositions(from lineString: String) -> [League.Position]? {
+    func extractPositions(from lineString: String) -> [League.RosterPosition]? {
         // If the entire linestring converts to a Position, the player only has 1 position elligible
-        if let singlePosition = League.Position(rawValue: lineString) {
+        if let singlePosition = League.RosterPosition(rawValue: lineString) {
             return [singlePosition]
         } else {
             // Otherwise it is a comma-delimited list
             let positionArray = lineString.components(separatedBy: ",")
-                                          .compactMap { League.Position(rawValue: $0 ) }
+                                          .compactMap { League.RosterPosition(rawValue: $0 ) }
 
             if positionArray.isEmpty {
                 return nil
