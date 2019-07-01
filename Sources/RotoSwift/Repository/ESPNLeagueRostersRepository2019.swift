@@ -29,7 +29,6 @@ public class ESPNLeagueRostersRepository2019 {
         var teams = [League.Team]()
 
         var parseState: ParseState = .beforeLeague
-        var lineCount = 0
 
         var teamName: String = ""
         var players = [League.Player]()
@@ -37,8 +36,6 @@ public class ESPNLeagueRostersRepository2019 {
         var playerName: String?
 
         string.enumerateLines { (lineString, _) in
-            lineCount += 1
-
             if lineString.isEmpty || lineString == self.proposeTradeToken {
                 return
             }
@@ -114,7 +111,6 @@ public class ESPNLeagueRostersRepository2019 {
             }
         }
 
-        // print(lineCount)
         return League(teams: teams)
     }
 }
