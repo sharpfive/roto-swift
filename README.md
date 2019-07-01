@@ -39,6 +39,8 @@ See sample directory for expected formats. Downloadable and especially ESPN form
 ### PlayerRelativeValues
 Scrapes a csv of team rosters and compares them to csv's of project Fangraphs auction values. This show the relative value of a player.
 
+swift run PlayerRelativeValues --hitters data/FanGraphs-batters-2019-03-16.csv --pitchers data/FanGraphs-pitchers-2019-03-16.csv --auction data/PlayerRelativeValues.auctionvalues.csv
+
 ### ProjectionsToAuctionValues
 Takes a csv of raw stat projections and converts them to auction values. It uses an algorithm similar to [this site](https://www.friendswithfantasybenefits.com/2019-rankings-and-auction-values-using-z-score-and-steamers). Note: my code was written before this blog post, but I didn't invent the algorithm anyway.
 
