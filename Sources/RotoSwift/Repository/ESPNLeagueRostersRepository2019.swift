@@ -87,7 +87,7 @@ public class ESPNLeagueRostersRepository2019 {
                 // Player is complete
                 guard let playerName = playerName,
                     activePosition != nil else {
-                        print("error")
+                        print("Error: Unable to parse a player")
                         return
                 }
 
