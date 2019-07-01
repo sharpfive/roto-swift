@@ -51,16 +51,16 @@ public class ESPNLeagueRostersRepository2019 {
                 }
             case .teamName:
                 if lineString == self.endOfTeamsToken {
-                    print("end of teams")
+                    // print("end of teams")
                     parseState = .complete
                     break
                 }
-                print("Found Team: \(lineString)")
+                // print("Found Team: \(lineString)")
                 teamName = lineString
                 parseState = .activePosition
             case .activePosition:
                 if lineString == self.endOfTeamToken {
-                    print("end of single team")
+                    // print("end of single team")
                     let newTeam = League.Team(name: teamName, players: players)
                     teams.append(newTeam)
                     teamName = ""
@@ -79,7 +79,7 @@ public class ESPNLeagueRostersRepository2019 {
                     }
 
                     playerName = lineString
-                    print("found player: \(String(describing: playerName))")
+                    // print("found player: \(String(describing: playerName))")
                     parseState = .positions
                 } else {
                     parseState = .activePosition
@@ -103,7 +103,7 @@ public class ESPNLeagueRostersRepository2019 {
                 // Player is complete
                 guard let playerName = playerName,
                     activePosition != nil else {
-                        print("aiai error")
+                        print("error")
                         return
                 }
 
@@ -114,7 +114,7 @@ public class ESPNLeagueRostersRepository2019 {
             }
         }
 
-        print(lineCount)
+        // print(lineCount)
         return League(teams: teams)
     }
 }

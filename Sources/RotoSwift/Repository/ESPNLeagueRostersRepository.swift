@@ -47,7 +47,7 @@ public class ESPNLeagueRostersRepository {
             case .teamName:
                 // print("Found Team: \(lineString)")
                 if lineString == self.endOfTeamsToken {
-                    print("end of teams")
+                    // print("end of teams")
                     parseState = .complete
                     break
                 }
