@@ -74,6 +74,10 @@ public class ESPNLeagueRostersRepository2019 {
 
             case .name:
                 if lineString != self.emptyToken {
+                    if !isValidPlayerName(name: lineString) {
+                        break
+                    }
+
                     playerName = lineString
                     print("found player: \(String(describing: playerName))")
                     parseState = .positions
@@ -113,4 +117,14 @@ public class ESPNLeagueRostersRepository2019 {
         print(lineCount)
         return League(teams: teams)
     }
+}
+
+func isValidPlayerName(name: String) -> Bool {
+    // check for duplicated strings
+    let stringLength = name.count / 2
+
+    let firstHalf = name.prefix(stringLength)
+    let secondHalf = name.suffix(stringLength)
+
+    return firstHalf != secondHalf
 }
