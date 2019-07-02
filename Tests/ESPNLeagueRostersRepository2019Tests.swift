@@ -36,6 +36,27 @@ class ESPNLeagueRostersRepository2019Tests: XCTestCase {
         XCTAssertTrue(league.teams.first?.players.contains { $0.name == "Pete Alonso" } == true)
     }
 
+    func testJonathanVillarExists() {
+        let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
+        let villar = findPlayer(inLeague: league, named: "Jonathan Villar")
+        XCTAssertNotNil(villar)
+    }
+
+    func testJonathanVillarPlaysTwoPositions() {
+        let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
+        let villar = findPlayer(inLeague: league, named: "Jonathan Villar")
+        print("villar \(villar)")
+        XCTAssertEqual(villar?.eligiblePositions.count, 2)
+    }
+
+    func findPlayer(inLeague league: League, named name: String) -> League.Player? {
+        let allPlayers = league.teams.flatMap { $0.players }
+
+        return allPlayers.first { player in
+            player.name == name
+        }
+    }
+
     func createLeague(with filename: String, version: Int? = nil) -> League {
         let repository = ESPNLeagueRostersRepository2019()
         let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)

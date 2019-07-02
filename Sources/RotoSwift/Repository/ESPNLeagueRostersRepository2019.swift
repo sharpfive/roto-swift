@@ -108,6 +108,7 @@ public class ESPNLeagueRostersRepository2019 {
         } else {
             // Otherwise it is a comma-delimited list
             let positionArray = lineString.components(separatedBy: ",")
+                                          .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                                           .compactMap { League.FieldPosition(rawValue: $0 ) }
 
             if positionArray.isEmpty {
