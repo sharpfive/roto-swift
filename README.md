@@ -49,6 +49,10 @@ Takes a csv of raw stat projections and converts them to auction values. It uses
 ### ProjectionsToAuctionValuesPitchers
 Turns out things like ERA & WHIP need to be calculated differently (a lower value is better), so a different script is used to calculate pitcher values.
 
+### HitterAuctionValues
+
+swift run HitterAuctionValues --hitters data/Zips-projections-2020-batters.csv
+
 ### TeamRelativeValues
 
 This takes a scrape of the league rosters and adds the values for all the players on their team. It is used to estimate which teams have the best chance of winning. Turns out I can often predict the league winners before the season even starts.

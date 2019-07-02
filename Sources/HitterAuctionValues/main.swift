@@ -8,10 +8,6 @@ import SPMUtility
     import Darwin.C
 #endif
 
-//let filename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters.csv"
-//let outputFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
-
-
 let parser = ArgumentParser(commandName: "HitterAuctionValues",
                             usage: "filename [--hitters  hitter-projections.csv --output output-auction-values-csv]",
                             overview: "Converts a set of hitter statistic projections and turns them into auction values")
@@ -19,7 +15,6 @@ let parser = ArgumentParser(commandName: "HitterAuctionValues",
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters projections.")
 
 let outputFilenameOption = parser.add(option: "--output", shortName: "-o", kind: String.self, usage: "Filename for output")
-
 
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 

@@ -48,7 +48,7 @@ let nextYearAuctionValuesFullPathString = outputDirectoryString + nextYearAuctio
 let followingYearAuctionValuesFullPathString = outputDirectoryString + followingYearAuctionValuesFilenameString
 let futureRelativeValuesFullPathString = outputDirectoryString + futureRelativeValuesFilenameString
 
-// Convert the projectsion to projected auction values
+// Convert the projections to projected auction values
 convertPitcherProjectionsFileToActionValues(from: nextYearProjectionsFullPathString, to: nextYearAuctionValuesFullPathString)
 convertPitcherProjectionsFileToActionValues(from: followingYearProjectionsFullPathString, to: followingYearAuctionValuesFullPathString)
 
