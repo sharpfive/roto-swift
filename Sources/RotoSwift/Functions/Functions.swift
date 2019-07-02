@@ -71,7 +71,6 @@ public enum PitcherFields: String {
 func calculatePitcherZScores(with filename: String) -> [PitcherZScores] {
     let pitchers = convertFileToPitchers(filename: filename)
     let startingPitchers = pitchers.filter { $0.inningsPitched > 100 }
-    print("Starting pitchers")
     return calculatePitcherZScores(for: startingPitchers)
 }
 
