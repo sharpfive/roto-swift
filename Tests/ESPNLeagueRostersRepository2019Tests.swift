@@ -45,7 +45,6 @@ class ESPNLeagueRostersRepository2019Tests: XCTestCase {
     func testJonathanVillarPlaysTwoPositions() {
         let league = createLeague(with: "data/ESPN-rosters-2019-07-01.txt")
         let villar = findPlayer(inLeague: league, named: "Jonathan Villar")
-        print("villar \(villar)")
         XCTAssertEqual(villar?.eligiblePositions.count, 2)
     }
 

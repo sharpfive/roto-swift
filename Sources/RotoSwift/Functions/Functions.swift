@@ -245,8 +245,6 @@ public func calculateProjections(with filename: String) {
     let batters = convertFileToBatters(filename: filename)
 
     let numberOfTeams = 12
-    let playersPerTeam = 24
-    let numberOfPlayers = numberOfTeams * playersPerTeam
     let hittersPerTeam = 7
 
     // let auctionDollarsAvailable = 260
@@ -279,7 +277,6 @@ public func calculateProjections(with filename: String) {
 
     let replacementZScore = replacementBatter.1
 
-    let numberOfBatterResults = min(replacementLevelBatterPosition*2, batters.count)
     // subtract total-z-scores for each player from the replacement-z-score
     let adjustedBatters = combinedZScores.map {
         ($0.0,
