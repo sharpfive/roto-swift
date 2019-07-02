@@ -52,7 +52,6 @@ public struct DataFormat {
     }
 }
 
-// aiai halfway thought through, the name is an identifier, but we need to store type info to be able to calculate fields like OBP
 public enum BatterFields: String {
     case homeRuns = "HR"
     case name = "Name"
