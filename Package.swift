@@ -31,7 +31,7 @@ let package = Package(
         ),
         .target(
             name: "RotoAuctionValues",
-            dependencies: ["RotoSwift"]
+            dependencies: ["RotoSwift", "SPMUtility"]
         ),
         .target(
             name: "FreeAgentFinder",
