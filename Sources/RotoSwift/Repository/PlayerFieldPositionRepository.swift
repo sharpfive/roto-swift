@@ -46,8 +46,6 @@ public class PlayerFieldPositionRepository {
             }
 
             players.append(League.Player(name: nameString, eligiblePositions: eligblePositions))
-
-
         }
 
         return players

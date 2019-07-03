@@ -24,7 +24,6 @@ class PlayerFieldPositionRepositoryTests: XCTestCase {
         players = try! repository.getPlayers(from: playerDataFilenameString)
     }
 
-
     func testHasPlayers() throws {
         XCTAssertFalse(players.isEmpty)
     }
@@ -43,7 +42,7 @@ class PlayerFieldPositionRepositoryTests: XCTestCase {
             throw TestError.unexpectedNilError
         }
 
-        XCTAssertTrue(yandy.eligiblePositions.contains{ $0 == League.FieldPosition.designatedHitter })
+        XCTAssertTrue(yandy.eligiblePositions.contains { $0 == League.FieldPosition.designatedHitter })
     }
 
     func testYandyDiazPlaysFirstBase() throws {
@@ -51,7 +50,7 @@ class PlayerFieldPositionRepositoryTests: XCTestCase {
             throw TestError.unexpectedNilError
         }
 
-        XCTAssertTrue(yandy.eligiblePositions.contains{ $0 == League.FieldPosition.firstBase })
+        XCTAssertTrue(yandy.eligiblePositions.contains { $0 == League.FieldPosition.firstBase })
     }
 
     func testYandyDiazPlaysThirdBase() throws {
@@ -59,6 +58,6 @@ class PlayerFieldPositionRepositoryTests: XCTestCase {
             throw TestError.unexpectedNilError
         }
 
-        XCTAssertTrue(yandy.eligiblePositions.contains{ $0 == League.FieldPosition.thirdBase })
+        XCTAssertTrue(yandy.eligiblePositions.contains { $0 == League.FieldPosition.thirdBase })
     }
 }
