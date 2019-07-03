@@ -41,8 +41,7 @@ public class PlayerFieldPositionRepository {
             let nameString = row[nameRow]
             let elligiblePositionsString = row[elligiblePositionsRow]
 
-            guard let eligblePositions = extractPositions(from: elligiblePositionsString) else {
-                print("no positions for \(nameString)")
+            guard let eligblePositions = extractPositions(from: elligiblePositionsString, separatorString: "/") else {
                 continue
             }
 
@@ -50,7 +49,6 @@ public class PlayerFieldPositionRepository {
 
 
         }
-
 
         return players
     }

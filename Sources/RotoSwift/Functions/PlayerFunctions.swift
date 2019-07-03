@@ -7,13 +7,13 @@
 
 import Foundation
 
-func extractPositions(from lineString: String) -> [League.FieldPosition]? {
+func extractPositions(from lineString: String, separatorString: String = ",") -> [League.FieldPosition]? {
     // If the entire linestring converts to a Position, the player only has 1 position elligible
     if let singlePosition = League.FieldPosition(rawValue: lineString) {
         return [singlePosition]
     } else {
         // Otherwise it is a comma-delimited list
-        let positionArray = lineString.components(separatedBy: ",")
+        let positionArray = lineString.components(separatedBy: separatorString)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .compactMap { League.FieldPosition(rawValue: $0 ) }
 
