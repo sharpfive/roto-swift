@@ -24,6 +24,14 @@ public struct League {
             self.name = name
             self.eligiblePositions = eligiblePositions
         }
+
+        public func isEligible(for position: FieldPosition) -> Bool {
+            if position == .designatedHitter {
+                return true
+            }
+
+            return eligiblePositions.contains { $0 == position }
+        }
     }
 
     public enum FieldPosition: String {
