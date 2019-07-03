@@ -25,7 +25,7 @@ func extractPositions(from lineString: String, separatorString: String = ",") ->
     }
 }
 
-func getBelowReplacementPlayers(from players: [League.Player], playerPoolSize: Int) -> [League.Player] {
+func getBelowReplacementPlayers(from players: [League.Player], numberOfTeams: Int) -> [League.Player] {
 
     var remainingPlayers = players
     let positionOrder: [League.FieldPosition] = [
@@ -34,14 +34,28 @@ func getBelowReplacementPlayers(from players: [League.Player], playerPoolSize: I
         .shortStop,
         .thirdBase,
         .outfield,
+        .outfield,
+        .outfield,
         .firstBase,
         .designatedHitter
     ]
 
     positionOrder.forEach { position in
-        
+        var playersLeft = numberOfTeams
+
+        remainingPlayers = remainingPlayers.filter { player in
+            if playersLeft <= 0 {
+                return true
+            }
+
+            if player.isEligible(for: position) {
+                playersLeft -= 1
+                return false
+            } else {
+                return true
+            }
+        }
     }
 
-    return [League.Player]()
-
+    return remainingPlayers
 }
