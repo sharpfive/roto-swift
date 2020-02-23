@@ -26,7 +26,7 @@ import Darwin.C
 // The output of this program. This program converts the projected stats into auction values
 //
 
-let dateString = "2019-08-25"
+let dateString = "2019-12-31"
 
 let baseDirectoryString = "/Users/jaim/Dropbox/roto/projections/\(dateString)"
 let inputDirectoryString = "\(baseDirectoryString)/input/"

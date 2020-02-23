@@ -51,7 +51,7 @@ Turns out things like ERA & WHIP need to be calculated differently (a lower valu
 
 ### HitterAuctionValues
 
-swift run HitterAuctionValues --hitters data/Zips-projections-2020-batters.csv
+swift run HitterAuctionValues --hitters data/Zips-projections-2020-batters.csv --output data/Zips-projections-2020-batters-auction-values.csv
 
 ### TeamRelativeValues
 
