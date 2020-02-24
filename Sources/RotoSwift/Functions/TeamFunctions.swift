@@ -24,7 +24,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
     }
 
     let teamKeeperRankings: [(String, Double)] = valueTeams.map { valueTeam in
-        print("name:\(valueTeam.name)")
+        print("name: \(valueTeam.name)")
 
         // Show all players
         let valueablePlayers = valueTeam.players
