@@ -13,7 +13,6 @@ public class CBAuctionValueRepository {
     }
 
 	public func getAuctionValues() -> [PlayerKeeperPrice] {
-
 		let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
 		let csv = try! CSVReader(string: playerDataCSV,
@@ -48,9 +47,7 @@ public class CBAuctionValueRepository {
 
         while let row = csv.next() {
             let auctionString = row[auctionValueRow]
-            print("\(auctionString)")
             if auctionString.contains("$$") {
-                //print("$$")
                 if let currentTeamName = currentTeamName {
                     let newTeam = Team(name: currentTeamName, players: players)
                     teams.append(newTeam)
@@ -58,7 +55,6 @@ public class CBAuctionValueRepository {
                 }
                 currentTeamName = row[nameTeamPositionRow]
             } else {
-                //print("not $$")
                 if let playerName = extractName(from: row[nameTeamPositionRow]),
                     let keeperPrice = Int(row[auctionValueRow]) {
                     let newPlayer = PlayerKeeperPrice(name: playerName, keeperPrice: keeperPrice)
