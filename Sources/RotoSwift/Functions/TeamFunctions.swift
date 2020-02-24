@@ -13,6 +13,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
     let auctionRepository = CBAuctionValueRepository(filename: auctionValuesFilename)
     let teams = auctionRepository.getTeams()
 
+    print("teams: \(teams.count)")
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
 
@@ -29,19 +30,25 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         // Show all players
         let valueablePlayers = valueTeam.players
 
+        func calculateValue(for playerRelativeValue: PlayerRelativeValue) -> Double {
+            return playerRelativeValue.relativeValue
+        }
+
         // only show players with positive value
         // let valueablePlayers = valueTeam.players.filter { player in
         //     player.relativeValue > 0
         // }
 
-        valueablePlayers.sorted(by: {$0.relativeValue > $1.relativeValue})
+        valueablePlayers.sorted(by: {calculateValue(for: $0)  > calculateValue(for: $1) })
+            .filter { calculateValue(for: $0) > 0 }
             .forEach { player in
-                print("   player:\(player.name) - value: \(player.relativeValue)")
+                print("   player:\(player.name) - value: \(calculateValue(for: player))")
         }
 
         let totalTeamValue: Double = valueablePlayers.map { player in
             // limit the penalty for a keeper to their keeper price
-            return max(player.relativeValue, Double(player.keeperPrice * -1))
+            // return max(player.relativeValue, Double(player.keeperPrice * -1))
+            return max(calculateValue(for: player), 0)
             }.reduce(0.0, +)
 
         //print("total team value: \(totalTeamValue)")

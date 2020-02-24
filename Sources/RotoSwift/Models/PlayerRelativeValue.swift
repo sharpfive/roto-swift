@@ -15,4 +15,8 @@ public struct PlayerRelativeValue {
     public var relativeValue: Double {
         return projectedAuctionValue - (Double(keeperPrice))
     }
+
+    public var halfValue: Double {
+    	return projectedAuctionValue / 2.0 + relativeValue
+    }
 }
