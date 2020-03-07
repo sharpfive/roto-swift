@@ -31,7 +31,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         let teamPlayers = valueTeam.players
 
         func calculateValue(for playerRelativeValue: PlayerRelativeValue) -> Double {
-            return playerRelativeValue.relativeValue + playerRelativeValue.projectedAuctionValue
+            return playerRelativeValue.projectedAuctionValue
         }
 
         // only show players with positive value
@@ -61,8 +61,9 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
 
-    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * 0.8 > $1.1 + $1.2 * 0.8 }).forEach { tuple in
-        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * 0.8)")
+    let moneyValueFactor = 0.8
+    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyValueFactor > $1.1 + $1.2 * moneyValueFactor }).forEach { tuple in
+        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyValueFactor)")
     }
     return teams
 }
