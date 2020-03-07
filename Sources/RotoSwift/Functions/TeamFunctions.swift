@@ -54,9 +54,9 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         //     player.relativeValue > 0
         // }
 
-        teamPlayers.forEach {
-            print("name: \($0.name) - av: \($0.projectedAuctionValue) - rv \($0.relativeValue) valueFactor: \(($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue))")
-        }
+        // teamPlayers.forEach {
+        //     print("name: \($0.name) - av: \($0.projectedAuctionValue) - rv \($0.relativeValue) valueFactor: \(($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue))")
+        // }
 
         let valueablePlayers = teamPlayers.filter { ($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue) > moneyFactor }
 
