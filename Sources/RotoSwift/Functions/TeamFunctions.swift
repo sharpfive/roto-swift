@@ -63,7 +63,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
 
         valueablePlayers.sorted(by: {calculateValue(for: $0)  > calculateValue(for: $1) })
             .forEach { player in
-                print("   player:\(player.name) - value: \(calculateValue(for: player)) - keeper: \(player.keeperPrice) - projectedAuctionValue: \(player.projectedAuctionValue)")
+                print("   player:\(player.name) - value: \(calculateValue(for: player)) - relativeValue: \(player.relativeValue) - projectedAuctionValue: \(player.projectedAuctionValue)")
         }
 
         print("valuablePlayers count: \(valueablePlayers.count)")
