@@ -24,14 +24,14 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         return TeamPlayerRelativeValue(name: team.name, players: playerRelativeValues)
     }
 
-    let teamKeeperRankings: [(String, Double)] = valueTeams.map { valueTeam in
+    let teamKeeperRankings: [(String, Double, Double)] = valueTeams.map { valueTeam in
         print("name: \(valueTeam.name)")
 
         // Show all players
-        let valueablePlayers = valueTeam.players
+        let teamPlayers = valueTeam.players
 
         func calculateValue(for playerRelativeValue: PlayerRelativeValue) -> Double {
-            return playerRelativeValue.relativeValue
+            return playerRelativeValue.relativeValue + playerRelativeValue.projectedAuctionValue
         }
 
         // only show players with positive value
@@ -39,11 +39,16 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         //     player.relativeValue > 0
         // }
 
+        let valueablePlayers = teamPlayers.filter { $0.relativeValue > 0 }
+
         valueablePlayers.sorted(by: {calculateValue(for: $0)  > calculateValue(for: $1) })
-            .filter { calculateValue(for: $0) > 0 }
             .forEach { player in
-                print("   player:\(player.name) - value: \(calculateValue(for: player))")
+                print("   player:\(player.name) - value: \(calculateValue(for: player)) - keeper: \(player.keeperPrice) - projectedAuctionValue: \(player.projectedAuctionValue)")
         }
+
+        print("valuablePlayers count: \(valueablePlayers.count)")
+        let totalValuableSalary = valueablePlayers.map { $0.keeperPrice }.reduce(0,+)
+        let leftoverMoney: Double = 260.0 - Double(totalValuableSalary)
 
         let totalTeamValue: Double = valueablePlayers.map { player in
             // limit the penalty for a keeper to their keeper price
@@ -53,11 +58,11 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
 
         //print("total team value: \(totalTeamValue)")
 
-        return (valueTeam.name, totalTeamValue)
+        return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
 
-    teamKeeperRankings.sorted(by: { $0.1 > $1.1 }).forEach { tuple in
-        print("team: \(tuple.0) - keeper ranking:\(tuple.1)")
+    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * 0.8 > $1.1 + $1.2 * 0.8 }).forEach { tuple in
+        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * 0.8)")
     }
     return teams
 }

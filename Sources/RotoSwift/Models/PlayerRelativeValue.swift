@@ -19,4 +19,13 @@ public struct PlayerRelativeValue {
     public var halfValue: Double {
     	return projectedAuctionValue / 2.0 + relativeValue
     }
+
+    public var preDraftPowerRanking: Double {
+    	return projectedAuctionValue + relativeValue * 2.0
+    	// if relativeValue > 0.0 {
+    	// 	return projectedAuctionValue + relativeValue
+    	// } else {
+    	// 	return projectedAuctionValue + relativeValue * 3.0
+    	// }
+    }
 }
