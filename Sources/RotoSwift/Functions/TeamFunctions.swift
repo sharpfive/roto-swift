@@ -61,19 +61,22 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
 
-    let totalPositiveRelativeValue = valueTeams.compactMap { $0.players }
-                                               .filter { $0.relativeValue > 0}
-                                               .reduce(0,+)
+    let totalPositiveRelativeValue: Double = valueTeams.flatMap { $0.players }
+                                               .filter { $0.relativeValue > 0 }
+                                               .map { $0.relativeValue }
+                                               .reduce(0.0,+)
 
+    /// This calculates a moneyFactor to determine how "valuable" auction money is. If there are a bunch of players whose worth is 
+    /// greater than that they are being paid, there is effective more money in the auction pool. This raises the prices of free agents
+    /// so Having $$$ in hand won't get you the same value 
     print("totalPositiveRelativeValue: \(totalPositiveRelativeValue)")
     let moneyPool = Double(260 * 12)
     let moneyFactor = moneyPool / (totalPositiveRelativeValue + moneyPool)
 
     print("moneyFactor: \(moneyFactor)")
-    
-    let moneyValueFactor = 0.8
-    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyValueFactor > $1.1 + $1.2 * moneyValueFactor }).forEach { tuple in
-        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyValueFactor)")
+
+    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyFactor > $1.1 + $1.2 * moneyFactor }).forEach { tuple in
+        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyFactor)")
     }
     return teams
 }
