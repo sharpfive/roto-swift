@@ -61,6 +61,16 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
 
+    let totalPositiveRelativeValue = valueTeams.compactMap { $0.players }
+                                               .filter { $0.relativeValue > 0}
+                                               .reduce(0,+)
+
+    print("totalPositiveRelativeValue: \(totalPositiveRelativeValue)")
+    let moneyPool = Double(260 * 12)
+    let moneyFactor = moneyPool / (totalPositiveRelativeValue + moneyPool)
+
+    print("moneyFactor: \(moneyFactor)")
+    
     let moneyValueFactor = 0.8
     teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyValueFactor > $1.1 + $1.2 * moneyValueFactor }).forEach { tuple in
         print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyValueFactor)")
