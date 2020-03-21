@@ -3,3 +3,4 @@
 /Packages
 /*.xcodeproj
 command-line-tool.xcworkspace/xcuserdata/
+/.swiftpm
