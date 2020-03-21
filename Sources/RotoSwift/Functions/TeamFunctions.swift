@@ -10,10 +10,13 @@ func processTeams(at auctionValueFilename: String) {
 }
 
 public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangraphsHitterFilename: String, fangraphsPitcherFilename: String) -> [Team] {
+
+    // If this is true, we calculate which players are still valueable. If false, we use the list as-is
+    let estimateKeepers = false
+
     let auctionRepository = CBAuctionValueRepository(filename: auctionValuesFilename)
     let teams = auctionRepository.getTeams()
 
-    print("teams: \(teams.count)")
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()
 
@@ -28,7 +31,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
     /// greater than that they are being paid, there is effective more money in the auction pool. This raises the prices of free agents
     /// so Having $$$ in hand won't get you the same value 
     let totalPositiveRelativeValue: Double = valueTeams.flatMap { $0.players }
-                                               .filter { $0.relativeValue > 0 }
+                                               .filter { estimateKeepers ? $0.relativeValue > 0 : true }
                                                .map { $0.relativeValue }
                                                .reduce(0.0,+)
 
@@ -46,7 +49,7 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         let teamPlayers = valueTeam.players
 
         func calculateValue(for playerRelativeValue: PlayerRelativeValue) -> Double {
-            return playerRelativeValue.projectedAuctionValue
+            return playerRelativeValue.effectiveValue
         }
 
         // only show players with positive value
@@ -58,7 +61,12 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         //     print("name: \($0.name) - av: \($0.projectedAuctionValue) - rv \($0.relativeValue) valueFactor: \(($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue))")
         // }
 
-        let valueablePlayers = teamPlayers.filter { ($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue) > moneyFactor }
+        let valueablePlayers: [PlayerRelativeValue]
+        if estimateKeepers {
+            valueablePlayers = teamPlayers.filter { ($0.projectedAuctionValue + $0.relativeValue) / abs($0.projectedAuctionValue) > moneyFactor }
+        } else {
+            valueablePlayers = teamPlayers
+        }
 
 
         valueablePlayers.sorted(by: {calculateValue(for: $0)  > calculateValue(for: $1) })
@@ -73,10 +81,12 @@ public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangra
         let totalTeamValue: Double = valueablePlayers.map { player in
             // limit the penalty for a keeper to their keeper price
             // return max(player.relativeValue, Double(player.keeperPrice * -1))
-            return max(calculateValue(for: player), 0)
+            return max(player.projectedAuctionValue, 0)
             }.reduce(0.0, +)
 
         //print("total team value: \(totalTeamValue)")
+
+
 
         return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
