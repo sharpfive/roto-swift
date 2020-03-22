@@ -15,7 +15,20 @@ var hitterValuesIn2020 = buildPlayerAuctionValuesArray(hitterFilename: hitterFil
 var hitterValuesIn2021 = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename2021, pitcherFilename: nil, csvFormat: .rotoswift)
 
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
+
+
+// If ESPN (deprecated?)
 let league = buildLeague(with: rosterFilename)
+
+let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-22-Auction.csv"
+let couchManagerLeagueRepository = CouchManagerLeagueRespository(filename: couchManagerFilename)
+
+let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
+
+print("auction Entries: \(auctionEntries)")
+
+
+
 
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
