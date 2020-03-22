@@ -11,8 +11,8 @@ func processTeams(at auctionValueFilename: String) {
 
 public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangraphsHitterFilename: String, fangraphsPitcherFilename: String) -> [Team] {
 
-    // If this is true, we calculate which players are still valueable. If false, we use the list as-is
-    let estimateKeepers = false
+    // If this is true, we calculate which players are still valuable. If false, we use the list as-is
+    let estimateKeepers = true
 
     let auctionRepository = CBAuctionValueRepository(filename: auctionValuesFilename)
     let teams = auctionRepository.getTeams()
