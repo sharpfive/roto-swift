@@ -22,6 +22,10 @@ public class CouchManagerLeagueRespository {
         let auctionAmount: Int
         let teamNumber: Int
         let ottid: Int // identifier?
+
+        public var fullName: String {
+            return "\(firstName) \(lastName)"
+        }
     }
 
     public func getAuctionEntries() -> [AuctionEntry] {

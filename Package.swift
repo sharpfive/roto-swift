@@ -43,6 +43,10 @@ let package = Package(
             dependencies: ["RotoSwift"]
         ),
         .target(
+            name: "Drafter",
+            dependencies: ["RotoSwift"]
+        ),
+        .target(
             name: "ProjectionsToAuctionValues",
             dependencies: ["RotoSwift"]
         ),
