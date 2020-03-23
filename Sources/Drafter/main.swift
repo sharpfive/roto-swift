@@ -17,7 +17,7 @@ var hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename,
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 
 
-let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-22-Auction.csv"
+let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-23-Auction.csv"
 let couchManagerLeagueRepository = CouchManagerLeagueRespository(filename: couchManagerFilename)
 
 let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
@@ -25,14 +25,16 @@ let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
 // print("auction Entries: \(auctionEntries)")
 
 auctionEntries.forEach { auctionEntry in
-    let fullname = auctionEntry.fullName
+    let fullname = auctionEntry.fullName.trimmingCharacters(in: CharacterSet(charactersIn: "."))
 
     let previousHitterCount = hitterValues.count
     let previousPitcherCount = pitcherValues.count
 
     hitterValues = hitterValues.filter {
         // very basic compare happening here
-        $0.name.caseInsensitiveCompare(fullname) != .orderedSame
+        let trimmedName = $0.name.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+
+        return trimmedName.caseInsensitiveCompare(fullname) != .orderedSame
     }
 
     pitcherValues = pitcherValues.filter {
