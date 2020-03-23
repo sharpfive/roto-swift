@@ -32,7 +32,6 @@ let baseDirectoryString = "/Users/jaim/Dropbox/roto/projections/\(dateString)"
 let inputDirectoryString = "\(baseDirectoryString)/input/"
 let outputDirectoryString = "\(baseDirectoryString)/output/"
 
-// aiai why is this here???
 let keeperValuesFilenameString = "Keeper-Values-2019.csv"
 let nextYearProjectionFilenameString = "Zips-projections-2020-pitchers.csv"
 let followingYearProjectionFilenameString = "Zips-projections-2021-pitchers.csv"
