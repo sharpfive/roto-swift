@@ -47,6 +47,10 @@ let package = Package(
             dependencies: ["RotoSwift"]
         ),
         .target(
+            name: "GameSimulator",
+            dependencies: ["RotoSwift", "CSV", "SPMUtility"]
+        ),
+        .target(
             name: "ProjectionsToAuctionValues",
             dependencies: ["RotoSwift"]
         ),
