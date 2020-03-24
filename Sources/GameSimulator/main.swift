@@ -25,21 +25,14 @@ struct PitcherProjection {
     let name: String
     let inningsPitched: Int
     let hits: Int
-    // let doubles: Int
-    // let triples: Int
     let homeRuns: Int
     let walks: Int
     let strikeouts: Int
-    // let hitByPitch: Int
 
     var plateAppearances: Int {
         inningsPitched * 3 +
         hits +
-//        doubles +
-//        triples +
-        homeRuns +
         walks
-//        hitByPitch
     }
 
     func probability(doublePercentage: Double, triplePercentage: Double, hitByPitchProbability: Double) -> HitterProbability {
