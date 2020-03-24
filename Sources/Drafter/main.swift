@@ -11,7 +11,7 @@ var hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename,
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 
 
-let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-23-Auction.csv"
+let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-24-Auction.csv"
 let couchManagerLeagueRepository = CouchManagerLeagueRespository(filename: couchManagerFilename)
 
 let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
