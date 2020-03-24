@@ -20,6 +20,29 @@ struct HitterProbability {
     let hitByPitch: Double
 }
 
+struct PitcherProjection {
+    let playerId: String
+    let name: String
+    let inningsPitched: Int
+    let hits: Int
+    // let doubles: Int
+    // let triples: Int
+    let homeRuns: Int
+    let walks: Int
+    let strikeouts: Int
+    // let hitByPitch: Int
+
+    var plateAppearances: Int {
+        inningsPitched * 3 +
+        hits +
+//        doubles +
+//        triples +
+        homeRuns +
+        walks +
+//        hitByPitch
+    }
+}
+
 // Read in batter stats file
 struct HitterProjection {
     let playerId: String
@@ -115,6 +138,54 @@ func inputHitterProjections(filename: String) {
     }
 }
 
+func inputPitcherProjections(filename: String) {
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+
+    let csv = try! CSVReader(string: playerDataCSV,
+                             hasHeaderRow: true)
+
+    var pitcherProjections = [PitcherProjection]()
+    while let row = csv.next() {
+        guard let inningsPitched = Int(row[8]),
+            let hits = Int(row[9]),
+//            let doubles = Int(row[6]),
+//            let triples = Int(row[7]),
+            let homeRuns = Int(row[11]),
+            let strikeouts = Int(row[12]),
+            let walks = Int(row[13]),
+            //let hitByPitch = Int(row[13])
+            else {
+                print("Invalid Pitcher row: \(row)")
+                exit(0)
+        }
+
+        let playerId = row[21]
+        let playerName = row[0]
+
+        let pitcherProjection = PitcherProjection(playerId: playerId,
+                                                  name: playerName,
+                                                  inningsPitched: inningsPitched,
+                                                  singles: singles,
+//                                                  doubles: doubles,
+//                                                  triples: triples,
+                                                  homeRuns: homeRuns,
+                                                  walks: walks,
+                                                  strikeouts: strikeouts,
+//                                                  hitByPitch: hitByPitch)
+        )
+        pitcherProjections.append(pitcherProjection)
+    }
+
+    hitterProjections.prefix(upTo: 20).forEach {
+        print($0)
+        // print($0.probability)
+        print("--")
+    }
+
+
+    return pitcherProjections
+}
+
 let parser = ArgumentParser(commandName: "GameSimulator",
 usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv]",
 overview: "Converts a set of hitter statistic projections and turns them into auction values")
@@ -149,4 +220,5 @@ guard let hitterFilename = hitterFilename else {
     exit(0)
 }
 
-inputHitterProjections(filename: hitterFilename)
+// inputHitterProjections(filename: hitterFilename)
+inputPitcherProjections(filename: pitcherFilename)
