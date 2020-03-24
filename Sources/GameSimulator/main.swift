@@ -5,6 +5,7 @@
 //  Created by Jaim Zuber on 3/23/20.
 //
 
+// ex swift run GameSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv
 import Foundation
 import RotoSwift
 import CSV
