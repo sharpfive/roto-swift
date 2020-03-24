@@ -41,6 +41,21 @@ struct PitcherProjection {
         walks
 //        hitByPitch
     }
+
+    func probability(doublePercentage: Double, triplePercentage: Double, hitByPitchProbability: Double) -> HitterProbability {
+        // aiai this logic is wrong, input percentage is percent of hits that are doubles and triples
+        let hitButNotHomeRunProbability: Double = (Double(hits) - Double(homeRuns)) / Double(plateAppearances)
+        let estimatedDoubles = Double(hits) * doublePercentage
+        let estimatedTriples = Double(hits) * triplePercentage
+        let doubleProbability = estimatedDoubles / Double(plateAppearances)
+        let tripleProbability = estimatedTriples / Double(plateAppearances)
+        let singleProbability = (Double(hits) - Double(homeRuns) - estimatedDoubles - estimatedTriples) / Double(plateAppearances)
+        let homeRunProbability: Double = Double(homeRuns) / Double(plateAppearances)
+        let walkProbability: Double = Double(walks) / Double(plateAppearances)
+        let strikeoutProbability: Double = Double(strikeouts) / Double(plateAppearances)
+
+        return HitterProbability(single: singleProbability, double: doubleProbability, triple: tripleProbability, homeRun: homeRunProbability, walk: walkProbability, strikeOut: strikeoutProbability, hitByPitch: hitByPitchProbability)
+    }
 }
 
 // Read in batter stats file
@@ -94,7 +109,7 @@ struct HitterProjection {
     }
 }
 
-func inputHitterProjections(filename: String) {
+func inputHitterProjections(filename: String) -> [HitterProjection] {
     let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
     let csv = try! CSVReader(string: playerDataCSV,
@@ -130,6 +145,8 @@ func inputHitterProjections(filename: String) {
 
         hitterProjections.append(hitterProjection)
     }
+
+    return hitterProjections
 }
 
 func inputPitcherProjections(filename: String) -> [PitcherProjection] {
@@ -216,16 +233,39 @@ let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
 
 let totalSingles = hitterProjections.map { $0.singles }.reduce(0, +)
 let totalDoubles = hitterProjections.map { $0.doubles }.reduce(0, +)
-let totalTriples = hitterProjections.map { $0.triples}.reduct(0, +)
+let totalTriples = hitterProjections.map { $0.triples}.reduce(0, +)
+let totalHomeRuns = hitterProjections.map { $0.homeRuns}.reduce(0, +)
+let totalHitByPitch = hitterProjections.map { $0.hitByPitch}.reduce(0, +)
+let totalPlateAppearances = hitterProjections.map { $0.plateAppearances}.reduce(0, +)
 
-hitterProjections.prefix(upTo: 20).forEach {
-    print($0)
-    print($0.probability)
-    print("--")
-}
+let totalHits = totalSingles + totalDoubles + totalTriples + totalHomeRuns
 
-pitcherProjections.prefix(upTo: 20).forEach {
+let percentageOfDoubles = Double(totalDoubles) / Double(totalHits)
+let percentageOfTriples = Double(totalTriples) / Double(totalHits)
+let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
+
+//aiai this logic is wrong
+print("totalPlateAppearances: \(totalPlateAppearances)")
+print("totalHits: \(totalHits)")
+print("totalSingles: \(totalSingles)")
+print("totalDoubles: \(totalDoubles)")
+print("totalTriples: \(totalTriples)")
+print("totalHomeruns: \(totalHomeRuns)")
+
+print("percentageOfDoubles: \(percentageOfDoubles)")
+print("percentageOfTriples: \(percentageOfTriples)")
+
+
+
+
+//hitterProjections.prefix(upTo: 20).forEach {
+//    print($0)
+//    print($0.probability)
+//    print("--")
+//}
+
+pitcherProjections.prefix(upTo: 25).forEach {
     print($0)
-    // print($0.probability)
+    print($0.probability(doublePercentage: percentageOfDoubles, triplePercentage: percentageOfTriples, hitByPitchProbability: percentageOfHitByPitch))
     print("--")
 }
