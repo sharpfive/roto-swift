@@ -130,12 +130,6 @@ func inputHitterProjections(filename: String) {
 
         hitterProjections.append(hitterProjection)
     }
-
-    hitterProjections.prefix(upTo: 20).forEach {
-        print($0)
-        print($0.probability)
-        print("--")
-    }
 }
 
 func inputPitcherProjections(filename: String) -> [PitcherProjection] {
@@ -174,13 +168,6 @@ func inputPitcherProjections(filename: String) -> [PitcherProjection] {
                                                   strikeouts: strikeouts)
         pitcherProjections.append(pitcherProjection)
     }
-
-    pitcherProjections.prefix(upTo: 20).forEach {
-        print($0)
-        // print($0.probability)
-        print("--")
-    }
-
 
     return pitcherProjections
 }
@@ -224,5 +211,21 @@ guard let pitcherFilename = pitcherFilename else {
     exit(0)
 }
 
-// inputHitterProjections(filename: hitterFilename)
-inputPitcherProjections(filename: pitcherFilename)
+let hitterProjections = inputHitterProjections(filename: hitterFilename)
+let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
+
+let totalSingles = hitterProjections.map { $0.singles }.reduce(0, +)
+let totalDoubles = hitterProjections.map { $0.doubles }.reduce(0, +)
+let totalTriples = hitterProjections.map { $0.triples}.reduct(0, +)
+
+hitterProjections.prefix(upTo: 20).forEach {
+    print($0)
+    print($0.probability)
+    print("--")
+}
+
+pitcherProjections.prefix(upTo: 20).forEach {
+    print($0)
+    // print($0.probability)
+    print("--")
+}
