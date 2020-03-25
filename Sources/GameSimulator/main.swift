@@ -62,7 +62,7 @@ struct GameState {
         }
     }
 
-    mutating func addAtBatResult(_ atBatResult: AtBatResult) {
+    mutating func addAtBatResult(_ atBatResult: AtBatOutcome) {
         switch atBatResult {
         case .strikeOut, .out:
             recordOut()
@@ -74,6 +74,12 @@ struct GameState {
             advanceRunners(by: 3)
         case .homerun:
             advanceRunners(by: 4)
+        }
+
+        if inningCount.frame == .top {
+            awayBattersRetired += 1
+        } else {
+            homeBattersRetired += 1
         }
     }
 
@@ -105,7 +111,7 @@ struct InningCount {
     }
 }
 
-enum AtBatResult {
+enum AtBatOutcome {
     case single
     case double
     case triple
@@ -116,16 +122,16 @@ enum AtBatResult {
     case out
 }
 
-struct AtBat {
+struct AtBatRecord {
     let batterId: String
     let pitcherId: String
-    let result: AtBatResult
+    let result: AtBatOutcome
 }
 
-func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbability: AtBatEventProbability) -> [AtBat] {
+func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbability: AtBatEventProbability) -> [AtBatRecord] {
     var gameState = gameState
 
-    var atBatResults = [AtBat]()
+    var atBatResults = [AtBatRecord]()
 
     while !gameState.isEndOfFrame() {
 
@@ -148,7 +154,7 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
                                         baseProbability: baseProbability)
 
         gameState.addAtBatResult(atBatResult)
-        atBatResults.append(AtBat(batterId: batterProbability.playerId, pitcherId: pitcherProbability.playerId, result: atBatResult))
+        atBatResults.append(AtBatRecord(batterId: batterProbability.playerId, pitcherId: pitcherProbability.playerId, result: atBatResult))
     }
 
     return atBatResults
@@ -156,7 +162,7 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
 
 func getAtBatEvent(pitcherProbability: AtBatEventProbability,
                    batterProbability: AtBatEventProbability,
-                   baseProbability: AtBatEventProbability) -> AtBatResult {
+                   baseProbability: AtBatEventProbability) -> AtBatOutcome {
     // do fancy math from Tony Twist or some guy like that
     return .out //aiai duh
 }
@@ -211,16 +217,6 @@ struct BatterProjection {
         let walkProbability: Double = Double(walks) / Double(plateAppearances)
         let strikeoutProbability: Double = Double(strikeouts) / Double(plateAppearances)
         let hitByPitchProbaility: Double = Double(hitByPitch) / Double(plateAppearances)
-
-        let probabilities = [
-            singleProbability,
-            doubleProbability,
-            tripleProbability,
-            homeRunProbability,
-            walkProbability,
-            strikeoutProbability,
-            hitByPitchProbaility
-        ]
 
         let normalizationFactor = 1.0
 
