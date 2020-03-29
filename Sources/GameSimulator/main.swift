@@ -19,6 +19,38 @@ struct AtBatEventProbability {
     let walk: Double
     let strikeOut: Double
     let hitByPitch: Double
+
+    var singleOdds: Double {
+        return odds(for: single)
+    }
+
+    var doubleOdds: Double {
+        return odds(for: double)
+    }
+
+    var tripleOdds: Double {
+        return odds(for: triple)
+    }
+
+    var homeRunOdds: Double {
+        return odds(for: homeRun)
+    }
+
+    var walkOdds: Double {
+        return odds(for: walk)
+    }
+
+    var strikeoutOdds: Double {
+        return odds(for: strikeOut)
+    }
+
+    var hitByPitchOdds: Double {
+        return odds(for: hitByPitch)
+    }
+
+    func odds(for value: Double) -> Double {
+        return value / (1 - value)
+    }
 }
 
 struct PlayerProbability {
@@ -64,7 +96,7 @@ struct GameState {
 
     mutating func addAtBatResult(_ atBatResult: AtBatOutcome) {
         switch atBatResult {
-        case .strikeOut, .out:
+        case .strikeout, .out:
             recordOut()
         case .single, .hitByPitch, .walk:
             advanceRunners(by: 1)
@@ -117,7 +149,7 @@ enum AtBatOutcome {
     case triple
     case homerun
     case walk
-    case strikeOut
+    case strikeout
     case hitByPitch
     case out
 }
@@ -163,8 +195,55 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
 func getAtBatEvent(pitcherProbability: AtBatEventProbability,
                    batterProbability: AtBatEventProbability,
                    baseProbability: AtBatEventProbability) -> AtBatOutcome {
-    // do fancy math from Tony Twist or some guy like that
-    return .out //aiai duh
+    // do fancy Odds Ratio math from Tony Tango
+    // http://www.insidethebook.com/ee/index.php/site/comments/the_odds_ratio_method/
+
+    let singleOdds = batterProbability.singleOdds * pitcherProbability.singleOdds / baseProbability.singleOdds
+    let doubleOdds = batterProbability.doubleOdds * pitcherProbability.doubleOdds / baseProbability.doubleOdds
+    let tripleOdds = batterProbability.tripleOdds * pitcherProbability.tripleOdds / baseProbability.tripleOdds
+    let homeRunOdds = batterProbability.homeRunOdds * pitcherProbability.homeRunOdds / baseProbability.homeRunOdds
+    let hitByPitchOdds = batterProbability.hitByPitchOdds * pitcherProbability.hitByPitchOdds / baseProbability.hitByPitchOdds
+    let walkOdds = batterProbability.walkOdds * pitcherProbability.walkOdds / baseProbability.walkOdds
+    let strikeoutOdds = batterProbability.strikeoutOdds * pitcherProbability.strikeoutOdds / baseProbability.strikeoutOdds
+
+    var weights: [(outcome: AtBatOutcome, weight: Double)] = [
+        (outcome: .single, weight: singleOdds),
+        (outcome: .double, weight: doubleOdds),
+        (outcome: .triple, weight: tripleOdds),
+        (outcome: .homerun, weight: homeRunOdds),
+        (outcome: .hitByPitch, weight: hitByPitchOdds),
+        (outcome: .walk, weight: walkOdds),
+        (outcome: .strikeout, weight: strikeoutOdds)
+    ]
+
+    // If it's not not an out, it's an out.
+    let outOdds = 1 - weights.map{ $0.weight }.reduce(0,+)
+
+    weights.append( (outcome: .out, weight: outOdds) )
+
+    return getRandomElementWeighted(weights)
+}
+
+func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double)]) -> AtBatOutcome {
+    // Thanks to the person at https://stackoverflow.com/questions/41418689/get-random-element-from-array-with-weighted-elements/41418770#41418770
+    let totalWeights = weights.map { $0.weight }.reduce(0,+)
+
+    let resultWeight = drand48() * totalWeights
+
+    var lastWeight: Double = 0.0
+    let weightedArray = totalWeights.map {
+        let weightValue = $0.weight + lastWeight
+        lastWieght = weightValue
+        return weightValue
+    }
+
+    if let result = weightedArray.first(where: { $0 >= resultWeight }) {
+        return result
+    } else {
+        // shouldn't get here
+        print("!!!! shouldn't get here")
+        return .out
+    }
 }
 
 struct PitcherProjection {
@@ -478,7 +557,13 @@ let gameState = GameState(inningCount: InningCount(frame: .top, number: 1, outs:
 
 let results = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
 
-print("results: \(results)")
+results.forEach {
+    print("\($0)")
+}
+
+//print("results: \(results)")
+
+
 
 //hitterProjections.prefix(upTo: 20).forEach {
 //    print($0)

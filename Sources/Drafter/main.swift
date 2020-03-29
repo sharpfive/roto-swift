@@ -11,10 +11,13 @@ var hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename,
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 
 
-let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-24-Auction.csv"
+let couchManagerFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-29-Auction.csv"
+let couchManagerMinorLeagueFilename = "/Users/jaim/Dropbox/roto/cash/2020-03-25-MiLB-Auction.csv"
 let couchManagerLeagueRepository = CouchManagerLeagueRespository(filename: couchManagerFilename)
-
+let couchManagerMinorLeagueRepository = CouchManagerLeagueRespository(filename: couchManagerMinorLeagueFilename
+)
 let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
+let minorLeagueAuctionEntries = couchManagerMinorLeagueRepository.getAuctionEntries()
 
 auctionEntries.forEach { auctionEntry in
     let fullname = auctionEntry.fullName.trimmingCharacters(in: CharacterSet(charactersIn: "."))
@@ -39,15 +42,38 @@ auctionEntries.forEach { auctionEntry in
     }
 }
 
+minorLeagueAuctionEntries.forEach { auctionEntry in
+    let fullname = auctionEntry.fullName.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+
+//    let previousHitterCount = hitterValues.count
+//    let previousPitcherCount = pitcherValues.count
+
+    hitterValues = hitterValues.filter {
+        // very basic compare happening here
+        let trimmedName = $0.name.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+
+        return trimmedName.caseInsensitiveCompare(fullname) != .orderedSame
+    }
+
+    pitcherValues = pitcherValues.filter {
+        $0.name.caseInsensitiveCompare(fullname) != .orderedSame
+    }
+
+//    if hitterValues.count == previousHitterCount &&
+//        pitcherValues.count == previousPitcherCount {
+//        print("!!! can't find \(fullname)")
+//    }
+}
+
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 
 print("Here are the best available Jitters")
-sortedHitterValues.prefix(upTo: 20).forEach {
+sortedHitterValues.prefix(upTo: 30).forEach {
     print($0)
 }
 
 print("Here are the best available Pitchers")
-sortedPitcherValues.prefix(upTo: 20).forEach {
+sortedPitcherValues.prefix(upTo: 30).forEach {
     print($0)
 }
