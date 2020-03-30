@@ -81,13 +81,15 @@ struct GameState {
     var inningCount: InningCount = InningCount.beginningOfGame()
     var homeBattersRetired = 0
     var awayBattersRetired = 0
-    var homeTeamRunsThisInning = 0
-    var awayTeamRunsThisInning = 0
+//    var homeTeamRunsThisInning = 0
+//    var awayTeamRunsThisInning = 0
 
     private(set) var firstBaseOccupant: String?
     private(set) var secondBaseOccupant: String?
     private(set) var thirdBaseOccupant: String?
     private(set) var runnersScoredInFrame = 0
+    private(set) var homeRunsScored = 0
+    private(set) var awayRunsScored = 0
 
     func isEndOfFrame() -> Bool {
         return inningCount.outs >= 3
@@ -99,6 +101,35 @@ struct GameState {
         } else {
             return false
         }
+    }
+
+    // Game state functions are meant to be called before advanceFrame
+    func isEndOfGame() -> Bool {
+        if inningCount.number < 8 {
+            return false
+        }
+
+        // aiai checkif end of top of inning and home team is ahead
+        if inningCount.frame != .bottom {
+            return false
+        }
+
+        var totalHomeRunsScored = homeRunsScored
+        var totalAwayRunsScored = awayRunsScored
+
+        if inningCount.frame == .top {
+            totalAwayRunsScored += runnersScoredInFrame
+        } else {
+            totalHomeRunsScored += runnersScoredInFrame
+        }
+
+        // Score is tied at the end of the inning
+        if totalHomeRunsScored == totalAwayRunsScored {
+            return false
+        }
+
+        // Game is over!
+        return true
     }
 
     mutating func addAtBatResult(_ atBatResult: AtBatOutcome) {
@@ -179,13 +210,38 @@ struct GameState {
             firstBaseOccupant = nil
             secondBaseOccupant = nil
             thirdBaseOccupant = occupantId
+
+        case 4:
+            if thirdBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            if secondBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            if firstBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            runnersScoredInFrame += 1
+
+            firstBaseOccupant = nil
+            secondBaseOccupant = nil
+            thirdBaseOccupant = nil
+
         default:
             print("advanceRunners should never get here")
-
         }
     }
 
     mutating func advanceFrame() {
+        if inningCount.frame == .top {
+            awayRunsScored += runnersScoredInFrame
+        } else {
+            homeRunsScored += runnersScoredInFrame
+        }
+
         firstBaseOccupant = nil
         secondBaseOccupant = nil
         thirdBaseOccupant = nil
@@ -205,7 +261,7 @@ struct InningCount {
     var outs: Int
 
     static func beginningOfGame() -> InningCount {
-        return InningCount(frame: .top, number: 1, outs: 0)
+        return InningCount(frame: .top, number: 0, outs: 0)
     }
 
     mutating func increment() {
@@ -239,7 +295,12 @@ struct AtBatRecord {
     let result: AtBatOutcome
 }
 
-func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbability: AtBatEventProbability) -> [AtBatRecord] {
+struct InningFrameResult {
+    let atBatsRecords: [AtBatRecord]
+    let gameState: GameState
+}
+
+func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbability: AtBatEventProbability) -> InningFrameResult {
     var gameState = gameState
 
     var atBatResults = [AtBatRecord]()
@@ -259,7 +320,7 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
 
         let batterProbability = battingTeam.getProbability(for: battersRetired)
 
-        print("batter: \(batterProbability.playerId)")
+        // print("batter: \(batterProbability.playerId)")
         // get at bat result
         let atBatResult = getAtBatEvent(pitcherProbability: pitcherProbability.probability,
                                         batterProbability: batterProbability.probability,
@@ -269,7 +330,7 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
         atBatResults.append(AtBatRecord(batterId: batterProbability.playerId, pitcherId: pitcherProbability.playerId, result: atBatResult))
     }
 
-    return atBatResults
+    return InningFrameResult(atBatsRecords: atBatResults, gameState: gameState)
 }
 
 func getAtBatEvent(pitcherProbability: AtBatEventProbability,
@@ -646,15 +707,39 @@ let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbab
 //
 //print("stars: \(starsProbabilities)")
 
-let gameState = GameState(inningCount: InningCount(frame: .top, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+var gameState = GameState(inningCount: InningCount(frame: .top, number: 0, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
 
 srand48(Int(Date().timeIntervalSince1970))
 
-let results = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+var gameStarted = true
 
-results.forEach {
-    print("\($0)")
-}
+repeat {
+
+    if gameStarted {
+        gameStarted = false
+    } else {
+        gameState.advanceFrame()
+    }
+    let inningResults = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+
+    gameState = inningResults.gameState
+
+    if gameState.isEndOfInning() {
+        print("inningResult: \(gameState.inningCount.number) - Away: \(gameState.awayRunsScored) - Home: \(gameState.homeRunsScored)")
+    }
+} while !gameState.isEndOfGame()
+
+//let atBats = inningResults.atBatsRecords
+//let gameState = inningResults.gameState
+
+print("************************")
+print("")
+print("Game Over!")
+print(gameState)
+
+//results.forEach {
+//    print("\($0)")
+//}
 
 //print("results: \(results)")
 
