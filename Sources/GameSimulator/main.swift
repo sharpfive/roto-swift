@@ -105,12 +105,12 @@ struct GameState {
 
     // Game state functions are meant to be called before advanceFrame
     func isEndOfGame() -> Bool {
-        if inningCount.number < 8 {
+
+        if !isEndOfFrame() {
             return false
         }
 
-        // aiai checkif end of top of inning and home team is ahead
-        if inningCount.frame != .bottom {
+        if inningCount.number < 8 {
             return false
         }
 
@@ -121,6 +121,15 @@ struct GameState {
             totalAwayRunsScored += runnersScoredInFrame
         } else {
             totalHomeRunsScored += runnersScoredInFrame
+        }
+
+        if inningCount.frame == .top {
+            // 9th inning or later, top is complete and home team has lead
+            if totalHomeRunsScored > totalAwayRunsScored {
+                return true
+            } else {
+                return false
+            }
         }
 
         // Score is tied at the end of the inning
