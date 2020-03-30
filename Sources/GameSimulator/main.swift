@@ -91,6 +91,22 @@ struct GameState {
     private(set) var homeRunsScored = 0
     private(set) var awayRunsScored = 0
 
+    var totalHomeRunsScored: Int {
+        if inningCount.frame == .bottom {
+            return homeRunsScored + runnersScoredInFrame
+        } else {
+            return homeRunsScored
+        }
+    }
+
+    var totalAwayRunsScored: Int {
+        if inningCount.frame == .top {
+            return awayRunsScored + runnersScoredInFrame
+        } else {
+            return awayRunsScored
+        }
+    }
+
     func isEndOfFrame() -> Bool {
         return inningCount.outs >= 3
     }
@@ -117,18 +133,20 @@ struct GameState {
         var totalHomeRunsScored = homeRunsScored
         var totalAwayRunsScored = awayRunsScored
 
-        if inningCount.frame == .top {
-            totalAwayRunsScored += runnersScoredInFrame
-        } else {
-            totalHomeRunsScored += runnersScoredInFrame
-        }
-
-        if inningCount.frame == .top {
-            // 9th inning or later, top is complete and home team has lead
-            if totalHomeRunsScored > totalAwayRunsScored {
-                return true
+        if inningCount.number == 8 {
+            if inningCount.frame == .top {
+                totalAwayRunsScored += runnersScoredInFrame
             } else {
-                return false
+                totalHomeRunsScored += runnersScoredInFrame
+            }
+
+            if inningCount.frame == .top {
+                // 9th inning, top is complete and home team has lead
+                if totalHomeRunsScored > totalAwayRunsScored {
+                    return true
+                } else {
+                    return false
+                }
             }
         }
 
@@ -139,6 +157,14 @@ struct GameState {
 
         // Game is over!
         return true
+    }
+
+    mutating func countScores() {
+        if inningCount.frame == .top {
+            awayRunsScored += runnersScoredInFrame
+        } else {
+            homeRunsScored += runnersScoredInFrame
+        }
     }
 
     mutating func addAtBatResult(_ atBatResult: AtBatOutcome) {
@@ -245,11 +271,7 @@ struct GameState {
     }
 
     mutating func advanceFrame() {
-        if inningCount.frame == .top {
-            awayRunsScored += runnersScoredInFrame
-        } else {
-            homeRunsScored += runnersScoredInFrame
-        }
+        countScores()
 
         firstBaseOccupant = nil
         secondBaseOccupant = nil
@@ -707,7 +729,7 @@ struct ProbabilityLineupConverter {
     }
 
 let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
-let scrubsProbabilities = converter.convert(lineup: scrubsLineup)
+let scrubsProbabilities = converter.convert(lineup: starsLineup)
 let starsProbabilities = converter.convert(lineup: starsLineup)
 
 let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbabilities)
@@ -733,17 +755,22 @@ repeat {
 
     gameState = inningResults.gameState
 
-    if gameState.isEndOfInning() {
-        print("inningResult: \(gameState.inningCount.number) - Away: \(gameState.awayRunsScored) - Home: \(gameState.homeRunsScored)")
-    }
+    // if gameState.isEndOfInning() {
+    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    // }
 } while !gameState.isEndOfGame()
 
 //let atBats = inningResults.atBatsRecords
 //let gameState = inningResults.gameState
+gameState.countScores()
 
 print("************************")
 print("")
 print("Game Over!")
+print("inningResult: \(gameState.inningCount.number) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+print("")
+print("************************")
+print("")
 print(gameState)
 
 //results.forEach {
