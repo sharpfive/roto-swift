@@ -63,7 +63,7 @@ struct TeamLineupProbabilities {
     let batters: [PlayerProbability]
 
     func getProbability(for battersRetired: Int) -> PlayerProbability {
-        return batters[battersRetired % 9]
+        return batters[battersRetired % 8]
     }
 }
 
@@ -228,16 +228,27 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     // Thanks to the person at https://stackoverflow.com/questions/41418689/get-random-element-from-array-with-weighted-elements/41418770#41418770
     let totalWeights = weights.map { $0.weight }.reduce(0,+)
 
+//    print("odds array!")
+//    weights.map {
+//        print("\($0)")
+//    }
+
     let resultWeight = drand48() * totalWeights
 
+    print("totalWeights: \(totalWeights) - result: \(resultWeight)")
+
     var lastWeight: Double = 0.0
-    let weightedArray = totalWeights.map {
+    let weightedArray: [(outcome: AtBatOutcome, weight: Double)] = weights.map {
         let weightValue = $0.weight + lastWeight
-        lastWieght = weightValue
-        return weightValue
+        lastWeight = weightValue
+        return (outcome: $0.outcome, weight: weightValue)
     }
 
-    if let result = weightedArray.first(where: { $0 >= resultWeight }) {
+//    print("weighted array!")
+//    weightedArray.map {
+//        print("\($0)")
+//    }
+    if let result = weightedArray.first(where: { $0.weight >= resultWeight }).map({ $0.outcome}) {
         return result
     } else {
         // shouldn't get here
@@ -554,6 +565,8 @@ let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbab
 //print("stars: \(starsProbabilities)")
 
 let gameState = GameState(inningCount: InningCount(frame: .top, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+
+srand48(Int(Date().timeIntervalSince1970))
 
 let results = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
 
