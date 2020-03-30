@@ -564,7 +564,7 @@ let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbab
 //
 //print("stars: \(starsProbabilities)")
 
-let gameState = GameState(inningCount: InningCount(frame: .top, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+let gameState = GameState(inningCount: InningCount(frame: .bottom, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
 
 srand48(Int(Date().timeIntervalSince1970))
 
