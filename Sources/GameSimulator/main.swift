@@ -81,6 +81,13 @@ struct GameState {
     var inningCount: InningCount = InningCount.beginningOfGame()
     var homeBattersRetired = 0
     var awayBattersRetired = 0
+    var homeTeamRunsThisInning = 0
+    var awayTeamRunsThisInning = 0
+
+    private(set) var firstBaseOccupant: String?
+    private(set) var secondBaseOccupant: String?
+    private(set) var thirdBaseOccupant: String?
+    private(set) var runnersScoredInFrame = 0
 
     func isEndOfFrame() -> Bool {
         return inningCount.outs >= 3
@@ -119,12 +126,71 @@ struct GameState {
         inningCount.outs += 1
     }
 
-    private func advanceRunners(by bases: Int) {
-        //aiai do we even need this here?
+    mutating private func advanceRunners(by bases: Int) {
+        let occupantId = "-1"
+
+        switch bases {
+        case 1:
+            if thirdBaseOccupant != nil {
+                runnersScoredInFrame += 1
+                thirdBaseOccupant = nil
+            }
+
+            if let secondBaseOccupant = secondBaseOccupant {
+                thirdBaseOccupant = secondBaseOccupant
+            }
+
+            if let firstBaseOccupant = firstBaseOccupant {
+                secondBaseOccupant = firstBaseOccupant
+            }
+
+            firstBaseOccupant = occupantId
+        case 2:
+            if thirdBaseOccupant != nil {
+                runnersScoredInFrame += 1
+                self.thirdBaseOccupant = nil
+            }
+
+            if secondBaseOccupant != nil {
+                runnersScoredInFrame += 1
+                self.secondBaseOccupant = nil
+            }
+
+            if let firstBaseOccupant = firstBaseOccupant {
+                thirdBaseOccupant = firstBaseOccupant
+            }
+
+            firstBaseOccupant = nil
+            secondBaseOccupant = occupantId
+
+        case 3:
+            if thirdBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            if secondBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            if firstBaseOccupant != nil {
+                runnersScoredInFrame += 1
+            }
+
+            firstBaseOccupant = nil
+            secondBaseOccupant = nil
+            thirdBaseOccupant = occupantId
+        default:
+            print("advanceRunners should never get here")
+
+        }
     }
 
-    func advanceFrame() {
-
+    mutating func advanceFrame() {
+        firstBaseOccupant = nil
+        secondBaseOccupant = nil
+        thirdBaseOccupant = nil
+        runnersScoredInFrame = 0
+        inningCount.increment()
     }
 }
 
@@ -140,6 +206,19 @@ struct InningCount {
 
     static func beginningOfGame() -> InningCount {
         return InningCount(frame: .top, number: 1, outs: 0)
+    }
+
+    mutating func increment() {
+        switch frame {
+        case .top:
+            frame = .bottom
+
+        case .bottom:
+            frame = .top
+            number += 1
+        }
+
+        outs = 0
     }
 }
 
@@ -180,6 +259,7 @@ func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbabili
 
         let batterProbability = battingTeam.getProbability(for: battersRetired)
 
+        print("batter: \(batterProbability.playerId)")
         // get at bat result
         let atBatResult = getAtBatEvent(pitcherProbability: pitcherProbability.probability,
                                         batterProbability: batterProbability.probability,
@@ -221,6 +301,10 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
 
     weights.append( (outcome: .out, weight: outOdds) )
 
+//    weights.forEach {
+//        print("\($0)")
+//    }
+
     return getRandomElementWeighted(weights)
 }
 
@@ -228,14 +312,12 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     // Thanks to the person at https://stackoverflow.com/questions/41418689/get-random-element-from-array-with-weighted-elements/41418770#41418770
     let totalWeights = weights.map { $0.weight }.reduce(0,+)
 
-//    print("odds array!")
-//    weights.map {
-//        print("\($0)")
-//    }
-
     let resultWeight = drand48() * totalWeights
 
-    print("totalWeights: \(totalWeights) - result: \(resultWeight)")
+//    print("totalWeights: \(totalWeights) - result: \(resultWeight)")
+//    weights.forEach {
+//        print("\($0)")
+//    }
 
     var lastWeight: Double = 0.0
     let weightedArray: [(outcome: AtBatOutcome, weight: Double)] = weights.map {
@@ -245,7 +327,7 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     }
 
 //    print("weighted array!")
-//    weightedArray.map {
+//    weightedArray.forEach {
 //        print("\($0)")
 //    }
     if let result = weightedArray.first(where: { $0.weight >= resultWeight }).map({ $0.outcome}) {
@@ -564,7 +646,7 @@ let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbab
 //
 //print("stars: \(starsProbabilities)")
 
-let gameState = GameState(inningCount: InningCount(frame: .bottom, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+let gameState = GameState(inningCount: InningCount(frame: .top, number: 1, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
 
 srand48(Int(Date().timeIntervalSince1970))
 
