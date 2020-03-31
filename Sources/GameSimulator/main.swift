@@ -19,6 +19,7 @@ struct AtBatEventProbability {
     let walk: Double
     let strikeOut: Double
     let hitByPitch: Double
+    let out: Double
 
     var singleOdds: Double {
         return odds(for: single)
@@ -46,6 +47,10 @@ struct AtBatEventProbability {
 
     var hitByPitchOdds: Double {
         return odds(for: hitByPitch)
+    }
+
+    var outOdds: Double {
+        return odds(for: out)
     }
 
     func odds(for value: Double) -> Double {
@@ -377,6 +382,7 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
     let hitByPitchOdds = batterProbability.hitByPitchOdds * pitcherProbability.hitByPitchOdds / baseProbability.hitByPitchOdds
     let walkOdds = batterProbability.walkOdds * pitcherProbability.walkOdds / baseProbability.walkOdds
     let strikeoutOdds = batterProbability.strikeoutOdds * pitcherProbability.strikeoutOdds / baseProbability.strikeoutOdds
+    let outOdds = batterProbability.outOdds * pitcherProbability.outOdds / baseProbability.outOdds
 
     var weights: [(outcome: AtBatOutcome, weight: Double)] = [
         (outcome: .single, weight: singleOdds),
@@ -385,14 +391,15 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
         (outcome: .homerun, weight: homeRunOdds),
         (outcome: .hitByPitch, weight: hitByPitchOdds),
         (outcome: .walk, weight: walkOdds),
-        (outcome: .strikeout, weight: strikeoutOdds)
+        (outcome: .strikeout, weight: strikeoutOdds),
+        (outcome: .out, weight: outOdds)
     ]
 
-    // If it's not not an out, it's an out.
-    let outOdds = 1 - weights.map{ $0.weight }.reduce(0,+)
-
-    weights.append( (outcome: .out, weight: outOdds) )
-
+//    print(">-------<")
+//    print("pitcherProbability: \(pitcherProbability)")
+//    print("batterProbability: \(batterProbability)")
+//    print("baseProbability: \(baseProbability)")
+//    print(">-----<")
 //    weights.forEach {
 //        print("\($0)")
 //    }
@@ -456,7 +463,10 @@ struct PitcherProjection {
         let walkProbability: Double = Double(walks) / Double(plateAppearances)
         let strikeoutProbability: Double = Double(strikeouts) / Double(plateAppearances)
 
-        return AtBatEventProbability(single: singleProbability, double: doubleProbability, triple: tripleProbability, homeRun: homeRunProbability, walk: walkProbability, strikeOut: strikeoutProbability, hitByPitch: hitByPitchProbability)
+        let outs = plateAppearances - hits - strikeouts - Int((Double(plateAppearances) * hitByPitchProbability))
+        let outProbability: Double = Double(outs) / Double(plateAppearances)
+
+        return AtBatEventProbability(single: singleProbability, double: doubleProbability, triple: tripleProbability, homeRun: homeRunProbability, walk: walkProbability, strikeOut: strikeoutProbability, hitByPitch: hitByPitchProbability, out: outProbability)
     }
 }
 
@@ -473,6 +483,10 @@ struct BatterProjection {
     let strikeouts: Int
     let hitByPitch: Int
 
+    var outs: Int {
+        return plateAppearances - singles - doubles - triples - hitByPitch - homeRuns - walks
+    }
+
     var probability: AtBatEventProbability {
         let singleProbability: Double = Double(singles) / Double(plateAppearances)
         let doubleProbability: Double = Double(doubles) / Double(plateAppearances)
@@ -481,7 +495,7 @@ struct BatterProjection {
         let walkProbability: Double = Double(walks) / Double(plateAppearances)
         let strikeoutProbability: Double = Double(strikeouts) / Double(plateAppearances)
         let hitByPitchProbaility: Double = Double(hitByPitch) / Double(plateAppearances)
-
+        let outProbability: Double = Double(outs) / Double(plateAppearances)
         let normalizationFactor = 1.0
 
         return AtBatEventProbability(single: singleProbability * normalizationFactor,
@@ -490,7 +504,8 @@ struct BatterProjection {
                                  homeRun: homeRunProbability * normalizationFactor,
                                  walk: walkProbability * normalizationFactor,
                                  strikeOut: strikeoutProbability * normalizationFactor,
-                                 hitByPitch: hitByPitchProbaility * normalizationFactor)
+                                 hitByPitch: hitByPitchProbaility * normalizationFactor,
+                                out: outProbability)
     }
 }
 
@@ -696,6 +711,15 @@ struct ProbabilityLineupConverter {
         return batterDictionary.values.map { $0.strikeouts }.reduce(0, +)
     }
 
+    var totalPlateAppearances: Int {
+        return batterDictionary.values.map { $0.plateAppearances }.reduce(0, +)
+    }
+
+    // Out but not a strikeout
+    var totalOuts: Int {
+        return totalPlateAppearances - totalHits - totalWalks - totalStrikeouts - totalHitByPitch
+    }
+
     var baseAtBatProbabilites: AtBatEventProbability {
         let baseProbabilities = AtBatEventProbability(
         single: Double(totalSingles) / Double(totalPlateAppearances),
@@ -704,7 +728,8 @@ struct ProbabilityLineupConverter {
         homeRun: Double(totalHomeRuns) / Double(totalPlateAppearances),
         walk: Double(totalWalks) / Double(totalPlateAppearances),
         strikeOut: Double(totalStrikeouts) / Double(totalPlateAppearances),
-        hitByPitch: Double(totalHitByPitch) / Double(totalPlateAppearances))
+        hitByPitch: Double(totalHitByPitch) / Double(totalPlateAppearances),
+        out: Double(totalOuts) / Double(totalPlateAppearances))
 
         return baseProbabilities
     }
@@ -729,7 +754,7 @@ struct ProbabilityLineupConverter {
     }
 
 let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
-let scrubsProbabilities = converter.convert(lineup: starsLineup)
+let scrubsProbabilities = converter.convert(lineup: scrubsLineup)
 let starsProbabilities = converter.convert(lineup: starsLineup)
 
 let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbabilities)
@@ -756,7 +781,7 @@ repeat {
     gameState = inningResults.gameState
 
     // if gameState.isEndOfInning() {
-    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
     // }
 } while !gameState.isEndOfGame()
 
@@ -767,7 +792,7 @@ gameState.countScores()
 print("************************")
 print("")
 print("Game Over!")
-print("inningResult: \(gameState.inningCount.number) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+print("inningResult: \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
 print("")
 print("************************")
 print("")
