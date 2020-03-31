@@ -128,6 +128,17 @@ struct GameState {
     func isEndOfGame() -> Bool {
 
         if !isEndOfFrame() {
+            if inningCount.number >= 8 {
+                if inningCount.frame == .top &&
+                    inningCount.outs >= 3 &&
+                    totalHomeRunsScored > totalAwayRunsScored {
+                    return true
+                } else if inningCount.frame == .bottom &&
+                    totalHomeRunsScored > totalAwayRunsScored {
+                    return true
+                }
+            }
+
             return false
         }
 
@@ -135,24 +146,18 @@ struct GameState {
             return false
         }
 
-        var totalHomeRunsScored = homeRunsScored
-        var totalAwayRunsScored = awayRunsScored
-
-        if inningCount.number == 8 {
-            if inningCount.frame == .top {
-                totalAwayRunsScored += runnersScoredInFrame
-            } else {
-                totalHomeRunsScored += runnersScoredInFrame
-            }
-
-            if inningCount.frame == .top {
-                // 9th inning, top is complete and home team has lead
-                if totalHomeRunsScored > totalAwayRunsScored {
+        if !isEndOfInning() {
+            if inningCount.number >= 8 {
+                if inningCount.frame == .top &&
+                    inningCount.outs >= 3 &&
+                    totalHomeRunsScored > totalAwayRunsScored {
                     return true
-                } else {
-                    return false
+                } else if inningCount.frame == .bottom &&
+                    totalHomeRunsScored > totalAwayRunsScored {
+                    return true
                 }
             }
+            return false
         }
 
         // Score is tied at the end of the inning
@@ -164,7 +169,7 @@ struct GameState {
         return true
     }
 
-    mutating func countScores() {
+    mutating private func countScores() {
         if inningCount.frame == .top {
             awayRunsScored += runnersScoredInFrame
         } else {
@@ -384,7 +389,7 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
     let strikeoutOdds = batterProbability.strikeoutOdds * pitcherProbability.strikeoutOdds / baseProbability.strikeoutOdds
     let outOdds = batterProbability.outOdds * pitcherProbability.outOdds / baseProbability.outOdds
 
-    var weights: [(outcome: AtBatOutcome, weight: Double)] = [
+    let weights: [(outcome: AtBatOutcome, weight: Double)] = [
         (outcome: .single, weight: singleOdds),
         (outcome: .double, weight: doubleOdds),
         (outcome: .triple, weight: tripleOdds),
@@ -780,14 +785,14 @@ repeat {
 
     gameState = inningResults.gameState
 
-    // if gameState.isEndOfInning() {
     print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
-    // }
+    // print(gameState)
+
 } while !gameState.isEndOfGame()
 
 //let atBats = inningResults.atBatsRecords
 //let gameState = inningResults.gameState
-gameState.countScores()
+//gameState.countScores()
 
 print("************************")
 print("")
