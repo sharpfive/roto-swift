@@ -380,15 +380,24 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
     // do fancy Odds Ratio math from Tony Tango
     // http://www.insidethebook.com/ee/index.php/site/comments/the_odds_ratio_method/
 
-    let singleOdds = batterProbability.singleOdds * pitcherProbability.singleOdds / baseProbability.singleOdds
-    let doubleOdds = batterProbability.doubleOdds * pitcherProbability.doubleOdds / baseProbability.doubleOdds
-    let tripleOdds = batterProbability.tripleOdds * pitcherProbability.tripleOdds / baseProbability.tripleOdds
-    let homeRunOdds = batterProbability.homeRunOdds * pitcherProbability.homeRunOdds / baseProbability.homeRunOdds
-    let hitByPitchOdds = batterProbability.hitByPitchOdds * pitcherProbability.hitByPitchOdds / baseProbability.hitByPitchOdds
-    let walkOdds = batterProbability.walkOdds * pitcherProbability.walkOdds / baseProbability.walkOdds
-    let strikeoutOdds = batterProbability.strikeoutOdds * pitcherProbability.strikeoutOdds / baseProbability.strikeoutOdds
-    let outOdds = batterProbability.outOdds * pitcherProbability.outOdds / baseProbability.outOdds
+    func oddsRatio(batter: Double, pitcher: Double, base: Double) -> Double {
+        if base == 0.0 {
+            return 0
+        }
 
+        return batter * pitcher / base
+    }
+
+    let singleOdds = oddsRatio(batter: batterProbability.singleOdds, pitcher: pitcherProbability.singleOdds, base: baseProbability.singleOdds)
+    let doubleOdds = oddsRatio(batter: batterProbability.doubleOdds, pitcher: pitcherProbability.doubleOdds, base: baseProbability.doubleOdds)
+    let tripleOdds = oddsRatio(batter: batterProbability.tripleOdds, pitcher: pitcherProbability.tripleOdds, base: baseProbability.tripleOdds)
+    let homeRunOdds = oddsRatio(batter: batterProbability.homeRunOdds, pitcher: pitcherProbability.homeRunOdds, base: baseProbability.homeRunOdds)
+    let hitByPitchOdds = oddsRatio(batter: batterProbability.hitByPitchOdds, pitcher: pitcherProbability.hitByPitchOdds, base: baseProbability.hitByPitchOdds)
+    let walkOdds = oddsRatio(batter: batterProbability.walkOdds, pitcher: pitcherProbability.walkOdds, base: baseProbability.walkOdds)
+    let strikeoutOdds = oddsRatio(batter: batterProbability.strikeoutOdds, pitcher: pitcherProbability.strikeoutOdds, base: baseProbability.strikeoutOdds)
+    let outOdds = oddsRatio(batter: batterProbability.outOdds, pitcher: pitcherProbability.outOdds, base: baseProbability.outOdds)
+
+    print("outOdds: \(outOdds)")
     let weights: [(outcome: AtBatOutcome, weight: Double)] = [
         (outcome: .single, weight: singleOdds),
         (outcome: .double, weight: doubleOdds),
@@ -430,15 +439,22 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
         return (outcome: $0.outcome, weight: weightValue)
     }
 
-//    print("weighted array!")
-//    weightedArray.forEach {
-//        print("\($0)")
-//    }
+    print("weighted array!")
+    weightedArray.forEach {
+        print("\($0)")
+    }
+
     if let result = weightedArray.first(where: { $0.weight >= resultWeight }).map({ $0.outcome}) {
         return result
     } else {
         // shouldn't get here
         print("!!!! shouldn't get here")
+        print("totalWeights: \(totalWeights) - result: \(resultWeight)")
+
+        print("weighted array!")
+        weightedArray.forEach {
+            print("\($0)")
+        }
         return .out
     }
 }
@@ -654,32 +670,6 @@ print("totalHomeruns: \(totalHomeRuns)")
 print("percentageOfDoubles: \(percentageOfDoubles)")
 print("percentageOfTriples: \(percentageOfTriples)")
 
-
-let starsLineup = Lineup(startingPitcherId: "13125", //Gerrit Cole
-                       batterIds: [
-                        "10155", // Mike Trout
-                        "11477",
-                        "16505",
-                        "5038",
-                        "13510",
-                        "17350",
-                        "11493",
-                        "18401",
-                        "5361"
-                       ])
-
-let scrubsLineup = Lineup(startingPitcherId: "4153",
-                        batterIds: [
-                         "19470",
-                         "19683",
-                         "16424",
-                         "19339",
-                         "sa601536",
-                         "13807",
-                         "9256",
-                         "19238"
-                        ])
-
 struct ProbabilityLineupConverter {
     let pitcherDictionary: [String: PitcherProjection]
     let batterDictionary: [String: BatterProjection]
@@ -758,50 +748,103 @@ struct ProbabilityLineupConverter {
         }
     }
 
-let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
-let scrubsProbabilities = converter.convert(lineup: scrubsLineup)
-let starsProbabilities = converter.convert(lineup: starsLineup)
+let starsLineup = Lineup(startingPitcherId: "13125", //Gerrit Cole
+                       batterIds: [
+                        "10155", // Mike Trout
+                        "11477",
+                        "16505",
+                        "5038",
+                        "13510",
+                        "17350",
+                        "11493",
+                        "18401",
+                        "5361"
+                       ])
 
-let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbabilities)
+let scrubsLineup = Lineup(startingPitcherId: "4153",
+                        batterIds: [
+                         "19470",
+                         "19683",
+                         "16424",
+                         "19339",
+                         "sa601536",
+                         "13807",
+                         "9256",
+                         "19238"
+                        ])
 
-//print("scrubs: \(scrubsProbabilities)")
-//
-//print("stars: \(starsProbabilities)")
 
-var gameState = GameState(inningCount: InningCount(frame: .top, number: 0, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
+    let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
+    let scrubsProbabilities = converter.convert(lineup: scrubsLineup)
+    let starsProbabilities = converter.convert(lineup: starsLineup)
+
+    let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbabilities)
+
+    var gameState = GameState(inningCount: InningCount(frame: .top, number: 0, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
+
+    srand48(Int(Date().timeIntervalSince1970))
+
+    var gameStarted = true
+
+    repeat {
+
+        if gameStarted {
+            gameStarted = false
+        } else {
+            gameState.advanceFrame()
+        }
+        let inningResults = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+
+        gameState = inningResults.gameState
+
+        print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+        // print(gameState)
+
+    } while !gameState.isEndOfGame()
+
+    print("************************")
+    print("")
+    print("Game Over!")
+    print("inningResult: \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("")
+    print("************************")
+    print("")
+    print(gameState)
+
+    return gameState
+}
+
+
+
+let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
+                                                      double: 0.05,
+                                                      triple: 0,
+                                                      homeRun: 0.0,
+                                                      walk: 0.0,
+                                                      strikeOut: 0.0,
+                                                      hitByPitch: 0.0,
+                                                      out: 0.75)
+
+let event = getAtBatEvent(pitcherProbability: twoFiftyHitterProbability, batterProbability: twoFiftyHitterProbability, baseProbability: twoFiftyHitterProbability)
 
 srand48(Int(Date().timeIntervalSince1970))
 
-var gameStarted = true
+let events: [AtBatOutcome] = (0..<1).map { number in
+    return getAtBatEvent(pitcherProbability: twoFiftyHitterProbability,
+                  batterProbability: twoFiftyHitterProbability,
+                  baseProbability: twoFiftyHitterProbability) }
 
-repeat {
 
-    if gameStarted {
-        gameStarted = false
-    } else {
-        gameState.advanceFrame()
-    }
-    let inningResults = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+let singles = events.filter { $0 == .single }.count
 
-    gameState = inningResults.gameState
+print("\(singles) singeles out of \(events.count) at bats")
 
-    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
-    // print(gameState)
-
-} while !gameState.isEndOfGame()
 
 //let atBats = inningResults.atBatsRecords
 //let gameState = inningResults.gameState
 //gameState.countScores()
 
-print("************************")
-print("")
-print("Game Over!")
-print("inningResult: \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
-print("")
-print("************************")
-print("")
-print(gameState)
 
 //results.forEach {
 //    print("\($0)")
