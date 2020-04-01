@@ -388,16 +388,16 @@ func getAtBatEvent(pitcherProbability: AtBatEventProbability,
         return batter * pitcher / base
     }
 
-    let singleOdds = oddsRatio(batter: batterProbability.singleOdds, pitcher: pitcherProbability.singleOdds, base: baseProbability.singleOdds)
-    let doubleOdds = oddsRatio(batter: batterProbability.doubleOdds, pitcher: pitcherProbability.doubleOdds, base: baseProbability.doubleOdds)
-    let tripleOdds = oddsRatio(batter: batterProbability.tripleOdds, pitcher: pitcherProbability.tripleOdds, base: baseProbability.tripleOdds)
-    let homeRunOdds = oddsRatio(batter: batterProbability.homeRunOdds, pitcher: pitcherProbability.homeRunOdds, base: baseProbability.homeRunOdds)
-    let hitByPitchOdds = oddsRatio(batter: batterProbability.hitByPitchOdds, pitcher: pitcherProbability.hitByPitchOdds, base: baseProbability.hitByPitchOdds)
-    let walkOdds = oddsRatio(batter: batterProbability.walkOdds, pitcher: pitcherProbability.walkOdds, base: baseProbability.walkOdds)
-    let strikeoutOdds = oddsRatio(batter: batterProbability.strikeoutOdds, pitcher: pitcherProbability.strikeoutOdds, base: baseProbability.strikeoutOdds)
-    let outOdds = oddsRatio(batter: batterProbability.outOdds, pitcher: pitcherProbability.outOdds, base: baseProbability.outOdds)
+    let singleOdds = oddsRatio(batter: batterProbability.single, pitcher: pitcherProbability.single, base: baseProbability.single)
+    let doubleOdds = oddsRatio(batter: batterProbability.double, pitcher: pitcherProbability.double, base: baseProbability.double)
+    let tripleOdds = oddsRatio(batter: batterProbability.triple, pitcher: pitcherProbability.triple, base: baseProbability.triple)
+    let homeRunOdds = oddsRatio(batter: batterProbability.homeRun, pitcher: pitcherProbability.homeRun, base: baseProbability.homeRun)
+    let hitByPitchOdds = oddsRatio(batter: batterProbability.hitByPitch, pitcher: pitcherProbability.hitByPitch, base: baseProbability.hitByPitch)
+    let walkOdds = oddsRatio(batter: batterProbability.walk, pitcher: pitcherProbability.walk, base: baseProbability.walk)
+    let strikeoutOdds = oddsRatio(batter: batterProbability.strikeOut, pitcher: pitcherProbability.strikeOut, base: baseProbability.strikeOut)
+    let outOdds = oddsRatio(batter: batterProbability.out, pitcher: pitcherProbability.out, base: baseProbability.out)
 
-    print("outOdds: \(outOdds)")
+    //print("outOdds: \(outOdds)")
     let weights: [(outcome: AtBatOutcome, weight: Double)] = [
         (outcome: .single, weight: singleOdds),
         (outcome: .double, weight: doubleOdds),
@@ -439,10 +439,10 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
         return (outcome: $0.outcome, weight: weightValue)
     }
 
-    print("weighted array!")
-    weightedArray.forEach {
-        print("\($0)")
-    }
+//    print("weighted array!")
+//    weightedArray.forEach {
+//        print("\($0)")
+//    }
 
     if let result = weightedArray.first(where: { $0.weight >= resultWeight }).map({ $0.outcome}) {
         return result
@@ -816,6 +816,7 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
 }
 
 
+simulateGame(homeLineup: starsLineup, awayLineup: scrubsLineup)
 
 let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
                                                       double: 0.05,
@@ -828,17 +829,17 @@ let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
 
 let event = getAtBatEvent(pitcherProbability: twoFiftyHitterProbability, batterProbability: twoFiftyHitterProbability, baseProbability: twoFiftyHitterProbability)
 
-srand48(Int(Date().timeIntervalSince1970))
-
-let events: [AtBatOutcome] = (0..<1).map { number in
-    return getAtBatEvent(pitcherProbability: twoFiftyHitterProbability,
-                  batterProbability: twoFiftyHitterProbability,
-                  baseProbability: twoFiftyHitterProbability) }
-
-
-let singles = events.filter { $0 == .single }.count
-
-print("\(singles) singeles out of \(events.count) at bats")
+//srand48(Int(Date().timeIntervalSince1970))
+//
+//let events: [AtBatOutcome] = (0..<10000000).map { number in
+//    return getAtBatEvent(pitcherProbability: twoFiftyHitterProbability,
+//                  batterProbability: twoFiftyHitterProbability,
+//                  baseProbability: twoFiftyHitterProbability) }
+//
+//
+//let singles = events.filter { $0 == .single }.count
+//
+//print("\(singles) singeles out of \(events.count) at bats")
 
 
 //let atBats = inningResults.atBatsRecords
