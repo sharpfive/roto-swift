@@ -776,10 +776,10 @@ let scrubsLineup = Lineup(startingPitcherId: "4153",
 
 func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
     let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
-    let scrubsProbabilities = converter.convert(lineup: scrubsLineup)
-    let starsProbabilities = converter.convert(lineup: starsLineup)
+    let awayProbabilities = converter.convert(lineup: awayLineup)
+    let homeProbabilities = converter.convert(lineup: homeLineup)
 
-    let gameLineup = GameLineup(awayTeam: scrubsProbabilities, homeTeam: starsProbabilities)
+    let gameLineup = GameLineup(awayTeam: awayProbabilities, homeTeam: homeProbabilities)
 
     var gameState = GameState(inningCount: InningCount(frame: .top, number: 0, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
 
@@ -816,7 +816,7 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
 }
 
 
-simulateGame(homeLineup: starsLineup, awayLineup: scrubsLineup)
+simulateGame(homeLineup: scrubsLineup, awayLineup: scrubsLineup)
 
 let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
                                                       double: 0.05,
