@@ -5,7 +5,7 @@
 //  Created by Jaim Zuber on 3/23/20.
 //
 
-// ex swift run GameSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv
+// ex swift run GameSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-02-Auction.csv
 import Foundation
 import RotoSwift
 import CSV
@@ -574,9 +574,8 @@ func createLineups(filename: String, batterProjections: [String: BatterProjectio
             currentTeamName = auctionEntry.teamName
         }
 
-        if pitchers.count >= maxPitchers && batters.count >= maxBatters {
-            continue
-        }
+        currentTeamId = auctionEntry.teamNumber
+        currentTeamName = auctionEntry.teamName
 
         if batters.count < maxBatters,
             let batterProjection = batterProjections.values.first(where: {
@@ -891,19 +890,20 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
     return gameState
 }
 
+print("lineups: \(lineups)")
 
-simulateGame(homeLineup: scrubsLineup, awayLineup: scrubsLineup)
+_ = simulateGame(homeLineup: scrubsLineup, awayLineup: scrubsLineup)
 
-let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
-                                                      double: 0.05,
-                                                      triple: 0,
-                                                      homeRun: 0.0,
-                                                      walk: 0.0,
-                                                      strikeOut: 0.0,
-                                                      hitByPitch: 0.0,
-                                                      out: 0.75)
-
-let event = getAtBatEvent(pitcherProbability: twoFiftyHitterProbability, batterProbability: twoFiftyHitterProbability, baseProbability: twoFiftyHitterProbability)
+//let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
+//                                                      double: 0.05,
+//                                                      triple: 0,
+//                                                      homeRun: 0.0,
+//                                                      walk: 0.0,
+//                                                      strikeOut: 0.0,
+//                                                      hitByPitch: 0.0,
+//                                                      out: 0.75)
+//
+//let event = getAtBatEvent(pitcherProbability: twoFiftyHitterProbability, batterProbability: twoFiftyHitterProbability, baseProbability: twoFiftyHitterProbability)
 
 //srand48(Int(Date().timeIntervalSince1970))
 //
