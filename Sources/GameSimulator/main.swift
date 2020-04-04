@@ -890,9 +890,14 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
     return gameState
 }
 
-print("lineups: \(lineups)")
 
-_ = simulateGame(homeLineup: scrubsLineup, awayLineup: scrubsLineup)
+let homeTeam = lineups[0]
+let awayTeam = lineups[1]
+
+print("Home Team: \(homeTeam)")
+print("Away Team: \(awayTeam)")
+
+_ = simulateGame(homeLineup: homeTeam.lineup, awayLineup: awayTeam.lineup)
 
 //let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
 //                                                      double: 0.05,
