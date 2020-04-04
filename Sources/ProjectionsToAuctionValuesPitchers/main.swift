@@ -58,9 +58,9 @@ var followingYearHitterValues = buildPlayerAuctionValuesArray(hitterFilename: ni
 // Take next and following values and add them
 // Note: current value is zero
 let futureValueHitters: [PlayerKeeperValue] = nextYearHitterValues.map { hitter in
-    let valueIn2020 = nextYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
-    let valueIn2021 = followingYearHitterValues.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
-    return PlayerKeeperValue(name: hitter.name, currentValue: 0.0, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
+    let valueIn2020 = nextYearHitterValues.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+    let valueIn2021 = followingYearHitterValues.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+    return PlayerKeeperValue(name: hitter.fullName, currentValue: 0.0, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
 }
 
 // Get the list of keeper values

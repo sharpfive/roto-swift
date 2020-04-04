@@ -76,7 +76,7 @@ public class FanGraphsAuctionRepository {
                     projectedAuctionValue = projectedAuctionAbsoluteValue
                 }
 
-                playerAuctions.append( PlayerAuction(name: name, zScore: 0.0, auctionValue: projectedAuctionValue))
+                playerAuctions.append( PlayerAuction(fullName: name, zScore: 0.0, auctionValue: projectedAuctionValue))
             } else {
                 print("rejecting: \(trimmedString)")
             }

@@ -1,6 +1,23 @@
 import Foundation
 import CSV
 
+struct PlayerMap {
+    let fangraphsId: String
+    let ottId: String
+    let firstName: String
+    let lastName: String
+    let fullName: String
+}
+
+public protocol TwoPartNameHaving {
+    var firstName: String { get }
+    var lastName: String { get }
+}
+
+public protocol FullNameHaving {
+    var fullName: String { get }
+}
+
 public class CouchManagerLeagueRespository {
     let filename: String
 
@@ -15,9 +32,9 @@ public class CouchManagerLeagueRespository {
     let teamNumberRow = 4
     let ottidRow = 5
 
-    public struct AuctionEntry {
-        let firstName: String
-        let lastName: String
+    public struct AuctionEntry: TwoPartNameHaving, FullNameHaving {
+        public let firstName: String
+        public let lastName: String
         let teamName: String
         let auctionAmount: Int
         let teamNumber: Int

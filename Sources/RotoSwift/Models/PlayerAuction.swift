@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct PlayerAuction {
-    public let name: String
+public struct PlayerAuction: FullNameHaving {
+    public let fullName: String
     public let zScore: Double
     public let auctionValue: Double
 }

@@ -9,7 +9,7 @@ func printValues(for leagueRosters: League, auctionValues: [PlayerAuction], top:
         var teamValue = 0.0
 
         let players: [PlayerAuction] = team.players.compactMap { player in
-            if let auctionPlayer = auctionValues.first(where: { $0.name == player.name }) {
+            if let auctionPlayer = auctionValues.first(where: { $0.fullName == player.name }) {
                 return auctionPlayer
             } else {
                 print("\(player.name) not found")

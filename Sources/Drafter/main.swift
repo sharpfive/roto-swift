@@ -19,56 +19,40 @@ let couchManagerMinorLeagueRepository = CouchManagerLeagueRespository(filename: 
 let auctionEntries = couchManagerLeagueRepository.getAuctionEntries()
 let minorLeagueAuctionEntries = couchManagerMinorLeagueRepository.getAuctionEntries()
 
-auctionEntries.forEach { auctionEntry in
-    let fullname = auctionEntry.fullName.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+let playerComparer = PlayerComparer()
 
+auctionEntries.forEach { auctionEntry in
     let previousHitterCount = hitterValues.count
     let previousPitcherCount = pitcherValues.count
 
     hitterValues = hitterValues.filter {
-        // very basic compare happening here
-        let trimmedName = $0.name.trimmingCharacters(in: CharacterSet(charactersIn: "."))
-
-        return trimmedName.caseInsensitiveCompare(fullname) != .orderedSame
+        return !playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
     }
 
     pitcherValues = pitcherValues.filter {
-        $0.name.caseInsensitiveCompare(fullname) != .orderedSame
+       return !playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
     }
 
     if hitterValues.count == previousHitterCount &&
         pitcherValues.count == previousPitcherCount {
-        print("!!! can't find \(fullname)")
+        print("!!! can't find \(auctionEntry.fullName)")
     }
 }
 
 minorLeagueAuctionEntries.forEach { auctionEntry in
-    let fullname = auctionEntry.fullName.trimmingCharacters(in: CharacterSet(charactersIn: "."))
-
-//    let previousHitterCount = hitterValues.count
-//    let previousPitcherCount = pitcherValues.count
-
     hitterValues = hitterValues.filter {
-        // very basic compare happening here
-        let trimmedName = $0.name.trimmingCharacters(in: CharacterSet(charactersIn: "."))
-
-        return trimmedName.caseInsensitiveCompare(fullname) != .orderedSame
+        return !playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
     }
 
     pitcherValues = pitcherValues.filter {
-        $0.name.caseInsensitiveCompare(fullname) != .orderedSame
+        return !playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
     }
-
-//    if hitterValues.count == previousHitterCount &&
-//        pitcherValues.count == previousPitcherCount {
-//        print("!!! can't find \(fullname)")
-//    }
 }
 
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 
-print("Here are the best available Jitters")
+print("Here are the best available Hitters")
 sortedHitterValues.prefix(upTo: 30).forEach {
     print($0)
 }

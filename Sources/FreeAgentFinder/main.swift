@@ -73,9 +73,9 @@ struct PlayerKeeperActualValue {
 print("Here are the best available hitters")
 
 let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo: 100).map { hitter in
-    let valueIn2020 = hitterValuesIn2020.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
-    let valueIn2021 = hitterValuesIn2021.first(where: { $0.name == hitter.name })?.auctionValue ?? 0.0
-    return PlayerKeeperValue(name: hitter.name, value: hitter.auctionValue, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
+    let valueIn2020 = hitterValuesIn2020.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+    let valueIn2021 = hitterValuesIn2021.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+    return PlayerKeeperValue(name: hitter.fullName, value: hitter.auctionValue, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
 }
 
 nextTwoYearsHitters.sorted(by: { $0.futureValue > $1.futureValue }).forEach {

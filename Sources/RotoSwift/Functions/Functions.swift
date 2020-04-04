@@ -26,7 +26,7 @@ public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAu
 
     playerKeeperPrices.forEach { nameKeeperValue in
 
-        let fangraphPlayer = playerAuctions.first(where: { $0.name == nameKeeperValue.name})
+        let fangraphPlayer = playerAuctions.first(where: { $0.fullName == nameKeeperValue.name})
 
         if let fangraphPlayer = fangraphPlayer {
             let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name,
@@ -296,11 +296,11 @@ public func calculateProjections(with filename: String) {
     let playersAuctions: [PlayerAuction] = adjustedBatters.map { batter in
         let batterZScore = batter.1
         let auctionAmount = batterZScore / totalZScores * Double(hitterAuctionMoney)
-        return PlayerAuction(name: batter.0, zScore: batterZScore, auctionValue: auctionAmount)
+        return PlayerAuction(fullName: batter.0, zScore: batterZScore, auctionValue: auctionAmount)
     }
 
     for (index, playerAuction) in playersAuctions.enumerated() {
-        print("\(index) - \(playerAuction.name) - \(playerAuction.zScore) - \(playerAuction.auctionValue)")
+        print("\(index) - \(playerAuction.fullName) - \(playerAuction.zScore) - \(playerAuction.auctionValue)")
     }
 
     // Check out work, this should be roughly the number of teams * the auction $$$
