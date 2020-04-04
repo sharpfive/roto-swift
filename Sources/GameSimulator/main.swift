@@ -77,6 +77,12 @@ struct Lineup {
     let batterIds: [String]
 }
 
+struct Team {
+    let identifier: String
+    let name: String
+    let lineup: Lineup
+}
+
 struct GameLineup {
     let awayTeam: TeamLineupProbabilities
     let homeTeam: TeamLineupProbabilities
@@ -86,8 +92,6 @@ struct GameState {
     var inningCount: InningCount = InningCount.beginningOfGame()
     var homeBattersRetired = 0
     var awayBattersRetired = 0
-//    var homeTeamRunsThisInning = 0
-//    var awayTeamRunsThisInning = 0
 
     private(set) var firstBaseOccupant: String?
     private(set) var secondBaseOccupant: String?
@@ -459,9 +463,9 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     }
 }
 
-struct PitcherProjection {
+struct PitcherProjection: FullNameHaving {
     let playerId: String
-    let name: String
+    let fullName: String
     let inningsPitched: Int
     let hits: Int
     let homeRuns: Int
@@ -492,9 +496,9 @@ struct PitcherProjection {
 }
 
 // Read in batter stats file
-struct BatterProjection {
+struct BatterProjection: FullNameHaving {
     let playerId: String
-    let name: String
+    let fullName: String
     let plateAppearances: Int
     let singles: Int
     let doubles: Int
@@ -530,6 +534,69 @@ struct BatterProjection {
     }
 }
 
+func createLineups(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [Team] {
+
+    let maxBatters = 9
+    let maxPitchers = 1
+
+    let repository = CouchManagerLeagueRespository(filename: filename)
+    let auctionEntries = repository.getAuctionEntries()
+
+    var currentTeamId: Int?
+    var currentTeamName: String = ""
+
+    let playerComparer = PlayerComparer()
+
+    var batters = [BatterProjection]()
+    var pitchers = [PitcherProjection]()
+
+    var teams = [Team]()
+
+    for auctionEntry in auctionEntries {
+        if let unwrappedCurrentTeamId = currentTeamId,
+            currentTeamId != auctionEntry.teamNumber {
+
+            guard let startingPitcherId = pitchers.first else {
+                print("Invalid lineup for team: \(String(describing: currentTeamId))")
+                exit(0)
+            }
+
+            let lineup = Lineup(startingPitcherId: startingPitcherId.playerId, batterIds: batters.map { $0.playerId } )
+
+            // create team
+            let team = Team(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, lineup: lineup)
+            teams.append(team)
+
+            // Reset counters
+            batters = [BatterProjection]()
+            pitchers = [PitcherProjection]()
+            currentTeamId = auctionEntry.teamNumber
+            currentTeamName = auctionEntry.teamName
+        }
+
+        if pitchers.count >= maxPitchers && batters.count >= maxBatters {
+            continue
+        }
+
+        if batters.count < maxBatters,
+            let batterProjection = batterProjections.values.first(where: {
+            playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
+        }) {
+            batters.append(batterProjection)
+        }
+
+        if pitchers.count < maxPitchers,
+            let pitcherProjection = pitcherProjections.values.first(where: {
+                playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
+        }) {
+            pitchers.append(pitcherProjection)
+        }
+
+    }
+
+    return teams
+}
+
 func inputHitterProjections(filename: String) -> [String: BatterProjection] {
     let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
@@ -554,7 +621,7 @@ func inputHitterProjections(filename: String) -> [String: BatterProjection] {
         let playerName = row[0]
 
         let hitterProjection = BatterProjection(playerId: playerId,
-                                                 name: playerName,
+                                                 fullName: playerName,
                                                  plateAppearances: plateAppearances,
                                                  singles: singles,
                                                  doubles: doubles,
@@ -593,7 +660,7 @@ func inputPitcherProjections(filename: String) -> [String: PitcherProjection] {
         let inningsPitched = Int(inningsPitchedDouble)
 
         let pitcherProjection = PitcherProjection(playerId: playerId,
-                                                  name: playerName,
+                                                  fullName: playerName,
                                                   inningsPitched: inningsPitched,
                                                   hits: hits,
                                                   homeRuns: homeRuns,
@@ -615,6 +682,8 @@ let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", ki
 
 let outputFilenameOption = parser.add(option: "--output", shortName: "-o", kind: String.self, usage: "Filename for output")
 
+let lineupsFilenameOption = parser.add(option: "--lineups", shortName: "-l", kind: String.self, usage: "Filename for the team lineups.")
+
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 
 let parsedArguments: SPMUtility.ArgumentParser.Result
@@ -633,6 +702,7 @@ do {
 let hitterFilename = parsedArguments.get(hitterFilenameOption)
 let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
 let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "HitterAuctionValues", format: "csv")
+let lineupsFileName = parsedArguments.get(lineupsFilenameOption)
 
 guard let hitterFilename = hitterFilename else {
     print("Hitter filename is required")
@@ -644,8 +714,14 @@ guard let pitcherFilename = pitcherFilename else {
     exit(0)
 }
 
+guard let lineupsFilename = lineupsFileName else {
+    print("Lineup filename is required")
+    exit(0)
+}
+
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
+let lineups = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
 let totalSingles = hitterProjections.values.map { $0.singles }.reduce(0, +)
 let totalDoubles = hitterProjections.values.map { $0.doubles }.reduce(0, +)
@@ -660,15 +736,15 @@ let percentageOfDoubles = Double(totalDoubles) / Double(totalHits)
 let percentageOfTriples = Double(totalTriples) / Double(totalHits)
 let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
 
-print("totalPlateAppearances: \(totalPlateAppearances)")
-print("totalHits: \(totalHits)")
-print("totalSingles: \(totalSingles)")
-print("totalDoubles: \(totalDoubles)")
-print("totalTriples: \(totalTriples)")
-print("totalHomeruns: \(totalHomeRuns)")
-
-print("percentageOfDoubles: \(percentageOfDoubles)")
-print("percentageOfTriples: \(percentageOfTriples)")
+//print("totalPlateAppearances: \(totalPlateAppearances)")
+//print("totalHits: \(totalHits)")
+//print("totalSingles: \(totalSingles)")
+//print("totalDoubles: \(totalDoubles)")
+//print("totalTriples: \(totalTriples)")
+//print("totalHomeruns: \(totalHomeRuns)")
+//
+//print("percentageOfDoubles: \(percentageOfDoubles)")
+//print("percentageOfTriples: \(percentageOfTriples)")
 
 struct ProbabilityLineupConverter {
     let pitcherDictionary: [String: PitcherProjection]
