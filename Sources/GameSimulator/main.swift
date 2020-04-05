@@ -77,10 +77,30 @@ struct Lineup {
     let batterIds: [String]
 }
 
-struct Team {
+struct TeamLineup {
     let identifier: String
     let name: String
     let lineup: Lineup
+}
+
+struct Team {
+    let identifier: String
+    let name: String
+    let pitchers: [PitcherProjection]
+    let batters: [BatterProjection]
+
+    func printToStandardOut() {
+        print("Team: \(name)")
+        print("   id: \(identifier)")
+        print("   Pitchers")
+        pitchers.forEach {
+            print("      \($0)")
+        }
+        print("   Batters")
+        batters.forEach {
+            print("      \($0)")
+        }
+    }
 }
 
 struct GameLineup {
@@ -536,8 +556,8 @@ struct BatterProjection: FullNameHaving {
 
 func createLineups(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [Team] {
 
-    let maxBatters = 9
-    let maxPitchers = 1
+    let requiredBatters = 9
+    let requiredPitchers = 5
 
     let repository = CouchManagerLeagueRespository(filename: filename)
     let auctionEntries = repository.getAuctionEntries()
@@ -556,15 +576,17 @@ func createLineups(filename: String, batterProjections: [String: BatterProjectio
         if let unwrappedCurrentTeamId = currentTeamId,
             currentTeamId != auctionEntry.teamNumber {
 
-            guard let startingPitcherId = pitchers.first else {
-                print("Invalid lineup for team: \(String(describing: currentTeamId))")
+            guard pitchers.count >= requiredPitchers else {
+                print("Invalid lineup for team: \(String(describing: currentTeamId)) - not enough pitchers")
                 exit(0)
             }
 
-            let lineup = Lineup(startingPitcherId: startingPitcherId.playerId, batterIds: batters.map { $0.playerId } )
+            guard batters.count >= requiredBatters else {
+                print("Invalid lineup for team \(String(describing: currentTeamId)) - not enough pitchers")
+                exit(0)
+            }
 
-            // create team
-            let team = Team(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, lineup: lineup)
+            let team = Team(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, pitchers: pitchers, batters: batters)
             teams.append(team)
 
             // Reset counters
@@ -577,14 +599,14 @@ func createLineups(filename: String, batterProjections: [String: BatterProjectio
         currentTeamId = auctionEntry.teamNumber
         currentTeamName = auctionEntry.teamName
 
-        if batters.count < maxBatters,
+        if batters.count < requiredBatters,
             let batterProjection = batterProjections.values.first(where: {
             playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
         }) {
             batters.append(batterProjection)
         }
 
-        if pitchers.count < maxPitchers,
+        if pitchers.count < requiredPitchers,
             let pitcherProjection = pitcherProjections.values.first(where: {
                 playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
         }) {
@@ -896,13 +918,28 @@ func printFinalScore(with gameState: GameState) {
     print("")
 }
 
+func createLineups(for team: Team) -> [Lineup] {
+    return team.pitchers.map { pitcherProjection in
+        return Lineup(startingPitcherId: pitcherProjection.playerId, batterIds: team.batters.prefix(9).map{ $0.playerId })
+    }
+}
+
 let homeTeam = lineups[0]
 let awayTeam = lineups[1]
 
-print("Home Team: \(homeTeam)")
-print("Away Team: \(awayTeam)")
 
-let gameStates = simulateGame(homeLineup: homeTeam.lineup, awayLineup: awayTeam.lineup)
+print("Home Team:")
+homeTeam.printToStandardOut()
+
+print("")
+
+print("Away Team:")
+awayTeam.printToStandardOut()
+
+let homeLineups = createLineups(for: homeTeam)
+let awayLineups = createLineups(for: awayTeam)
+
+let gameStates = simulateGame(homeLineup: homeLineups.first!, awayLineup: awayLineups.first!)
 
 gameStates.forEach { gameState in
     if gameState.isEndOfGame() {
