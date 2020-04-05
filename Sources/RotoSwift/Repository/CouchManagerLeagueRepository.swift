@@ -44,7 +44,8 @@ public class CouchManagerLeagueRespository {
         var auctionEntries = [AuctionEntry]()
 
         while let row = csv.next() {
-            guard let teamNumber = Int(row[teamNumberRow]),
+            guard row.count > ottidRow,
+                let teamNumber = Int(row[teamNumberRow]),
                 let auctionAmount = Int(row[auctionAmountRow]),
                 let ottid = Int(row[ottidRow]) else { continue }
 
