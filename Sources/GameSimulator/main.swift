@@ -939,15 +939,37 @@ awayTeam.printToStandardOut()
 let homeLineups = createLineups(for: homeTeam)
 let awayLineups = createLineups(for: awayTeam)
 
-let gameStates = simulateGame(homeLineup: homeLineups.first!, awayLineup: awayLineups.first!)
+//let gameStates = simulateGame(homeLineup: homeLineups.first!, awayLineup: awayLineups.first!)
+//
+//gameStates.forEach { gameState in
+//    if gameState.isEndOfGame() {
+//        printFinalScore(with: gameState)
+//    } else {
+//        printInningFrame(with: gameState)
+//    }
+//}
 
-gameStates.forEach { gameState in
-    if gameState.isEndOfGame() {
-        printFinalScore(with: gameState)
-    } else {
-        printInningFrame(with: gameState)
+var games = [GameState]()
+
+homeLineups.forEach { homeLineup in
+    awayLineups.forEach { awayLineup in
+        let gameStates = simulateGame(homeLineup: homeLineup, awayLineup: awayLineup)
+        if let lastState = gameStates.last {
+            games.append(lastState)
+        }
     }
 }
+
+games.forEach {
+    printFinalScore(with: $0)
+}
+
+let homeTeamWon = games.filter { $0.totalHomeRunsScored > $0.totalAwayRunsScored }.count
+let awayTeamWon = games.filter { $0.totalHomeRunsScored < $0.totalAwayRunsScored }.count
+
+
+print("Home Team Won: \(homeTeamWon) games")
+print("Away Team Won: \(awayTeamWon) games")
 
 //let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
 //                                                      double: 0.05,
