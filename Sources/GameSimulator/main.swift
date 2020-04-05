@@ -5,7 +5,7 @@
 //  Created by Jaim Zuber on 3/23/20.
 //
 
-// ex swift run GameSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-02-Auction.csv
+// ex swift run GameSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 import Foundation
 import RotoSwift
 import CSV
@@ -849,7 +849,7 @@ let scrubsLineup = Lineup(startingPitcherId: "4153",
                         ])
 
 
-func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
+func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> [GameState] {
     let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections, batterDictionary: hitterProjections)
     let awayProbabilities = converter.convert(lineup: awayLineup)
     let homeProbabilities = converter.convert(lineup: homeLineup)
@@ -862,6 +862,8 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
 
     var gameStarted = true
 
+    var gameStates = [GameState]()
+
     repeat {
 
         if gameStarted {
@@ -873,11 +875,18 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
 
         gameState = inningResults.gameState
 
-        print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
-        // print(gameState)
+        gameStates.append(gameState)
 
     } while !gameState.isEndOfGame()
 
+    return gameStates
+}
+
+func printInningFrame(with gameState: GameState) {
+    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+}
+
+func printFinalScore(with gameState: GameState) {
     print("************************")
     print("")
     print("Game Over!")
@@ -885,11 +894,7 @@ func simulateGame(homeLineup: Lineup, awayLineup: Lineup) -> GameState {
     print("")
     print("************************")
     print("")
-    print(gameState)
-
-    return gameState
 }
-
 
 let homeTeam = lineups[0]
 let awayTeam = lineups[1]
@@ -897,7 +902,15 @@ let awayTeam = lineups[1]
 print("Home Team: \(homeTeam)")
 print("Away Team: \(awayTeam)")
 
-_ = simulateGame(homeLineup: homeTeam.lineup, awayLineup: awayTeam.lineup)
+let gameStates = simulateGame(homeLineup: homeTeam.lineup, awayLineup: awayTeam.lineup)
+
+gameStates.forEach { gameState in
+    if gameState.isEndOfGame() {
+        printFinalScore(with: gameState)
+    } else {
+        printInningFrame(with: gameState)
+    }
+}
 
 //let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
 //                                                      double: 0.05,
