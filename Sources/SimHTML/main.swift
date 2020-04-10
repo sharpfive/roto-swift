@@ -66,11 +66,16 @@ let lineups = createLineups(filename: lineupsFilename, batterProjections: hitter
 let leagueName = "CIK"
 
 let html = HTML(
+    .head(
+        .title(leagueName)
+    ),
     .body(
-        .element(named: "league", text: leagueName)
+        .div(
+            .ul(.forEach(lineups) {
+                .li(.text($0.name))
+            })
+        )
     )
 )
-
-
 
 print(html.render(indentedBy: .spaces(4)))
