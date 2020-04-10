@@ -57,7 +57,7 @@ let package = Package(
         ),
         .target(
             name: "SimHTML",
-            dependencies: ["RotoSwift", "SimulatorLib", "Plot"]
+            dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility"]
         ),
         .target(
             name: "ProjectionsToAuctionValues",

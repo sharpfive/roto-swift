@@ -122,7 +122,7 @@ extension SimulatorLib.Team {
 //}
 
 let parser = ArgumentParser(commandName: "GameSimulator",
-usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv]",
+usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv --linup lineups.csv]",
 overview: "Converts a set of hitter statistic projections and turns them into auction values")
 
 let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters projections.")
