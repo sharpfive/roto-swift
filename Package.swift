@@ -7,11 +7,16 @@ let package = Package(
     dependencies: [
     .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
     .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.3.0"),
+    .package(url: "https://github.com/JohnSundell/Plot.git", from: "0.7.0"),
     ],
     targets: [
         .target(
             name: "RotoSwift",
             dependencies: ["CSV"]
+        ),
+        .target(
+            name: "SimulatorLib",
+            dependencies: ["CSV", "RotoSwift"]
         ),
         .target(
             name: "PlayerRelativeValues",
@@ -48,7 +53,11 @@ let package = Package(
         ),
         .target(
             name: "GameSimulator",
-            dependencies: ["RotoSwift", "CSV", "SPMUtility"]
+            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib",]
+        ),
+        .target(
+            name: "SimHTML",
+            dependencies: ["RotoSwift", "SimulatorLib", "Plot"]
         ),
         .target(
             name: "ProjectionsToAuctionValues",
