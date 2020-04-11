@@ -62,7 +62,6 @@ let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
 let lineups = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
-
 let leagueName = "CIK"
 
 let html = HTML(
@@ -71,30 +70,42 @@ let html = HTML(
     ),
     .body(
         .div(
-            .ul(.forEach(lineups) {
-                .li(.div(
-                    .text($0.name)
+            .h1(
+                .text("League: \(leagueName)")
+            ),
+            .forEach(lineups) { lineup in
+                .div(
+                    .h2(
+                        .text(lineup.name)
+                    ),
+                    .h3(
+                        .text("Batters")
+                    ),
+                    .table(
+                        .tr(
+                            .th("Name")
+                        ),
+                        .forEach(lineup.batters) { batter in
+                            .tr(
+                                .td(.text(batter.fullName))
+                            )
+                        }
+                    ),
+                    .h3(
+                        .text("Pitchers")
+                    ),
+                    .table(
+                        .tr(
+                            .th("Name")
+                        ),
+                        .forEach(lineup.pitchers) { pitcher in
+                            .tr(
+                                .td(.text(pitcher.fullName))
+                            )
+                        }
                     )
                 )
-            })
-        ),
-        .div(
-            .table(
-                .tr(
-                    .th("Team Id"),
-                    .th("Name")
-                ),
-                .forEach(lineups) { lineup in
-                    .tr(
-                        .td(
-                            .text(lineup.identifier)
-                        ),
-                        .td(
-                            .text(lineup.name)
-                        )
-                    )
-                }
-            )
+            }
         )
     )
 )
