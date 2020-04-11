@@ -72,10 +72,32 @@ let html = HTML(
     .body(
         .div(
             .ul(.forEach(lineups) {
-                .li(.text($0.name))
+                .li(.div(
+                    .text($0.name)
+                    )
+                )
             })
+        ),
+        .div(
+            .table(
+                .tr(
+                    .th("Team Id"),
+                    .th("Name")
+                ),
+                .forEach(lineups) { lineup in
+                    .tr(
+                        .td(
+                            .text(lineup.identifier)
+                        ),
+                        .td(
+                            .text(lineup.name)
+                        )
+                    )
+                }
+            )
         )
     )
 )
+
 
 print(html.render(indentedBy: .spaces(4)))
