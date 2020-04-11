@@ -188,6 +188,13 @@ public struct Team {
     public let batters: [BatterProjection]
 }
 
+extension Team: Codable {}
+extension Team: Hashable {}
+extension PitcherProjection: Codable {}
+extension PitcherProjection: Hashable {}
+extension BatterProjection: Hashable {}
+extension BatterProjection: Codable {}
+
 extension Team {
     func printToStandardOut() {
         print("Team: \(name)")

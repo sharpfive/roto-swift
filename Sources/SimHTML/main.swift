@@ -9,6 +9,7 @@ import Foundation
 import Plot
 import SPMUtility
 import SimulatorLib
+import Publish
 
 // ex swift run SimHTML --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 
@@ -100,7 +101,9 @@ let html = HTML(
                         ),
                         .forEach(lineup.pitchers) { pitcher in
                             .tr(
-                                .td(.text(pitcher.fullName))
+                                .td(
+                                    .text(pitcher.fullName)
+                                )
                             )
                         }
                     )
@@ -112,3 +115,23 @@ let html = HTML(
 
 
 print(html.render(indentedBy: .spaces(4)))
+
+struct SimulationLeague: Website {
+    enum SectionID: String, WebsiteSectionID {
+        case rosters
+        case links
+        case about
+    }
+
+    struct ItemMetadata: WebsiteItemMetadata {
+        var teams: [Team]
+    }
+
+    var url = URL(string: "https://cooking-with-john.com")!
+    var name = "The League"
+    var description = "Baseball Simulation"
+    var language: Language { .english }
+    var imagePath: Path? { "images/logo.png" }
+}
+
+try SimulationLeague().publish(withTheme: .foundation)
