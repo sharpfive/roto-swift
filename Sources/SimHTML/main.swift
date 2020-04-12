@@ -61,9 +61,10 @@ guard let lineupsFilename = lineupsFileName else {
 
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-let lineups = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+let teams = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
 let leagueName = "CIK"
+
 
 let html = HTML(
     .head(
@@ -74,10 +75,10 @@ let html = HTML(
             .h1(
                 .text("League: \(leagueName)")
             ),
-            .forEach(lineups) { lineup in
+            .forEach(teams) { team in
                 .div(
                     .h2(
-                        .text(lineup.name)
+                        .text(team.name)
                     ),
                     .h3(
                         .text("Batters")
@@ -86,7 +87,7 @@ let html = HTML(
                         .tr(
                             .th("Name")
                         ),
-                        .forEach(lineup.batters) { batter in
+                        .forEach(team.batters) { batter in
                             .tr(
                                 .td(.text(batter.fullName))
                             )
@@ -99,7 +100,7 @@ let html = HTML(
                         .tr(
                             .th("Name")
                         ),
-                        .forEach(lineup.pitchers) { pitcher in
+                        .forEach(team.pitchers) { pitcher in
                             .tr(
                                 .td(
                                     .text(pitcher.fullName)
@@ -143,10 +144,10 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
         return HTML(
             .head(
-                .title("The Title")
+                .title("Simulated Baseball Games")
             ),
             .body(
-                .h1("Here is some Index text"),
+                .h1("Simulated Baseball Games"),
                 .div(
                     .h2(
                         .text("Sections")
@@ -181,20 +182,55 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
     func leagueHTML(for metadata: SimulationLeague.ItemMetadata ) -> HTML {
 
+        let teams = metadata.teams
+
         return HTML(
             .head(
-                .title("League Info")
+                .title(leagueName)
             ),
             .body(
-                .h1(
-                    .text("Here is text for \(metadata.leagueName)")
-                ),
-                .h2(
-                    .text("Here are rosters \(metadata.teams)")
+                .div(
+                    .h1(
+                        .text("League: \(leagueName)")
+                    ),
+                    .forEach(teams) { team in
+                        .div(
+                            .h2(
+                                .text(team.name)
+                            ),
+                            .h3(
+                                .text("Batters")
+                            ),
+                            .table(
+                                .tr(
+                                    .th("Name")
+                                ),
+                                .forEach(team.batters) { batter in
+                                    .tr(
+                                        .td(.text(batter.fullName))
+                                    )
+                                }
+                            ),
+                            .h3(
+                                .text("Pitchers")
+                            ),
+                            .table(
+                                .tr(
+                                    .th("Name")
+                                ),
+                                .forEach(team.pitchers) { pitcher in
+                                    .tr(
+                                        .td(
+                                            .text(pitcher.fullName)
+                                        )
+                                    )
+                                }
+                            )
+                        )
+                    }
                 )
             )
         )
-
     }
 
     func aboutHTML() -> HTML {
@@ -235,19 +271,46 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
         return HTML(
             .head(
-                .title("Item :\(leagueName)")
+                .title(leagueName)
             ),
             .body(
-                .h1(
-                    .text("Here is text for \(leagueName)")
-                ),
-                .table(
-                    .tr(
-                        .th("Name")
+                .div(
+                    .h1(
+                        .text("League: \(leagueName)")
                     ),
                     .forEach(teams) { team in
-                        .tr(
-                            .td(.text(team.name))
+                        .div(
+                            .h2(
+                                .text(team.name)
+                            ),
+                            .h3(
+                                .text("Batters")
+                            ),
+                            .table(
+                                .tr(
+                                    .th("Name")
+                                ),
+                                .forEach(team.batters) { batter in
+                                    .tr(
+                                        .td(.text(batter.fullName))
+                                    )
+                                }
+                            ),
+                            .h3(
+                                .text("Pitchers")
+                            ),
+                            .table(
+                                .tr(
+                                    .th("Name")
+                                ),
+                                .forEach(team.pitchers) { pitcher in
+                                    .tr(
+                                        .td(
+                                            .text(pitcher.fullName)
+                                        )
+                                    )
+                                }
+                            )
                         )
                     }
                 )
@@ -309,7 +372,7 @@ try SimulationLeague().publish(
             sectionID: .rosters,
             metadata: SimulationLeague.ItemMetadata(
                 leagueName: leagueName,
-                teams: lineups
+                teams: teams
             ),
             tags: ["roster"],
             content: Content(
