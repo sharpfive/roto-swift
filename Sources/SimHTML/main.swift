@@ -119,7 +119,6 @@ print(html.render(indentedBy: .spaces(4)))
 struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {
         case rosters
-        case links
         case about
     }
 
@@ -173,6 +172,8 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
         switch (section.id, section.item(at: section.path)?.metadata) {
         case (.rosters, .some(let metadata)):
             return leagueHTML(for: metadata)
+        case (.about, _):
+            return aboutHTML()
         default:
             return defaultHTML(for: section)
         }
@@ -194,6 +195,25 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
             )
         )
 
+    }
+
+    func aboutHTML() -> HTML {
+        return HTML(
+            .head(
+                .title("About")
+            ),
+            .body(
+                .h1(
+                    .text("About these stats")
+                ),
+                .p(
+                    .text("This is a collection of simulated stats for baseball games. Not much else here yet. It is intended for amusement purposes only. Although its effectiveness to that point is debateable."
+                    ),
+                    .br(),
+                    .text("Want to simulate your league with projected 2020 stats? Let us know.")
+                )
+            )
+        )
     }
 
     func defaultHTML(for section: Section<SimulationLeague>) -> HTML {
