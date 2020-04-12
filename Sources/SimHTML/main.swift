@@ -140,19 +140,37 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
     func makeIndexHTML(for index: Index, context: PublishingContext<SimulationLeague>) throws -> HTML {
 
+        let sections = context.sections
+
         return HTML(
             .head(
                 .title("The Title")
             ),
             .body(
-                .h1("Here is some Index text")
+                .h1("Here is some Index text"),
+                .div(
+                    .h2(
+                        .text("Sections")
+                    ),
+                    .ul(
+                        .forEach(sections) { section in
+                            .li(
+                                .a(
+                                    .href("\(section.path)/index.html"),
+                                    .text("\(section.path)")
+                                )
+                            )
+                        }
+                    )
+                )
             )
         )
     }
 
     func makeSectionHTML(for section: Section<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
 
-        switch (section.id, section.items.first?.metadata) {
+
+        switch (section.id, section.item(at: section.path)?.metadata) {
         case (.rosters, .some(let metadata)):
             return leagueHTML(for: metadata)
         default:
