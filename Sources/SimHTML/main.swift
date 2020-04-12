@@ -124,6 +124,7 @@ struct SimulationLeague: Website {
     }
 
     struct ItemMetadata: WebsiteItemMetadata {
+        let leagueName: String
         var teams: [Team]
     }
 
@@ -134,4 +135,148 @@ struct SimulationLeague: Website {
     var imagePath: Path? { "images/logo.png" }
 }
 
-try SimulationLeague().publish(withTheme: .foundation)
+class SimulationLeagueHTMLFactory: HTMLFactory {
+    typealias Site = SimulationLeague
+
+    func makeIndexHTML(for index: Index, context: PublishingContext<SimulationLeague>) throws -> HTML {
+
+        return HTML(
+            .head(
+                .title("The Title")
+            ),
+            .body(
+                .h1("Here is some Index text")
+            )
+        )
+    }
+
+    func makeSectionHTML(for section: Section<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
+
+        switch (section.id, section.items.first?.metadata) {
+        case (.rosters, .some(let metadata)):
+            return leagueHTML(for: metadata)
+        default:
+            return defaultHTML(for: section)
+        }
+    }
+
+    func leagueHTML(for metadata: SimulationLeague.ItemMetadata ) -> HTML {
+
+        return HTML(
+            .head(
+                .title("League Info")
+            ),
+            .body(
+                .h1(
+                    .text("Here is text for \(metadata.leagueName)")
+                ),
+                .h2(
+                    .text("Here are rosters \(metadata.teams)")
+                )
+            )
+        )
+
+    }
+
+    func defaultHTML(for section: Section<SimulationLeague>) -> HTML {
+        return HTML(
+            .head(
+                .title("Section :\(section.id)")
+            ),
+            .body(
+                .h1(
+                    .text("Default text for \(section.id)")
+                )
+            )
+        )
+    }
+
+    func makeItemHTML(for item: Item<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
+        let leagueName = item.metadata.leagueName
+        let teams = item.metadata.teams
+
+        return HTML(
+            .head(
+                .title("Item :\(leagueName)")
+            ),
+            .body(
+                .h1(
+                    .text("Here is text for \(leagueName)")
+                ),
+                .table(
+                    .tr(
+                        .th("Name")
+                    ),
+                    .forEach(teams) { team in
+                        .tr(
+                            .td(.text(team.name))
+                        )
+                    }
+                )
+            )
+        )
+    }
+
+    func makePageHTML(for page: Page, context: PublishingContext<SimulationLeague>) throws -> HTML {
+        return HTML(
+            .head(
+                .title("Page")
+            ),
+            .body(
+                .h1(
+                    .text("A Page")
+                )
+            )
+        )
+    }
+
+    func makeTagListHTML(for page: TagListPage, context: PublishingContext<SimulationLeague>) throws -> HTML? {
+        return HTML(
+            .head(
+                .title("Tag List")
+            ),
+            .body(
+                .h1(
+                    .text("Tag List")
+                )
+            )
+        )
+    }
+
+    func makeTagDetailsHTML(for page: TagDetailsPage, context: PublishingContext<SimulationLeague>) throws -> HTML? {
+        return HTML(
+            .head(
+                .title("Tag Details")
+            ),
+            .body(
+                .h1(
+                    .text("Tag Details")
+                )
+            )
+        )
+    }
+}
+
+extension Theme where Site == SimulationLeague {
+    static var league: Self {
+        Theme(htmlFactory: SimulationLeagueHTMLFactory())
+    }
+}
+
+try SimulationLeague().publish(
+    withTheme: .league,
+    additionalSteps: [
+        .addItem(Item(
+            path: "rosters",
+            sectionID: .rosters,
+            metadata: SimulationLeague.ItemMetadata(
+                leagueName: leagueName,
+                teams: lineups
+            ),
+            tags: ["roster"],
+            content: Content(
+                title: "Roster"
+            )
+        ))
+    ]
+)
