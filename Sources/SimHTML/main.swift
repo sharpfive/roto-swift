@@ -65,58 +65,6 @@ let teams = createLineups(filename: lineupsFilename, batterProjections: hitterPr
 
 let leagueName = "CIK"
 
-
-let html = HTML(
-    .head(
-        .title(leagueName)
-    ),
-    .body(
-        .div(
-            .h1(
-                .text("League: \(leagueName)")
-            ),
-            .forEach(teams) { team in
-                .div(
-                    .h2(
-                        .text(team.name)
-                    ),
-                    .h3(
-                        .text("Batters")
-                    ),
-                    .table(
-                        .tr(
-                            .th("Name")
-                        ),
-                        .forEach(team.batters) { batter in
-                            .tr(
-                                .td(.text(batter.fullName))
-                            )
-                        }
-                    ),
-                    .h3(
-                        .text("Pitchers")
-                    ),
-                    .table(
-                        .tr(
-                            .th("Name")
-                        ),
-                        .forEach(team.pitchers) { pitcher in
-                            .tr(
-                                .td(
-                                    .text(pitcher.fullName)
-                                )
-                            )
-                        }
-                    )
-                )
-            }
-        )
-    )
-)
-
-
-print(html.render(indentedBy: .spaces(4)))
-
 struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {
         case rosters

@@ -177,15 +177,13 @@ public func createLineups(filename: String, batterProjections: [String: BatterPr
             playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
         }) {
             batters.append(batterProjection)
-        }
-
-        if pitchers.count < requiredPitchers,
+        } else if pitchers.count < requiredPitchers, // else is because we don't have another way to determine Will Smoth or Jose Ramirez are pitchers or batters
+            // we'll assume they are hitters for now
             let pitcherProjection = pitcherProjections.values.first(where: {
                 playerComparer.isSamePlayer(playerOne: auctionEntry, playerTwo: $0)
         }) {
             pitchers.append(pitcherProjection)
         }
-
     }
 
     return teams
