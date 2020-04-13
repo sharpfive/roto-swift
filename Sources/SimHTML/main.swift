@@ -134,7 +134,7 @@ let games = [
 struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {
         case rosters
-        case games
+        case game
         case about
     }
 
@@ -142,7 +142,7 @@ struct SimulationLeague: Website {
         let leagueName: String
         let teams: [Team]
 
-        let games: [GameViewModel]?
+        let game: GameViewModel?
     }
 
     var url = URL(string: "https://cooking-with-john.com")!
@@ -282,10 +282,7 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
         )
     }
 
-    func makeItemHTML(for item: Item<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
-        let leagueName = item.metadata.leagueName
-        let teams = item.metadata.teams
-
+    func makeRostersHTML(leagueName: String, teams: [Team]) -> HTML {
         return HTML(
             .head(
                 .title(leagueName)
@@ -335,6 +332,35 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
         )
     }
 
+    func makeGameHTML(for game: GameViewModel) -> HTML {
+        return HTML(
+            .head(
+                .title(
+                    game.title
+                )
+            ),
+            .body(
+                .h1(.text(game.title))
+            )
+        )
+    }
+
+    func makeItemHTML(for item: Item<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
+        let leagueName = item.metadata.leagueName
+        let teams = item.metadata.teams
+
+        switch item.sectionID {
+        case .rosters:
+            return makeRostersHTML(leagueName: leagueName, teams: teams)
+        case .game:
+            return makeGameHTML(for: item.metadata.game!)
+        default:
+            print("No Item Handler for \(item.sectionID)")
+            exit(0)
+        }
+
+    }
+
     func makePageHTML(for page: Page, context: PublishingContext<SimulationLeague>) throws -> HTML {
         return HTML(
             .head(
@@ -381,10 +407,12 @@ extension Theme where Site == SimulationLeague {
     }
 }
 
-let metaData = SimulationLeague.ItemMetadata(leagueName: leagueName, teams: teams, games: games)
+let metadatas = games.map { game in
+    return SimulationLeague.ItemMetadata(leagueName: leagueName, teams: teams, game: game)
+}
 
-let gameItems = games.map{ game in
-    return Item<SimulationLeague>(path: "game/\(game.gameId)", sectionID: .games, metadata: metaData)
+let gameItems = metadatas.map{ metadata in
+    return Item<SimulationLeague>(path: "\(metadata.game!.gameId)", sectionID: .game, metadata: metadata)
 }
 
 try SimulationLeague().publish(
@@ -396,7 +424,7 @@ try SimulationLeague().publish(
             metadata: SimulationLeague.ItemMetadata(
                 leagueName: leagueName,
                 teams: teams,
-                games: nil
+                game: nil
             ),
             tags: ["roster"],
             content: Content(
