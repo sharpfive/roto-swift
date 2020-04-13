@@ -63,17 +63,86 @@ let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
 let teams = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
+
+
 let leagueName = "CIK"
+
+struct LineScoreViewModel: Codable, Hashable {
+    struct InningResult: Codable, Hashable {
+        let inningNumber: String
+        let awayTeamRunsScored: String
+        let homeTeamRunsScored: String
+        let isFinalInning: Bool
+    }
+
+    let awayTeam: String
+    let homeTeam: String
+
+    let inningScores: [InningResult]
+    let awayTeamHits: String
+    let homeTeamHits: String
+
+    let awayTeamErrors: String = "0"
+    let homeTeamErrors: String = "0"
+
+    let awayTeamFinalScore: String
+    let homeTeamFinalScore: String
+}
+
+struct GameViewModel: Codable, Hashable {
+    let gameId: String
+    let title: String
+    let lineScore: LineScoreViewModel
+}
+
+let inningScores = [
+    LineScoreViewModel.InningResult(inningNumber: "1", awayTeamRunsScored: "1", homeTeamRunsScored: "0", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "2", awayTeamRunsScored: "0", homeTeamRunsScored: "0", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "3", awayTeamRunsScored: "0", homeTeamRunsScored: "0", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "4", awayTeamRunsScored: "0", homeTeamRunsScored: "3", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "5", awayTeamRunsScored: "0", homeTeamRunsScored: "0", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "6", awayTeamRunsScored: "0", homeTeamRunsScored: "0", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "7", awayTeamRunsScored: "0", homeTeamRunsScored: "2", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "8", awayTeamRunsScored: "0", homeTeamRunsScored: "1", isFinalInning: false),
+    LineScoreViewModel.InningResult(inningNumber: "9", awayTeamRunsScored: "2", homeTeamRunsScored: "-", isFinalInning: true),
+]
+
+let lineScoreViewModel = LineScoreViewModel(awayTeam: "Toronto Blue Jays",
+                                   homeTeam: "Minnesota Twins",
+                                   inningScores: inningScores,
+                                   awayTeamHits: "7",
+                                   homeTeamHits: "11",
+                                   awayTeamFinalScore: "3",
+                                   homeTeamFinalScore: "6")
+
+let gameViewModel = GameViewModel(gameId: "0", title: "Toronto Blue Jays at Minnesota Twins, April 13 2020", lineScore: lineScoreViewModel)
+
+func createGame(with gameId: String) -> GameViewModel {
+    return GameViewModel(gameId: gameId, title: "Toronto Blue Jays at Minnesota Twins, April 13 2020", lineScore: lineScoreViewModel)
+}
+
+let games = [
+    createGame(with: "0"),
+    createGame(with: "1"),
+    createGame(with: "2"),
+    createGame(with: "3"),
+    createGame(with: "4"),
+    createGame(with: "5"),
+]
+
 
 struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {
         case rosters
+        case games
         case about
     }
 
     struct ItemMetadata: WebsiteItemMetadata {
         let leagueName: String
-        var teams: [Team]
+        let teams: [Team]
+
+        let games: [GameViewModel]?
     }
 
     var url = URL(string: "https://cooking-with-john.com")!
@@ -312,6 +381,12 @@ extension Theme where Site == SimulationLeague {
     }
 }
 
+let metaData = SimulationLeague.ItemMetadata(leagueName: leagueName, teams: teams, games: games)
+
+let gameItems = games.map{ game in
+    return Item<SimulationLeague>(path: "game/\(game.gameId)", sectionID: .games, metadata: metaData)
+}
+
 try SimulationLeague().publish(
     withTheme: .league,
     additionalSteps: [
@@ -320,12 +395,15 @@ try SimulationLeague().publish(
             sectionID: .rosters,
             metadata: SimulationLeague.ItemMetadata(
                 leagueName: leagueName,
-                teams: teams
+                teams: teams,
+                games: nil
             ),
             tags: ["roster"],
             content: Content(
-                title: "Roster"
+                title: "Roster",
+                date: Date()
             )
-        ))
+        )),
+        .addItems(in: gameItems)
     ]
 )
