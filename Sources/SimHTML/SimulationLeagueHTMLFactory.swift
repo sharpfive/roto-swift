@@ -204,32 +204,7 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
                 .h1(.text(game.title)),
                 .div(
                     .class("linescore"),
-                    .table(
-                        .tr(
-                            .forEach(game.lineScore.inningScores) { inningScore in
-                                .td(.text(inningScore.inningNumber))
-                            },
-                            .td("H"),
-                            .td("R"),
-                            .td("E")
-                        ),
-                        .tr(
-                            .forEach(game.lineScore.inningScores) { inningScore in
-                                .td(.text(inningScore.awayTeamRunsScored))
-                            },
-                            .td(.text(game.lineScore.awayTeamHits)),
-                            .td(.text(game.lineScore.awayTeamFinalScore)),
-                            .td(.text(game.lineScore.awayTeamErrors))
-                        ),
-                        .tr(
-                            .forEach(game.lineScore.inningScores) { inningScore in
-                                .td(.text(inningScore.homeTeamRunsScored))
-                            },
-                            .td(.text(game.lineScore.homeTeamHits)),
-                            .td(.text(game.lineScore.homeTeamFinalScore)),
-                            .td(.text(game.lineScore.homeTeamErrors))
-                        )
-                    )
+                    .lineScore(game.lineScore)
                 )
             )
         )
