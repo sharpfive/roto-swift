@@ -53,9 +53,35 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
             return leagueHTML(for: metadata)
         case (.about, _):
             return aboutHTML()
+        case (.leagueResults, .some(let metadata)):
+            return leagueResultsHTML(for: metadata)
         default:
             return defaultHTML(for: section)
         }
+    }
+
+    func leagueResultsHTML(for metadata: SimulationLeague.ItemMetadata ) -> HTML {
+        let leagueResults = metadata.leagueResults!
+        let gameMetaDataViewModels = leagueResults.games
+
+        return HTML(
+                    .head(
+                        .title(leagueName)
+                    ),
+                    .body(
+                        .h1(
+                            .text("League: \(leagueName) Results")
+                        ),
+                        .forEach(gameMetaDataViewModels) { gameMetaData in
+                            .div(
+                                .a(
+                                    .href(gameMetaData.detailURLString),
+                                    .text(gameMetaData.title)
+                                )
+                            )
+                        }
+                    )
+        )
     }
 
     func leagueHTML(for metadata: SimulationLeague.ItemMetadata ) -> HTML {
@@ -204,7 +230,8 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
                 .h1(.text(game.title)),
                 .div(
                     .class("linescore"),
-                    .lineScore(game.lineScore)
+                    .lineScore(game.lineScore),
+                    makeLinescoreNode(for: game.lineScore)
                 )
             )
         )
@@ -220,41 +247,40 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 //        }
 //    }
 
-//    func makeLinescoreHTML(for lineScore: LineScoreViewModel, node: Node<HTML.BodyContext>) -> Node<HTML.BodyContext> {
-//        let asdf = Node<HTML.BodyContext>(stringLiteral: "asdf")
-//
-//
-//        return node.div(
-//                .class("linescore"),
-//                .table(
-//                    .tr(
-//                        .forEach(lineScore.inningScores) { inningScore in
-//                            .td(.text(inningScore.inningNumber))
-//                        },
-//                        .td("H"),
-//                        .td("R"),
-//                        .td("E")
-//                    ),
-//                    .tr(
-//                        .forEach(lineScore.inningScores) { inningScore in
-//                            .td(.text(inningScore.awayTeamRunsScored))
-//                        },
-//                        .td(.text(lineScore.awayTeamHits)),
-//                        .td(.text(lineScore.awayTeamFinalScore)),
-//                        .td(.text(lineScore.awayTeamErrors))
-//                    ),
-//                    .tr(
-//                        .forEach(lineScore.inningScores) { inningScore in
-//                            .td(.text(inningScore.homeTeamRunsScored))
-//                        },
-//                        .td(.text(lineScore.homeTeamHits)),
-//                        .td(.text(lineScore.homeTeamFinalScore)),
-//                        .td(.text(lineScore.homeTeamErrors))
-//                    )
-//                )
-//            )
-//        )
-//    }
+    func makeLinescoreNode(for lineScore: LineScoreViewModel) -> Node<HTML.BodyContext> {
+        return .div(
+                .class("linescore"),
+                .table(
+                    .tr(
+                        .td("Team"),
+                        .forEach(lineScore.inningScores) { inningScore in
+                            .td(.text(inningScore.inningNumber))
+                        },
+                        .td(.b("R")),
+                        .td(.b("H")),
+                        .td(.b("E"))
+                    ),
+                    .tr(
+                        .td(.text(lineScore.awayTeam)),
+                        .forEach(lineScore.inningScores) { inningScore in
+                            .td(.text(inningScore.awayTeamRunsScored))
+                        },
+                        .td(.text(lineScore.awayTeamFinalScore)),
+                        .td(.text(lineScore.awayTeamHits)),
+                        .td(.text(lineScore.awayTeamErrors))
+                    ),
+                    .tr(
+                        .td(.text(lineScore.homeTeam)),
+                        .forEach(lineScore.inningScores) { inningScore in
+                            .td(.text(inningScore.homeTeamRunsScored))
+                        },
+                        .td(.text(lineScore.homeTeamFinalScore)),
+                        .td(.text(lineScore.homeTeamHits)),
+                        .td(.text(lineScore.homeTeamErrors))
+                    )
+                )
+            )
+    }
 
     func makeItemHTML(for item: Item<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
         let leagueName = item.metadata.leagueName

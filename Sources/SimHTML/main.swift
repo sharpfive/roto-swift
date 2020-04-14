@@ -89,6 +89,15 @@ struct LineScoreViewModel: Codable, Hashable {
     let homeTeamFinalScore: String
 }
 
+struct GameMetaDataViewModel: Codable, Hashable {
+    let title: String
+    let detailURLString: String
+}
+
+struct LeagueResultsViewModel: Codable, Hashable {
+    let games: [GameMetaDataViewModel]
+}
+
 struct GameViewModel: Codable, Hashable {
     let gameId: String
     let title: String
@@ -135,14 +144,25 @@ struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {
         case rosters
         case game
+        case leagueResults
         case about
     }
 
     struct ItemMetadata: WebsiteItemMetadata {
         let leagueName: String
         let teams: [Team]
-
         let game: GameViewModel?
+        let leagueResults: LeagueResultsViewModel?
+
+        init(leagueName: String,
+             teams: [Team],
+             game: GameViewModel? = nil,
+             leagueResults: LeagueResultsViewModel? = nil) {
+            self.leagueName = leagueName
+            self.teams = teams
+            self.game = game
+            self.leagueResults = leagueResults
+        }
     }
 
     var url = URL(string: "https://cooking-with-john.com")!
@@ -166,6 +186,13 @@ let gameItems = metadatas.map{ metadata in
     return Item<SimulationLeague>(path: "\(metadata.game!.gameId)", sectionID: .game, metadata: metadata)
 }
 
+let gameMetaDatas: [GameMetaDataViewModel] = games.map {
+    let urlString = "game/\($0.gameId)/index.html"
+    return GameMetaDataViewModel(title: $0.title, detailURLString: urlString)
+}
+
+let leagueResults = LeagueResultsViewModel(games: gameMetaDatas)
+
 try SimulationLeague().publish(
     withTheme: .league,
     additionalSteps: [
@@ -183,6 +210,11 @@ try SimulationLeague().publish(
                 date: Date()
             )
         )),
-        .addItems(in: gameItems)
+        .addItems(in: gameItems),
+        .addItem(Item(path: "leagueResults",
+                      sectionID: .leagueResults,
+                      metadata: SimulationLeague.ItemMetadata(leagueName: leagueName,
+                                                              teams: teams,
+                                                              leagueResults: leagueResults)))
     ]
 )
