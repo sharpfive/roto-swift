@@ -47,7 +47,6 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
     func makeSectionHTML(for section: Section<SimulationLeague>, context: PublishingContext<SimulationLeague>) throws -> HTML {
 
-
         switch (section.id, section.item(at: section.path)?.metadata) {
         case (.rosters, .some(let metadata)):
             return leagueHTML(for: metadata)
@@ -230,22 +229,12 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
                 .h1(.text(game.title)),
                 .div(
                     .class("linescore"),
-                    .lineScore(game.lineScore),
+                    //.lineScore(game.lineScore),
                     makeLinescoreNode(for: game.lineScore)
                 )
             )
         )
     }
-
-//    extension Node where Context == HTML.DocumentContext {
-//        static func grid(_ nodes: Node...) -> Node {
-//            .div(
-//                .id("layout"),
-//                .class("pure-g"),
-//                .group(nodes)
-//            )
-//        }
-//    }
 
     func makeLinescoreNode(for lineScore: LineScoreViewModel) -> Node<HTML.BodyContext> {
         return .div(
@@ -291,6 +280,8 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
             return makeRostersHTML(leagueName: leagueName, teams: teams)
         case .game:
             return makeGameHTML(for: item.metadata.game!)
+        case .leagueResults:
+            return leagueResultsHTML(for: item.metadata)
         default:
             throw(Errors.noItemHandlerForSection(item.sectionID))
         }

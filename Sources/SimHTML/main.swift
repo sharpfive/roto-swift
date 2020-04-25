@@ -187,7 +187,7 @@ let gameItems = metadatas.map{ metadata in
 }
 
 let gameMetaDatas: [GameMetaDataViewModel] = games.map {
-    let urlString = "game/\($0.gameId)/index.html"
+    let urlString = "/game/\($0.gameId)/index.html"
     return GameMetaDataViewModel(title: $0.title, detailURLString: urlString)
 }
 
@@ -215,6 +215,11 @@ try SimulationLeague().publish(
                       sectionID: .leagueResults,
                       metadata: SimulationLeague.ItemMetadata(leagueName: leagueName,
                                                               teams: teams,
-                                                              leagueResults: leagueResults)))
+                                                              leagueResults: leagueResults),
+                                                              tags: ["leagueRosters"],
+                                                              content: Content(
+                                                                  title: "League Results",
+                                                                  date: Date()
+                                                              )))
     ]
 )
