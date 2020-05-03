@@ -6,7 +6,7 @@ let package = Package(
     name: "RotoSwift",
     dependencies: [
     .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
-    .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.3.0"),
+    .package(url: "https://github.com/apple/swift-package-manager.git", .exact("0.5.0")),
     .package(url: "https://github.com/JohnSundell/Plot.git", from: "0.7.0"),
     .package(url: "https://github.com/johnsundell/publish.git", from: "0.1.0")
     ],
