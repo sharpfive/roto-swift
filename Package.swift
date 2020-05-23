@@ -8,7 +8,8 @@ let package = Package(
     .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
     .package(url: "https://github.com/apple/swift-package-manager.git", .exact("0.5.0")),
     .package(url: "https://github.com/JohnSundell/Plot.git", from: "0.7.0"),
-    .package(url: "https://github.com/johnsundell/publish.git", from: "0.1.0")
+    .package(url: "https://github.com/johnsundell/publish.git", from: "0.1.0"),
+    .package(url: "https://github.com/sharpfive/oliva.git", .branch("dev"))
     ],
     targets: [
         .target(
@@ -58,7 +59,7 @@ let package = Package(
         ),
         .target(
             name: "SimHTML",
-            dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility", "Publish"]
+            dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility", "Publish", "Oliva"]
         ),
         .target(
             name: "ProjectionsToAuctionValues",
