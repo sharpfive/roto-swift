@@ -58,6 +58,10 @@ let package = Package(
             dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib",]
         ),
         .target(
+            name: "LeagueSimulator",
+            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib",]
+        ),
+        .target(
             name: "SimHTML",
             dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility", "Publish", "Oliva"]
         ),
