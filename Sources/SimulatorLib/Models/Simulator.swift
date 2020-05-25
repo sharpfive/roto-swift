@@ -21,14 +21,35 @@ public enum AtBatOutcome {
 }
 
 public struct AtBatRecord {
-    let batterId: String
-    let pitcherId: String
-    let result: AtBatOutcome
+    public let batterId: String
+    public let pitcherId: String
+    public let result: AtBatOutcome
+    public let resultingState: AtBatResultState
+}
+
+public struct GameResult {
+    public let inningFrameResults: [InningFrameResult]
+
+    public var homeScore: Int {
+        guard let lastGameState = inningFrameResults.last?.gameState else {
+            return 0
+        }
+
+        return lastGameState.totalHomeRunsScored
+    }
+
+    public var awayScore: Int {
+        guard let lastGameState = inningFrameResults.last?.gameState else {
+            return 0
+        }
+
+        return lastGameState.totalAwayRunsScored
+    }
 }
 
 public struct InningFrameResult {
-    let atBatsRecords: [AtBatRecord]
-    let gameState: GameState
+    public let atBatsRecords: [AtBatRecord]
+    public let gameState: GameState
 }
 
 //public struct Team {
@@ -215,6 +236,17 @@ public struct GameLineup {
     let homeTeam: TeamLineupProbabilities
 }
 
+public struct InningResult {
+    let gameState: GameState
+    let atbatResults: [AtBatRecord]
+}
+
+public struct BaseOccupancy {
+    let firstBaseOccupant: String?
+    let secondBaseOccupant: String?
+    let thirdBaseOccupant: String?
+}
+
 public struct GameState {
     public var inningCount: InningCount = InningCount.beginningOfGame()
     var homeBattersRetired = 0
@@ -256,7 +288,7 @@ public struct GameState {
     }
 
     // Game state functions are meant to be called before advanceFrame
-    func isEndOfGame() -> Bool {
+    public func isEndOfGame() -> Bool {
 
         if !isEndOfFrame() {
             if inningCount.number >= 8 {
@@ -308,18 +340,20 @@ public struct GameState {
         }
     }
 
-    mutating func addAtBatResult(_ atBatResult: AtBatOutcome) {
+    mutating func addAtBatResult(_ atBatResult: AtBatOutcome, batterId: String) -> AtBatResultState {
+        var runnersScored = [String]()
+
         switch atBatResult {
         case .strikeout, .out:
             recordOut()
         case .single, .hitByPitch, .walk:
-            advanceRunners(by: 1)
+            runnersScored = advanceRunners(by: 1, batterId: batterId)
         case .double:
-            advanceRunners(by: 2)
+            runnersScored = advanceRunners(by: 2, batterId: batterId)
         case .triple:
-            advanceRunners(by: 3)
+            runnersScored = advanceRunners(by: 3, batterId: batterId)
         case .homerun:
-            advanceRunners(by: 4)
+            runnersScored = advanceRunners(by: 4, batterId: batterId)
         }
 
         if inningCount.frame == .top {
@@ -327,20 +361,28 @@ public struct GameState {
         } else {
             homeBattersRetired += 1
         }
+
+        return AtBatResultState(baseOccupancy: BaseOccupancy(firstBaseOccupant: firstBaseOccupant,
+                                                             secondBaseOccupant: secondBaseOccupant,
+                                                             thirdBaseOccupant: thirdBaseOccupant),
+                                runnersScored: runnersScored)
     }
 
     mutating private func recordOut() {
         inningCount.outs += 1
     }
 
-    mutating private func advanceRunners(by bases: Int) {
+    // returns runners scored
+    mutating private func advanceRunners(by bases: Int, batterId: String) -> [String] {
         let occupantId = "-1"
+        var runnersScored = [String]()
 
         switch bases {
         case 1:
-            if thirdBaseOccupant != nil {
+            if let thirdBaseOccupant = thirdBaseOccupant {
                 runnersScoredInFrame += 1
-                thirdBaseOccupant = nil
+                runnersScored.append(thirdBaseOccupant)
+                self.thirdBaseOccupant = nil
             }
 
             if let secondBaseOccupant = secondBaseOccupant {
@@ -353,13 +395,15 @@ public struct GameState {
 
             firstBaseOccupant = occupantId
         case 2:
-            if thirdBaseOccupant != nil {
+            if let thirdBaseOccupant = thirdBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(thirdBaseOccupant)
                 self.thirdBaseOccupant = nil
             }
 
-            if secondBaseOccupant != nil {
+            if let secondBaseOccupant = secondBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(secondBaseOccupant)
                 self.secondBaseOccupant = nil
             }
 
@@ -371,16 +415,19 @@ public struct GameState {
             secondBaseOccupant = occupantId
 
         case 3:
-            if thirdBaseOccupant != nil {
+            if let thirdBaseOccupant = thirdBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(thirdBaseOccupant)
             }
 
-            if secondBaseOccupant != nil {
+            if let secondBaseOccupant = secondBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(secondBaseOccupant)
             }
 
-            if firstBaseOccupant != nil {
+            if let firstBaseOccupant = firstBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(firstBaseOccupant)
             }
 
             firstBaseOccupant = nil
@@ -388,19 +435,23 @@ public struct GameState {
             thirdBaseOccupant = occupantId
 
         case 4:
-            if thirdBaseOccupant != nil {
+            if let thirdBaseOccupant = thirdBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(thirdBaseOccupant)
             }
 
-            if secondBaseOccupant != nil {
+            if let secondBaseOccupant = secondBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(secondBaseOccupant)
             }
 
-            if firstBaseOccupant != nil {
+            if let firstBaseOccupant = firstBaseOccupant {
                 runnersScoredInFrame += 1
+                runnersScored.append(firstBaseOccupant)
             }
 
             runnersScoredInFrame += 1
+            runnersScored.append(batterId)
 
             firstBaseOccupant = nil
             secondBaseOccupant = nil
@@ -409,6 +460,8 @@ public struct GameState {
         default:
             print("advanceRunners should never get here")
         }
+
+        return runnersScored
     }
 
     mutating func advanceFrame() {

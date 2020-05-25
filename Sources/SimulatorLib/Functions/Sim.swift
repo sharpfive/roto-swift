@@ -9,6 +9,11 @@ import CSV
 import Foundation
 import RotoSwift
 
+public struct AtBatResultState {
+    public let baseOccupancy: BaseOccupancy
+    public let runnersScored: [String]
+}
+
 public func simulateInningFrame(lineup: GameLineup, gameState: GameState, baseProbability: AtBatEventProbability) -> InningFrameResult {
     var gameState = gameState
 
@@ -35,8 +40,14 @@ public func simulateInningFrame(lineup: GameLineup, gameState: GameState, basePr
                                         batterProbability: batterProbability.probability,
                                         baseProbability: baseProbability)
 
-        gameState.addAtBatResult(atBatResult)
-        atBatResults.append(AtBatRecord(batterId: batterProbability.playerId, pitcherId: pitcherProbability.playerId, result: atBatResult))
+        let atBatResultState = gameState.addAtBatResult(atBatResult, batterId: batterProbability.playerId)
+        atBatResults.append(
+            AtBatRecord(batterId: batterProbability.playerId,
+                        pitcherId: pitcherProbability.playerId,
+                        result: atBatResult,
+                        resultingState: atBatResultState
+            )
+        )
     }
 
     return InningFrameResult(atBatsRecords: atBatResults, gameState: gameState)
@@ -267,7 +278,7 @@ public func inputPitcherProjections(filename: String) -> [String: PitcherProject
 public func simulateGame(homeLineup: Lineup,
                          awayLineup: Lineup,
                          pitcherDictionary: [String: PitcherProjection],
-                         batterDictionary: [String: BatterProjection]) -> [GameState] {
+                         batterDictionary: [String: BatterProjection]) -> GameResult {
     let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherDictionary,
                                                batterDictionary: batterDictionary)
 
@@ -282,7 +293,7 @@ public func simulateGame(homeLineup: Lineup,
 
     var gameStarted = true
 
-    var gameStates = [GameState]()
+    var inningFrameResults = [InningFrameResult]()
 
     repeat {
 
@@ -291,15 +302,15 @@ public func simulateGame(homeLineup: Lineup,
         } else {
             gameState.advanceFrame()
         }
-        let inningResults = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+        let inningFrameResult = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
 
-        gameState = inningResults.gameState
+        gameState = inningFrameResult.gameState
 
-        gameStates.append(gameState)
+        inningFrameResults.append(inningFrameResult)
 
     } while !gameState.isEndOfGame()
 
-    return gameStates
+    return GameResult(inningFrameResults: inningFrameResults)
 }
 
 public func createLineups(for team: Team) -> [Lineup] {

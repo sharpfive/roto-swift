@@ -10,6 +10,7 @@ import Plot
 import SPMUtility
 import SimulatorLib
 import Publish
+import OlivaDomain
 
 // ex swift run SimHTML --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 
@@ -223,3 +224,5 @@ try SimulationLeague().publish(
                                                               )))
     ]
 )
+
+let asdf: PlayerViewModel = PlayerViewModel(fullName: "asdf")

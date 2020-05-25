@@ -12,67 +12,6 @@ import CSV
 import SPMUtility
 import SimulatorLib
 
-//struct AtBatEventProbability {
-//    let single: Double
-//    let double: Double
-//    let triple: Double
-//    let homeRun: Double
-//    let walk: Double
-//    let strikeOut: Double
-//    let hitByPitch: Double
-//    let out: Double
-//
-//    var singleOdds: Double {
-//        return odds(for: single)
-//    }
-//
-//    var doubleOdds: Double {
-//        return odds(for: double)
-//    }
-//
-//    var tripleOdds: Double {
-//        return odds(for: triple)
-//    }
-//
-//    var homeRunOdds: Double {
-//        return odds(for: homeRun)
-//    }
-//
-//    var walkOdds: Double {
-//        return odds(for: walk)
-//    }
-//
-//    var strikeoutOdds: Double {
-//        return odds(for: strikeOut)
-//    }
-//
-//    var hitByPitchOdds: Double {
-//        return odds(for: hitByPitch)
-//    }
-//
-//    var outOdds: Double {
-//        return odds(for: out)
-//    }
-//
-//    func odds(for value: Double) -> Double {
-//        return value / (1 - value)
-//    }
-//}
-
-//struct PlayerProbability {
-//    let playerId: String
-//    let probability: AtBatEventProbability
-//}
-//
-//struct TeamLineupProbabilities {
-//    let startingPitcher: PlayerProbability
-//    let batters: [PlayerProbability]
-//
-//    func getProbability(for battersRetired: Int) -> PlayerProbability {
-//        return batters[battersRetired % 8]
-//    }
-//}
-
 extension SimulatorLib.Team {
     func printToStandardOut() {
         print("Team: \(name)")
@@ -87,39 +26,6 @@ extension SimulatorLib.Team {
         }
     }
 }
-
-//struct GameLineup {
-//    let awayTeam: TeamLineupProbabilities
-//    let homeTeam: TeamLineupProbabilities
-//}
-//
-//enum InningFrame {
-//    case top
-//    case bottom
-//}
-
-//struct InningCount {
-//    var frame: InningFrame
-//    var number: Int
-//    var outs: Int
-//
-//    static func beginningOfGame() -> InningCount {
-//        return InningCount(frame: .top, number: 0, outs: 0)
-//    }
-//
-//    mutating func increment() {
-//        switch frame {
-//        case .top:
-//            frame = .bottom
-//
-//        case .bottom:
-//            frame = .top
-//            number += 1
-//        }
-//
-//        outs = 0
-//    }
-//}
 
 let parser = ArgumentParser(commandName: "GameSimulator",
 usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv --linup lineups.csv]",
@@ -185,41 +91,6 @@ let percentageOfDoubles = Double(totalDoubles) / Double(totalHits)
 let percentageOfTriples = Double(totalTriples) / Double(totalHits)
 let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
 
-//print("totalPlateAppearances: \(totalPlateAppearances)")
-//print("totalHits: \(totalHits)")
-//print("totalSingles: \(totalSingles)")
-//print("totalDoubles: \(totalDoubles)")
-//print("totalTriples: \(totalTriples)")
-//print("totalHomeruns: \(totalHomeRuns)")
-//
-//print("percentageOfDoubles: \(percentageOfDoubles)")
-//print("percentageOfTriples: \(percentageOfTriples)")
-//
-//let starsLineup = Lineup(startingPitcherId: "13125", //Gerrit Cole
-//                       batterIds: [
-//                        "10155", // Mike Trout
-//                        "11477",
-//                        "16505",
-//                        "5038",
-//                        "13510",
-//                        "17350",
-//                        "11493",
-//                        "18401",
-//                        "5361"
-//                       ])
-//
-//let scrubsLineup = Lineup(startingPitcherId: "4153",
-//                        batterIds: [
-//                         "19470",
-//                         "19683",
-//                         "16424",
-//                         "19339",
-//                         "sa601536",
-//                         "13807",
-//                         "9256",
-//                         "19238"
-//                        ])
-
 func printInningFrame(with gameState: GameState) {
     print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
 }
@@ -249,87 +120,18 @@ awayTeam.printToStandardOut()
 let homeLineups = createLineups(for: homeTeam)
 let awayLineups = createLineups(for: awayTeam)
 
-//let gameStates = simulateGame(homeLineup: homeLineups.first!, awayLineup: awayLineups.first!)
-//
-//gameStates.forEach { gameState in
-//    if gameState.isEndOfGame() {
-//        printFinalScore(with: gameState)
-//    } else {
-//        printInningFrame(with: gameState)
-//    }
-//}
+let gameState = simulateGame(
+    homeLineup: homeLineups.first!,
+    awayLineup: awayLineups.first!,
+    pitcherDictionary: pitcherProjections,
+    batterDictionary: hitterProjections
+)
 
-var games = [GameState]()
-
-homeLineups.forEach { homeLineup in
-    awayLineups.forEach { awayLineup in
-        let gameStates = simulateGame(homeLineup: homeLineup,
-                                      awayLineup: awayLineup,
-                                      pitcherDictionary: pitcherProjections,
-                                      batterDictionary: hitterProjections)
-
-        if let lastState = gameStates.last {
-            games.append(lastState)
-        }
+gameState.inningFrameResults.forEach { inningFrameResult in
+    let gameState = inningFrameResult.gameState
+    if gameState.isEndOfGame() {
+        printFinalScore(with: gameState)
+    } else {
+        printInningFrame(with: gameState)
     }
 }
-
-games.forEach {
-    printFinalScore(with: $0)
-}
-
-let homeTeamWon = games.filter { $0.totalHomeRunsScored > $0.totalAwayRunsScored }.count
-let awayTeamWon = games.filter { $0.totalHomeRunsScored < $0.totalAwayRunsScored }.count
-
-
-print("Home Team Won: \(homeTeamWon) games")
-print("Away Team Won: \(awayTeamWon) games")
-
-//let twoFiftyHitterProbability = AtBatEventProbability(single: 0.2,
-//                                                      double: 0.05,
-//                                                      triple: 0,
-//                                                      homeRun: 0.0,
-//                                                      walk: 0.0,
-//                                                      strikeOut: 0.0,
-//                                                      hitByPitch: 0.0,
-//                                                      out: 0.75)
-//
-//let event = getAtBatEvent(pitcherProbability: twoFiftyHitterProbability, batterProbability: twoFiftyHitterProbability, baseProbability: twoFiftyHitterProbability)
-
-//srand48(Int(Date().timeIntervalSince1970))
-//
-//let events: [AtBatOutcome] = (0..<10000000).map { number in
-//    return getAtBatEvent(pitcherProbability: twoFiftyHitterProbability,
-//                  batterProbability: twoFiftyHitterProbability,
-//                  baseProbability: twoFiftyHitterProbability) }
-//
-//
-//let singles = events.filter { $0 == .single }.count
-//
-//print("\(singles) singeles out of \(events.count) at bats")
-
-
-//let atBats = inningResults.atBatsRecords
-//let gameState = inningResults.gameState
-//gameState.countScores()
-
-
-//results.forEach {
-//    print("\($0)")
-//}
-
-//print("results: \(results)")
-
-
-
-//hitterProjections.prefix(upTo: 20).forEach {
-//    print($0)
-//    print($0.probability)
-//    print("--")
-//}
-//
-//pitcherProjections.prefix(upTo: 25).forEach {
-//    print($0)
-//    print($0.probability(doublePercentage: percentageOfDoubles, triplePercentage: percentageOfTriples, hitByPitchProbability: percentageOfHitByPitch))
-//    print("--")
-//}
