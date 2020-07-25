@@ -64,7 +64,7 @@ let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
 let teams = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
-
+//TODO need to create the games, similar to LeagueSimulator
 
 let leagueName = "CIK"
 
@@ -125,9 +125,8 @@ let lineScoreViewModel = LineScoreViewModel(awayTeam: "Toronto Blue Jays",
                                    awayTeamFinalScore: "3",
                                    homeTeamFinalScore: "6")
 
-let gameViewModel = GameViewModel(gameId: "0", title: "Toronto Blue Jays at Minnesota Twins, April 13 2020", lineScore: lineScoreViewModel)
-
 func createGame(with gameId: String) -> GameViewModel {
+    //TODO team names (team repository?)
     return GameViewModel(gameId: gameId, title: "Toronto Blue Jays at Minnesota Twins, April 13 2020", lineScore: lineScoreViewModel)
 }
 

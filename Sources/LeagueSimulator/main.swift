@@ -156,24 +156,11 @@ awayTeam.printToStandardOut()
 let homeLineups = createLineups(for: homeTeam)
 let awayLineups = createLineups(for: awayTeam)
 
-var gameResults = [GameResult]()
 
-homeLineups.forEach { homeLineup in
-    awayLineups.forEach { awayLineup in
-        let gameResult = simulateGame(homeLineup: homeLineup,
-                                      awayLineup: awayLineup,
-                                      pitcherDictionary: pitcherProjections,
-                                      batterDictionary: hitterProjections)
-
-        gameResults.append(gameResult)
-    }
-}
-
-
-struct GameData {
-    let homeTeam: Team
-    let awayTeam: Team
+struct GameTeamResult {
     let gameResult: GameResult
+    let homeTeam: SimulatorLib.Team
+    let awayTeam: SimulatorLib.Team
 
     var title: String {
         return "\(homeTeam.name) vs \(awayTeam.name)"
@@ -186,38 +173,99 @@ struct GameData {
     var result: String {
         return "\(homeTeam.name) \(gameResult.homeScore) \(awayTeam.name) \(gameResult.awayScore)"
     }
+
+    var homeTeamWon: Bool {
+        return gameResult.homeScore > gameResult.awayScore
+    }
 }
 
-func convertToLeagueResultsViewModel(teams: [Team], gameResults: [GameResult]) -> LeagueResultsViewModel? {
+var gameTeamResults = [GameTeamResult]()
 
-    gameResults.map {
-        $0.
+homeLineups.forEach { homeLineup in
+    awayLineups.forEach { awayLineup in
+        let gameResult = simulateGame(homeLineup: homeLineup,
+                                      awayLineup: awayLineup,
+                                      pitcherDictionary: pitcherProjections,
+                                      batterDictionary: hitterProjections)
+
+        gameTeamResults.append(
+            GameTeamResult(gameResult: gameResult,
+                            homeTeam: homeTeam,
+                            awayTeam: awayTeam))
     }
-    let gameViewModels = gameData.map { gameData in
+}
+
+func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
+
+//    gameResults.map {
+//        $0.
+//    }
+    let gameViewModels = gameTeamResults.map { gameTeamResult in
         return GameMetaDataViewModel(
-            title: gameData.title,
-            detailURLString: "aiai",
-            result: gameData.result)
+            title: gameTeamResult.title,
+            detailURLString: "-",
+            result: gameTeamResult.result)
     }
 
-    let teamStandings = [
-        TeamStandingsViewModel(teamName: "aiai", wins: "aiai", losses: "aiai", winPercentage: "aiai")
-    ]
-    let standingsViewModal = StandingsViewModel(
-        teamStandings: teamStandings)
+    let standingsViewModal = calculateTeamStandingsViewModels(from: gameTeamResults)
 
     return LeagueResultsViewModel(
         games: gameViewModels,
-        standings: teamStandings)
+        standings: standingsViewModal)
+}
+
+func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) -> StandingsViewModel {
+
+    // get list of all teams in the results
+    // let teamsRedundantArray = gameTeamResults.compactMap {[$0.homeTeam.identifier, $0.awayTeam.identifier]}
+
+    struct TeamResult {
+        let team: SimulatorLib.Team
+        let won: Bool
+    }
+
+    let teamResults: [TeamResult] = gameTeamResults.flatMap {
+        return [
+            TeamResult(team: $0.homeTeam, won: $0.homeTeamWon),
+            TeamResult(team: $0.awayTeam, won: !$0.homeTeamWon)
+        ]
+    }
+
+    let resultsDictionary = Dictionary(grouping: teamResults) { teamResult in
+        return teamResult.team.identifier
+    }
+
+    let teamStandingsViewModels: [TeamStandingsViewModel] = resultsDictionary.compactMap { asdf in
+        guard let teamName = asdf.value.first?.team.name else { return nil }
+
+        let totalGames = asdf.value.count
+        let gamesWon = asdf.value.filter { teamResult -> Bool in
+            teamResult.won
+        }.count
+        let gamesLost = totalGames - gamesWon
+        let winningPercentage = Double(gamesWon) /  Double(totalGames)
+
+        return TeamStandingsViewModel(teamName: teamName,
+                                      wins: "\(gamesWon)",
+                                      losses: "\(gamesLost)",
+                                      winPercentage: "\(winningPercentage)")
+    }
+
+    let standingsViewModel = StandingsViewModel(teamStandings: teamStandingsViewModels)
+    return standingsViewModel
 }
 
 
 switch outputFormat {
 case .text:
-    printText(gameResults)
+    printText(gameTeamResults.map { $0.gameResult})
 case .json:
-    let viewModel = convertToLeagueResultsViewModel(teams: teams, gameResults: gameResults)
-    print("json!")
+    let viewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults)
+
+    let jsonEncoder = JSONEncoder()
+    let data = try jsonEncoder.encode(viewModel)
+
+    print(String(data: data, encoding: .utf8)!)
 }
 
 
