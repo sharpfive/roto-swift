@@ -145,13 +145,13 @@ let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearan
 let homeTeam = lineups[0]
 let awayTeam = lineups[1]
 
-print("Home Team:")
-homeTeam.printToStandardOut()
-
-print("")
-
-print("Away Team:")
-awayTeam.printToStandardOut()
+//print("Home Team:")
+//homeTeam.printToStandardOut()
+//
+//print("")
+//
+//print("Away Team:")
+//awayTeam.printToStandardOut()
 
 let homeLineups = createLineups(for: homeTeam)
 let awayLineups = createLineups(for: awayTeam)
