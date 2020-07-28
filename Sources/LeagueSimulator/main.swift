@@ -235,15 +235,16 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
         return teamResult.team.identifier
     }
 
-    let teamStandingsViewModels: [TeamStandingsViewModel] = resultsDictionary.compactMap { asdf in
-        guard let teamName = asdf.value.first?.team.name else { return nil }
+    let teamStandingsViewModels: [TeamStandingsViewModel] = resultsDictionary.compactMap { groupedTeamResults in
+        guard let teamName = groupedTeamResults.value.first?.team.name else { return nil }
 
-        let totalGames = asdf.value.count
-        let gamesWon = asdf.value.filter { teamResult -> Bool in
+        let teamResultsForTeam = groupedTeamResults.value
+        let totalGames = teamResultsForTeam.count
+        let gamesWon = teamResultsForTeam.filter { teamResult -> Bool in
             teamResult.won
         }.count
         let gamesLost = totalGames - gamesWon
-        let winningPercentage = Double(gamesWon) /  Double(totalGames)
+        let winningPercentage = Double(gamesWon) / Double(totalGames)
 
         return TeamStandingsViewModel(teamName: teamName,
                                       wins: "\(gamesWon)",
@@ -263,6 +264,7 @@ case .json:
     let viewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults)
 
     let jsonEncoder = JSONEncoder()
+    jsonEncoder.outputFormatting = .prettyPrinted
     let data = try jsonEncoder.encode(viewModel)
 
     print(String(data: data, encoding: .utf8)!)
