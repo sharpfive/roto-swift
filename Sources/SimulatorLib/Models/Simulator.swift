@@ -60,7 +60,7 @@ public struct InningFrameResult {
 //}
 
 public struct PitcherProjection: FullNameHaving {
-    let playerId: String
+    public let playerId: String
     public let fullName: String
     let inningsPitched: Int
     let hits: Int
@@ -255,7 +255,7 @@ public struct GameState {
     private(set) var firstBaseOccupant: String?
     private(set) var secondBaseOccupant: String?
     private(set) var thirdBaseOccupant: String?
-    private(set) var runnersScoredInFrame = 0
+    public private(set) var runnersScoredInFrame = 0
     private(set) var homeRunsScored = 0
     private(set) var awayRunsScored = 0
 

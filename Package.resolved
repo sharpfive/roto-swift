@@ -42,7 +42,7 @@
         "repositoryURL": "https://github.com/sharpfive/oliva.git",
         "state": {
           "branch": "dev",
-          "revision": "c15ece6c3a9aaff363cf7caa1b9c2405552b2faa",
+          "revision": "392985fc3ade3ae41b5a0ba58dca67d9907e57e4",
           "version": null
         }
       },
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/johnsundell/publish.git",
         "state": {
           "branch": null,
-          "revision": "9458bacb992f1fde35648fd4bb379fb7335d571c",
-          "version": "0.5.0"
+          "revision": "e77aab786992350ea92333737fdb3d7cad3ca8fc",
+          "version": "0.7.0"
         }
       },
       {

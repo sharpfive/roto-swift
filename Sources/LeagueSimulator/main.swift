@@ -167,7 +167,7 @@ struct GameTeamResult {
     }
 
     var detailURLString: String {
-        return "aiai"
+        return "-"
     }
 
     var result: String {
@@ -176,6 +176,20 @@ struct GameTeamResult {
 
     var homeTeamWon: Bool {
         return gameResult.homeScore > gameResult.awayScore
+    }
+
+    func getBatterName(by playerId: String) -> String? {
+        let batter = homeTeam.batters.first(where: { return $0.playerId == playerId }) ??
+            awayTeam.batters.first(where: { return $0.playerId == playerId })
+
+        return batter?.fullName
+    }
+
+    func getPitcherName(by playerId: String) -> String? {
+        let pitcher = homeTeam.pitchers.first(where: { return $0.playerId == playerId }) ??
+            awayTeam.pitchers.first(where: { return $0.playerId == playerId })
+
+        return pitcher?.fullName
     }
 }
 
@@ -255,6 +269,137 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     let standingsViewModel = StandingsViewModel(teamStandings: teamStandingsViewModels)
     return standingsViewModel
 }
+
+// Copied from Oliva output //aiai consolidate somehow
+public struct LeagueData: Codable {
+    public let leagueName: String
+    public let teams: [TeamViewModel]
+    public let leagueResults: LeagueResultsViewModel
+    public let games: [GameViewModel]
+}
+
+guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
+    print("ERROR: unable to create leagueResultsViewModel")
+    exit(0)
+}
+
+let lineScoreViewModals: [LineScoreViewModel] = gameTeamResults.map { gameTeamResult in
+
+    let inningScores: [LineScoreViewModel.InningResult] = gameTeamResult.gameResult.inningFrameResults.map { inningFrameResult in
+
+        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount)",
+                                               awayTeamRunsScored: "\(0)", //aiai
+                                               homeTeamRunsScored: "\(0)", //aiai
+                                               isFinalInning: false) //aiai
+
+    }
+    return LineScoreViewModel(awayTeam: gameTeamResult.awayTeam.name,
+                              homeTeam: gameTeamResult.homeTeam.name,
+                              inningScores: inningScores,
+                              awayTeamHits: "\(0)",
+                              homeTeamHits: "\(0)",
+                              awayTeamFinalScore: "\(0)",
+                              homeTeamFinalScore: "\(0)")
+
+}
+
+var gameId = 0
+let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
+
+    let groupedInningFrames = Dictionary(grouping: gameTeamResult.gameResult.inningFrameResults) { inningFrameResult -> Int in
+        return inningFrameResult.gameState.inningCount.number
+    }
+
+    let inningResults: [LineScoreViewModel.InningResult] = groupedInningFrames.sorted (by: { (arg0, arg1) -> Bool in
+
+        let (key, _) = arg0
+        let (key2, _) = arg1
+        return key < key2
+    }).compactMap { tuple -> LineScoreViewModel.InningResult? in
+        guard let topOfInning = tuple.value.first(where: { (inningFrameResult) -> Bool in
+            return inningFrameResult.gameState.inningCount.frame == .top
+        }) else { return nil }
+
+        let bottomOfInning = tuple.value.first(where: { (inningFrameResult) -> Bool in
+            return inningFrameResult.gameState.inningCount.frame == .bottom
+        })
+
+        let homeRunsScoredString: String
+        if let runnersScoredInBottom = bottomOfInning?.gameState.runnersScoredInFrame {
+            homeRunsScoredString = "\(runnersScoredInBottom)"
+        } else {
+            homeRunsScoredString = "-"
+        }
+        return LineScoreViewModel.InningResult(
+            inningNumber: "\(tuple.key)",
+            awayTeamRunsScored: "\(topOfInning.gameState.runnersScoredInFrame)",
+            homeTeamRunsScored: homeRunsScoredString,
+            isFinalInning: bottomOfInning?.gameState.isEndOfGame() ?? true
+        )
+    }
+
+
+    let inningResultsViewModels: [InningResultViewModel] = gameTeamResult.gameResult.inningFrameResults.map { inningFrameResult in
+
+        let inningFrameString = inningFrameResult.gameState.inningCount.frame == .top ? "top" : "bottom"
+        let inningCountViewModel = InningCountViewModel(
+            frame: inningFrameString,
+            count: "\(inningFrameResult.gameState.inningCount.number)",
+            outs: "\(inningFrameResult.gameState.inningCount.outs)")
+
+        let atBatViewModels: [AtBatResultViewModel] = inningFrameResult.atBatsRecords.map { atBatRecord in
+
+            let batterName = gameTeamResult.getBatterName(by: atBatRecord.batterId) ?? "-"
+            let pitcherName = gameTeamResult.getPitcherName(by: atBatRecord.pitcherId) ?? "-"
+            return AtBatResultViewModel(batterName: batterName, pitcherName: pitcherName, result: "\(atBatRecord.result)")
+        }
+
+        return InningResultViewModel(inningCount: inningCountViewModel, atBats: atBatViewModels)
+    }
+
+    let lineScoreViewModel = LineScoreViewModel(awayTeam: gameTeamResult.awayTeam.name,
+                              homeTeam: gameTeamResult.homeTeam.name,
+                              inningScores: inningResults,
+                              awayTeamHits: "\(0)",
+                              homeTeamHits: "\(0)",
+                              awayTeamFinalScore: "\(0)",
+                              homeTeamFinalScore: "\(0)")
+
+
+
+    let tempBoxScore = BatterBoxScore(playerName: "", atBats: "", runs: "", hits: "", rbis: "", strikeouts: "")
+    let tempPitcherBoxScore = PitcherBoxScore(playerName: "", inningsPitched: "", hits: "", runs: "", walks: "", strikeouts: "", homeRuns: "")
+    let teamBoxScoreViewModel = TeamBoxScoreViewModel(teamName: gameTeamResult.homeTeam.name, batters: [tempBoxScore], pitchers: [tempPitcherBoxScore])
+    let gameViewModel = GameViewModel(gameId: "\(gameId)",
+                                      title: gameTeamResult.title,
+                         lineScore: lineScoreViewModel,
+                         inningResults: inningResultsViewModels,
+                         boxScore: BoxScoreViewModel(homeTeam: teamBoxScoreViewModel, awayTeam: teamBoxScoreViewModel))
+    gameId += 1
+    return gameViewModel
+
+}
+
+let teamViewModels: [TeamViewModel] = lineups.map { lineup in
+    let batterViewModels = lineup.batters.map { lineupBatter in
+        return PlayerViewModel(fullName: lineupBatter.fullName)
+    }
+
+    let pitcherViewModels = lineup.pitchers.map { lineupPitcher in
+        return PlayerViewModel(fullName: lineupPitcher.fullName)
+    }
+    return TeamViewModel(name: lineup.name, batters: batterViewModels, pitchers: pitcherViewModels)
+}
+
+let leagueData = LeagueData(leagueName: "leagueName", teams: teamViewModels , leagueResults: leagueResultsViewModel, games: gameViewModels)
+
+//let lineScoreViewModel = LineScoreViewModel(awayTeam: <#T##String#>, homeTeam: <#T##String#>, inningScores: <#T##[LineScoreViewModel.InningResult]#>, awayTeamHits: <#T##String#>, homeTeamHits: <#T##String#>, awayTeamFinalScore: <#T##String#>, homeTeamFinalScore: <#T##String#>)
+//let boxScoreViewModel = BoxScoreViewModel(homeTeam: <#T##TeamBoxScoreViewModel#>, awayTeam: <#T##TeamBoxScoreViewModel#>)
+//let inningResultViewModels = aiai
+// let gamesViewModel = GameViewModel(gameId: "aiai", title: "aiai", lineScore: <#T##LineScoreViewModel#>, inningResults: <#T##[InningResultViewModel]#>, boxScore: boxScoreViewModel)
+// let leagueData = LeagueData(leagueName: "RotoSim", teams: lineups, leagueResults: leagueResultsViewModel, games: <#T##[GameViewModel]#>)
+
+//SimulationLeagueWebsite.ItemMetaData
 
 
 switch outputFormat {
