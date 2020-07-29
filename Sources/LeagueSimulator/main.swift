@@ -12,7 +12,7 @@ import CSV
 import SPMUtility
 import SimulatorLib
 import OlivaDomain
-
+import SimulationLeagueSiteGenerator
 
 extension SimulatorLib.Team {
     func printToStandardOut() {
@@ -97,6 +97,7 @@ let outputFormatArgument = parsedArguments.get(outputFormatOption)
 enum OutputFormat: String {
     case text
     case json
+    case publish
 }
 
 guard let hitterFilename = hitterFilename else {
@@ -271,12 +272,12 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
 }
 
 // Copied from Oliva output //aiai consolidate somehow
-public struct LeagueData: Codable {
-    public let leagueName: String
-    public let teams: [TeamViewModel]
-    public let leagueResults: LeagueResultsViewModel
-    public let games: [GameViewModel]
-}
+//public struct LeagueData: Codable {
+//    public let leagueName: String
+//    public let teams: [TeamViewModel]
+//    public let leagueResults: LeagueResultsViewModel
+//    public let games: [GameViewModel]
+//}
 
 guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
     print("ERROR: unable to create leagueResultsViewModel")
@@ -344,7 +345,7 @@ let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
         let inningFrameString = inningFrameResult.gameState.inningCount.frame == .top ? "top" : "bottom"
         let inningCountViewModel = InningCountViewModel(
             frame: inningFrameString,
-            count: "\(inningFrameResult.gameState.inningCount.number)",
+            count: "\(inningFrameResult.gameState.inningCount.number + 1)",
             outs: "\(inningFrameResult.gameState.inningCount.outs)")
 
         let atBatViewModels: [AtBatResultViewModel] = inningFrameResult.atBatsRecords.map { atBatRecord in
@@ -366,10 +367,51 @@ let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
                               homeTeamFinalScore: "\(0)")
 
 
+    let atBatRecords = gameTeamResult.gameResult.inningFrameResults.flatMap {
+        $0.atBatsRecords
+    }
 
-    let tempBoxScore = BatterBoxScore(playerName: "", atBats: "", runs: "", hits: "", rbis: "", strikeouts: "")
-    let tempPitcherBoxScore = PitcherBoxScore(playerName: "", inningsPitched: "", hits: "", runs: "", walks: "", strikeouts: "", homeRuns: "")
-    let teamBoxScoreViewModel = TeamBoxScoreViewModel(teamName: gameTeamResult.homeTeam.name, batters: [tempBoxScore], pitchers: [tempPitcherBoxScore])
+    let batterGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
+        return atBatRecord.batterId
+    }
+
+    let batterBoxScores: [BatterBoxScore] = batterGroupedDictionary.map { tuple in
+        let atBats = tuple.value.filter({ $0.wasAtBat }).count
+        let hits = tuple.value.filter({ $0.wasHit }).count
+        let strikeouts = tuple.value.filter({ $0.result == .strikeout }).count
+        return BatterBoxScore(playerName: gameTeamResult.getBatterName(by: tuple.key) ?? "-",
+                       atBats: "\(atBats)",
+                       runs: "",
+                       hits: "\(hits)",
+                       rbis: "",
+                       strikeouts: "\(strikeouts)"
+        )
+    }
+
+    let pitcherGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
+        return atBatRecord.pitcherId
+    }
+
+    let pitcherBoxScores: [PitcherBoxScore] = pitcherGroupedDictionary.map { keyValue in
+        let inningsPitched = keyValue.value.count / 3 // an approximation, doesn't handle 1/3 or 2/3 of an inning
+
+        let hits = keyValue.value.filter({ $0.wasHit }).count
+        let walks = keyValue.value.filter({ $0.result == .walk }).count
+        let strikeouts = keyValue.value.filter({ $0.result == .strikeout }).count
+        let homeRuns = keyValue.value.filter({$0.result == .homerun}).count
+
+        return PitcherBoxScore(
+            playerName: gameTeamResult.getPitcherName(by: keyValue.key) ?? "-",
+            inningsPitched: "\(inningsPitched)",
+            hits: "\(hits)",
+            runs: "---",
+            walks: "\(walks)",
+            strikeouts: "\(strikeouts)",
+            homeRuns: "\(homeRuns)"
+        )
+    }
+
+    let teamBoxScoreViewModel = TeamBoxScoreViewModel(teamName: gameTeamResult.homeTeam.name, batters: batterBoxScores, pitchers: pitcherBoxScores)
     let gameViewModel = GameViewModel(gameId: "\(gameId)",
                                       title: gameTeamResult.title,
                          lineScore: lineScoreViewModel,
@@ -391,28 +433,26 @@ let teamViewModels: [TeamViewModel] = lineups.map { lineup in
     return TeamViewModel(name: lineup.name, batters: batterViewModels, pitchers: pitcherViewModels)
 }
 
-let leagueData = LeagueData(leagueName: "leagueName", teams: teamViewModels , leagueResults: leagueResultsViewModel, games: gameViewModels)
-
-//let lineScoreViewModel = LineScoreViewModel(awayTeam: <#T##String#>, homeTeam: <#T##String#>, inningScores: <#T##[LineScoreViewModel.InningResult]#>, awayTeamHits: <#T##String#>, homeTeamHits: <#T##String#>, awayTeamFinalScore: <#T##String#>, homeTeamFinalScore: <#T##String#>)
-//let boxScoreViewModel = BoxScoreViewModel(homeTeam: <#T##TeamBoxScoreViewModel#>, awayTeam: <#T##TeamBoxScoreViewModel#>)
-//let inningResultViewModels = aiai
-// let gamesViewModel = GameViewModel(gameId: "aiai", title: "aiai", lineScore: <#T##LineScoreViewModel#>, inningResults: <#T##[InningResultViewModel]#>, boxScore: boxScoreViewModel)
-// let leagueData = LeagueData(leagueName: "RotoSim", teams: lineups, leagueResults: leagueResultsViewModel, games: <#T##[GameViewModel]#>)
-
-//SimulationLeagueWebsite.ItemMetaData
+let leagueData = LeagueData(leagueName: "CIK",
+                            teams: teamViewModels,
+                            leagueResults: leagueResultsViewModel,
+                            games: gameViewModels
+                )
 
 
 switch outputFormat {
 case .text:
     printText(gameTeamResults.map { $0.gameResult})
 case .json:
-    let viewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults)
-
+//    let viewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults)
+//
     let jsonEncoder = JSONEncoder()
     jsonEncoder.outputFormatting = .prettyPrinted
-    let data = try jsonEncoder.encode(viewModel)
+    let data = try jsonEncoder.encode(leagueData)
 
     print(String(data: data, encoding: .utf8)!)
+case .publish:
+    publishSimulationLeagueSite(from: leagueData)
 }
 
 

@@ -25,6 +25,25 @@ public struct AtBatRecord {
     public let pitcherId: String
     public let result: AtBatOutcome
     public let resultingState: AtBatResultState
+
+    public var wasAtBat : Bool {
+        switch result {
+        case .walk, .hitByPitch:
+            return false
+
+        default:
+            return true
+        }
+    }
+
+    public var wasHit: Bool {
+        switch result {
+        case .double, .homerun, .single, .triple:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public struct GameResult {
