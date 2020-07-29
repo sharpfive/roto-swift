@@ -49,11 +49,11 @@ public struct AtBatRecord {
 public struct GameResult {
     public let inningFrameResults: [InningFrameResult]
 
-    public var homeInningFrameResults: [InningFrameResult] {
+    public var bottomInningFrameResults: [InningFrameResult] {
         return inningFrameResults.filter { $0.gameState.inningCount.frame == .bottom }
     }
 
-    public var awayInningFrameResults: [InningFrameResult] {
+    public var topInningFrameResults: [InningFrameResult] {
         return inningFrameResults.filter { $0.gameState.inningCount.frame == .top }
     }
 
