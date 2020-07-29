@@ -179,6 +179,23 @@ struct GameTeamResult {
         return gameResult.homeScore > gameResult.awayScore
     }
 
+    var homeTeamHits: Int {
+        homeTeamAtBatRecords.filter { return $0.wasHit }.count
+    }
+
+    var homeTeamAtBatRecords: [AtBatRecord] {
+        return gameResult.inningFrameResults.filter { $0.gameState.inningCount.frame == .bottom }.flatMap { $0.atBatsRecords }
+    }
+
+    var awayTeamHits: Int {
+        awayTeamAtBatRecords.filter { $0.wasHit }.count
+    }
+
+    var awayTeamAtBatRecords: [AtBatRecord] {
+        return gameResult.inningFrameResults.filter { $0.gameState.inningCount.frame == .top }.flatMap { $0.atBatsRecords }
+    }
+
+
     func getBatterName(by playerId: String) -> String? {
         let batter = homeTeam.batters.first(where: { return $0.playerId == playerId }) ??
             awayTeam.batters.first(where: { return $0.playerId == playerId })
@@ -212,9 +229,6 @@ homeLineups.forEach { homeLineup in
 
 func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
 
-//    gameResults.map {
-//        $0.
-//    }
     let gameViewModels = gameTeamResults.map { gameTeamResult in
         return GameMetaDataViewModel(
             title: gameTeamResult.title,
@@ -271,14 +285,6 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     return standingsViewModel
 }
 
-// Copied from Oliva output //aiai consolidate somehow
-//public struct LeagueData: Codable {
-//    public let leagueName: String
-//    public let teams: [TeamViewModel]
-//    public let leagueResults: LeagueResultsViewModel
-//    public let games: [GameViewModel]
-//}
-
 guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
     print("ERROR: unable to create leagueResultsViewModel")
     exit(0)
@@ -288,19 +294,19 @@ let lineScoreViewModals: [LineScoreViewModel] = gameTeamResults.map { gameTeamRe
 
     let inningScores: [LineScoreViewModel.InningResult] = gameTeamResult.gameResult.inningFrameResults.map { inningFrameResult in
 
-        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount)",
-                                               awayTeamRunsScored: "\(0)", //aiai
-                                               homeTeamRunsScored: "\(0)", //aiai
-                                               isFinalInning: false) //aiai
+        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount.number + 1)",
+                                               awayTeamRunsScored: "\(inningFrameResult.gameState.totalAwayRunsScored)",
+                                               homeTeamRunsScored: "\(inningFrameResult.gameState.totalHomeRunsScored)",
+                                               isFinalInning: false)
 
     }
     return LineScoreViewModel(awayTeam: gameTeamResult.awayTeam.name,
                               homeTeam: gameTeamResult.homeTeam.name,
                               inningScores: inningScores,
-                              awayTeamHits: "\(0)",
-                              homeTeamHits: "\(0)",
-                              awayTeamFinalScore: "\(0)",
-                              homeTeamFinalScore: "\(0)")
+                              awayTeamHits: "\(gameTeamResult.homeTeamHits)",
+                              homeTeamHits: "\(gameTeamResult.awayTeamHits)",
+                              awayTeamFinalScore: "\(gameTeamResult.gameResult.awayScore)",
+                              homeTeamFinalScore: "\(gameTeamResult.gameResult.homeScore)")
 
 }
 
@@ -358,13 +364,18 @@ let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
         return InningResultViewModel(inningCount: inningCountViewModel, atBats: atBatViewModels)
     }
 
+    let homeTeamAtBatRecords = gameTeamResult.gameResult.inningFrameResults.filter { $0.gameState.inningCount.frame == .bottom }.flatMap { $0.atBatsRecords }
+    let homeTeamHits = homeTeamAtBatRecords.filter { $0.wasHit }.count
+
+    let awayTeamAtBatRecords = gameTeamResult.gameResult.inningFrameResults.filter { $0.gameState.inningCount.frame == .top }.flatMap { $0.atBatsRecords }
+    let awayTeamHits = awayTeamAtBatRecords.filter { $0.wasHit }.count
     let lineScoreViewModel = LineScoreViewModel(awayTeam: gameTeamResult.awayTeam.name,
                               homeTeam: gameTeamResult.homeTeam.name,
                               inningScores: inningResults,
-                              awayTeamHits: "\(0)",
-                              homeTeamHits: "\(0)",
-                              awayTeamFinalScore: "\(0)",
-                              homeTeamFinalScore: "\(0)")
+                              awayTeamHits: "\(awayTeamHits)",
+                              homeTeamHits: "\(homeTeamHits)",
+                              awayTeamFinalScore: "\(gameTeamResult.gameResult.awayScore)",
+                              homeTeamFinalScore: "\(gameTeamResult.gameResult.homeScore)")
 
 
     let atBatRecords = gameTeamResult.gameResult.inningFrameResults.flatMap {
