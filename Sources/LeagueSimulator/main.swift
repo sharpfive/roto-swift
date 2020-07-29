@@ -377,60 +377,112 @@ let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
                               awayTeamFinalScore: "\(gameTeamResult.gameResult.awayScore)",
                               homeTeamFinalScore: "\(gameTeamResult.gameResult.homeScore)")
 
+    let homeBatterBoxScore = gameTeamResult.createHomeBatterBoxScore()
+    let awayBatterBoxScore = gameTeamResult.createAwayBatterBoxScore()
+    let homePitcherBoxScore = gameTeamResult.createHomePitcherBoxScore()
+    let awayPicherBoxScore = gameTeamResult.createAwayPitcherBoxScore()
 
-    let atBatRecords = gameTeamResult.gameResult.inningFrameResults.flatMap {
-        $0.atBatsRecords
-    }
+    let homeTeamBoxScoreViewModel = TeamBoxScoreViewModel(
+        teamName: gameTeamResult.homeTeam.name,
+        batters: homeBatterBoxScore,
+        pitchers: homePitcherBoxScore
+    )
 
-    let batterGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
-        return atBatRecord.batterId
-    }
+    let awayTeamBoxScoreViewModel = TeamBoxScoreViewModel(
+        teamName: gameTeamResult.awayTeam.name,
+        batters: awayBatterBoxScore,
+        pitchers: awayPicherBoxScore
+    )
 
-    let batterBoxScores: [BatterBoxScore] = batterGroupedDictionary.map { tuple in
-        let atBats = tuple.value.filter({ $0.wasAtBat }).count
-        let hits = tuple.value.filter({ $0.wasHit }).count
-        let strikeouts = tuple.value.filter({ $0.result == .strikeout }).count
-        return BatterBoxScore(playerName: gameTeamResult.getBatterName(by: tuple.key) ?? "-",
-                       atBats: "\(atBats)",
-                       runs: "",
-                       hits: "\(hits)",
-                       rbis: "",
-                       strikeouts: "\(strikeouts)"
-        )
-    }
-
-    let pitcherGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
-        return atBatRecord.pitcherId
-    }
-
-    let pitcherBoxScores: [PitcherBoxScore] = pitcherGroupedDictionary.map { keyValue in
-        let inningsPitched = keyValue.value.count / 3 // an approximation, doesn't handle 1/3 or 2/3 of an inning
-
-        let hits = keyValue.value.filter({ $0.wasHit }).count
-        let walks = keyValue.value.filter({ $0.result == .walk }).count
-        let strikeouts = keyValue.value.filter({ $0.result == .strikeout }).count
-        let homeRuns = keyValue.value.filter({$0.result == .homerun}).count
-
-        return PitcherBoxScore(
-            playerName: gameTeamResult.getPitcherName(by: keyValue.key) ?? "-",
-            inningsPitched: "\(inningsPitched)",
-            hits: "\(hits)",
-            runs: "---",
-            walks: "\(walks)",
-            strikeouts: "\(strikeouts)",
-            homeRuns: "\(homeRuns)"
-        )
-    }
-
-    let teamBoxScoreViewModel = TeamBoxScoreViewModel(teamName: gameTeamResult.homeTeam.name, batters: batterBoxScores, pitchers: pitcherBoxScores)
     let gameViewModel = GameViewModel(gameId: "\(gameId)",
                                       title: gameTeamResult.title,
                          lineScore: lineScoreViewModel,
                          inningResults: inningResultsViewModels,
-                         boxScore: BoxScoreViewModel(homeTeam: teamBoxScoreViewModel, awayTeam: teamBoxScoreViewModel))
+                         boxScore: BoxScoreViewModel(homeTeam: homeTeamBoxScoreViewModel, awayTeam: awayTeamBoxScoreViewModel))
     gameId += 1
     return gameViewModel
+}
 
+extension GameTeamResult {
+    func createHomeBatterBoxScore() -> [BatterBoxScore] {
+        let homeAtBatRecords = self.gameResult.homeInningFrameResults.flatMap {
+            $0.atBatsRecords
+        }
+
+        return createBatterBoxScore(from: homeAtBatRecords)
+    }
+
+    func createAwayBatterBoxScore() -> [BatterBoxScore] {
+        let awayAtBatRecords = self.gameResult.awayInningFrameResults.flatMap {
+            $0.atBatsRecords
+        }
+
+        return createBatterBoxScore(from: awayAtBatRecords)
+    }
+
+    func createHomePitcherBoxScore() -> [PitcherBoxScore] {
+        let homeAtBatRecords = self.gameResult.awayInningFrameResults.flatMap {
+            $0.atBatsRecords
+        }
+
+        return createPitcherBoxScore(from: homeAtBatRecords)
+    }
+
+    func createAwayPitcherBoxScore() -> [PitcherBoxScore] {
+        let awayAtBatRecords = self.gameResult.homeInningFrameResults.flatMap {
+            $0.atBatsRecords
+        }
+
+        return createPitcherBoxScore(from: awayAtBatRecords)
+    }
+
+    func createBatterBoxScore(from atBatRecords: [AtBatRecord]) -> [BatterBoxScore] {
+        let batterGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
+            return atBatRecord.batterId
+        }
+
+        let batterBoxScores: [BatterBoxScore] = batterGroupedDictionary.map { tuple in
+            let atBats = tuple.value.filter({ $0.wasAtBat }).count
+            let hits = tuple.value.filter({ $0.wasHit }).count
+            let strikeouts = tuple.value.filter({ $0.result == .strikeout }).count
+            return BatterBoxScore(playerName: self.getBatterName(by: tuple.key) ?? "-",
+                           atBats: "\(atBats)",
+                           runs: "",
+                           hits: "\(hits)",
+                           rbis: "",
+                           strikeouts: "\(strikeouts)"
+            )
+        }
+
+        return batterBoxScores
+    }
+
+    func createPitcherBoxScore(from atBatRecords: [AtBatRecord]) -> [PitcherBoxScore] {
+        let pitcherGroupedDictionary = Dictionary(grouping: atBatRecords) { atBatRecord in
+            return atBatRecord.pitcherId
+        }
+
+        let pitcherBoxScores: [PitcherBoxScore] = pitcherGroupedDictionary.map { keyValue in
+            let inningsPitched = keyValue.value.count / 3 // an approximation, doesn't handle 1/3 or 2/3 of an inning
+
+            let hits = keyValue.value.filter({ $0.wasHit }).count
+            let walks = keyValue.value.filter({ $0.result == .walk }).count
+            let strikeouts = keyValue.value.filter({ $0.result == .strikeout }).count
+            let homeRuns = keyValue.value.filter({$0.result == .homerun}).count
+
+            return PitcherBoxScore(
+                playerName: self.getPitcherName(by: keyValue.key) ?? "-",
+                inningsPitched: "\(inningsPitched)",
+                hits: "\(hits)",
+                runs: "---",
+                walks: "\(walks)",
+                strikeouts: "\(strikeouts)",
+                homeRuns: "\(homeRuns)"
+            )
+        }
+
+        return pitcherBoxScores
+    }
 }
 
 let teamViewModels: [TeamViewModel] = lineups.map { lineup in

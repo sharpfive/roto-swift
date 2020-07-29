@@ -49,6 +49,14 @@ public struct AtBatRecord {
 public struct GameResult {
     public let inningFrameResults: [InningFrameResult]
 
+    public var homeInningFrameResults: [InningFrameResult] {
+        return inningFrameResults.filter { $0.gameState.inningCount.frame == .bottom }
+    }
+
+    public var awayInningFrameResults: [InningFrameResult] {
+        return inningFrameResults.filter { $0.gameState.inningCount.frame == .top }
+    }
+
     public var homeScore: Int {
         guard let lastGameState = inningFrameResults.last?.gameState else {
             return 0
