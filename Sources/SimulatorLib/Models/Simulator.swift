@@ -44,6 +44,15 @@ public struct AtBatRecord {
             return false
         }
     }
+
+    public var wasOut: Bool {
+        switch result {
+        case .out, .strikeout:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public struct GameResult {

@@ -488,16 +488,30 @@ extension GameTeamResult {
         }
 
         let pitcherBoxScores: [PitcherBoxScore] = pitcherGroupedDictionary.map { keyValue in
-            let inningsPitched = keyValue.value.count / 3 // an approximation, doesn't handle 1/3 or 2/3 of an inning
-
             let hits = keyValue.value.filter({ $0.wasHit }).count
             let walks = keyValue.value.filter({ $0.result == .walk }).count
             let strikeouts = keyValue.value.filter({ $0.result == .strikeout }).count
             let homeRuns = keyValue.value.filter({$0.result == .homerun}).count
+            let outs = keyValue.value.filter({ $0.wasOut}).count
+
+            let outsPerInning = 3
+
+            let inningsPitchedString: String
+            let partialInningOuts = outs % outsPerInning
+
+            if partialInningOuts > 0 {
+                if partialInningOuts == 1 {
+                    inningsPitchedString = "\(outs / outsPerInning) 1/3"
+                } else {
+                    inningsPitchedString = "\(outs / outsPerInning) 2/3"
+                }
+            } else {
+                inningsPitchedString = "\(outs / outsPerInning)"
+            }
 
             return PitcherBoxScore(
                 playerName: self.getPitcherName(by: keyValue.key) ?? "-",
-                inningsPitched: "\(inningsPitched)",
+                inningsPitched: inningsPitchedString,
                 hits: "\(hits)",
                 runs: "---",
                 walks: "\(walks)",
