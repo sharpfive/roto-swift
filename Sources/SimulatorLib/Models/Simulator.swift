@@ -218,11 +218,13 @@ public struct PlayerProbability {
 }
 
 public struct TeamLineupProbabilities {
+    static let numberOfBatters = 9
+
     let startingPitcher: PlayerProbability
     let batters: [PlayerProbability]
 
     func getProbability(for battersRetired: Int) -> PlayerProbability {
-        return batters[battersRetired % 8]
+        return batters[battersRetired % TeamLineupProbabilities.numberOfBatters]
     }
 }
 

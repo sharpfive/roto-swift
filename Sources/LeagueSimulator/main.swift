@@ -425,11 +425,12 @@ extension GameTeamResult {
     }
 
     func createAwayBatterBoxScore() -> [BatterBoxScore] {
-        let atBatRecords = self.gameResult.topInningFrameResults.flatMap {
-            $0.atBatsRecords
+        return awayTeam.batterLineup.batterLineupPositions.map { batterLineupPosition in
+            return createBatterBoxScore(
+                for: batterLineupPosition.batterProjection,
+                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId)
+            )
         }
-
-        return createBatterBoxScore(from: atBatRecords)
     }
 
     func createHomePitcherBoxScore() -> [PitcherBoxScore] {
