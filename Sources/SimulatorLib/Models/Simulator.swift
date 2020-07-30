@@ -49,12 +49,20 @@ public struct AtBatRecord {
 public struct GameResult {
     public let inningFrameResults: [InningFrameResult]
 
+    var atBatRecords: [AtBatRecord] {
+        return inningFrameResults.flatMap { $0.atBatsRecords }
+    }
+
     public var bottomInningFrameResults: [InningFrameResult] {
         return inningFrameResults.filter { $0.gameState.inningCount.frame == .bottom }
     }
 
     public var topInningFrameResults: [InningFrameResult] {
         return inningFrameResults.filter { $0.gameState.inningCount.frame == .top }
+    }
+
+    public func atBatRecords(for playerId: String) -> [AtBatRecord] {
+        return atBatRecords.filter { return $0.batterId == playerId }
     }
 
     public var homeScore: Int {
@@ -236,12 +244,12 @@ public struct Team {
     //
 
     public struct BatterLineupPosition {
-        let batterProjection: BatterProjection
-        let lineupPosition: Int
+        public let batterProjection: BatterProjection
+        public let lineupPosition: Int
     }
 
     public struct BatterLineup {
-        let batterLineupPositions: [BatterLineupPosition]
+        public let batterLineupPositions: [BatterLineupPosition]
     }
 
     static let numberOfBatters = 9
@@ -251,7 +259,7 @@ public struct Team {
     public let pitchers: [PitcherProjection]
     public let batters: [BatterProjection]
 
-    var batterLineup: BatterLineup {
+    public var batterLineup: BatterLineup {
         var batterLineupPositions = [BatterLineupPosition]()
         for (index, batter) in batters.enumerated() {
             if index >= Team.numberOfBatters {

@@ -416,11 +416,12 @@ let gameViewModels = createGameViewModels(from: gameTeamResults)
 
 extension GameTeamResult {
     func createHomeBatterBoxScore() -> [BatterBoxScore] {
-        let atBatRecords = self.gameResult.bottomInningFrameResults.flatMap {
-            $0.atBatsRecords
+        return homeTeam.batterLineup.batterLineupPositions.map { batterLineupPosition in
+            return createBatterBoxScore(
+                for: batterLineupPosition.batterProjection,
+                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId)
+            )
         }
-
-        return createBatterBoxScore(from: atBatRecords)
     }
 
     func createAwayBatterBoxScore() -> [BatterBoxScore] {
@@ -445,6 +446,18 @@ extension GameTeamResult {
         }
 
         return createPitcherBoxScore(from: atBatRecords)
+    }
+
+    func createBatterBoxScore(for batter: BatterProjection, with atBatRecords: [AtBatRecord] ) -> BatterBoxScore {
+
+        return BatterBoxScore(
+            playerName: batter.fullName,
+            atBats: "\(atBatRecords.filter { $0.wasAtBat}.count)",
+            runs: "",
+            hits: "\(atBatRecords.filter({ $0.wasHit }).count)",
+            rbis: "",
+            strikeouts: "\(atBatRecords.filter({ $0.result == .strikeout }).count)"
+        )
     }
 
     func createBatterBoxScore(from atBatRecords: [AtBatRecord]) -> [BatterBoxScore] {
