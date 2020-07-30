@@ -30,14 +30,14 @@ extension SimulatorLib.Team {
 }
 
 func printInningFrame(with gameState: GameState) {
-    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.displayNumber) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
 }
 
 func printFinalScore(with gameState: GameState) {
     print("************************")
     print("")
     print("Game Over!")
-    print("inningResult: \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("inningResult: \(gameState.inningCount.displayNumber) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
     print("")
     print("************************")
     print("")
@@ -63,7 +63,7 @@ func createGameViewModels(from gameTeamResults: [GameTeamResult]) -> [GameViewMo
     let gameViewModels: [GameViewModel] = gameTeamResults.map { gameTeamResult in
 
         let groupedInningFrames = Dictionary(grouping: gameTeamResult.gameResult.inningFrameResults) { inningFrameResult -> Int in
-            return inningFrameResult.gameState.inningCount.number
+            return inningFrameResult.gameState.inningCount.displayNumber
         }
 
         let inningResults: [LineScoreViewModel.InningResult] = groupedInningFrames.sorted (by: { (arg0, arg1) -> Bool in
@@ -100,7 +100,7 @@ func createGameViewModels(from gameTeamResults: [GameTeamResult]) -> [GameViewMo
             let inningFrameString = inningFrameResult.gameState.inningCount.frame == .top ? "top" : "bottom"
             let inningCountViewModel = InningCountViewModel(
                 frame: inningFrameString,
-                count: "\(inningFrameResult.gameState.inningCount.number + 1)",
+                count: "\(inningFrameResult.gameState.inningCount.displayNumber)",
                 outs: "\(inningFrameResult.gameState.inningCount.outs)")
 
             let atBatViewModels: [AtBatResultViewModel] = inningFrameResult.atBatsRecords.map { atBatRecord in
@@ -396,7 +396,7 @@ let lineScoreViewModals: [LineScoreViewModel] = gameTeamResults.map { gameTeamRe
 
     let inningScores: [LineScoreViewModel.InningResult] = gameTeamResult.gameResult.inningFrameResults.map { inningFrameResult in
 
-        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount.number + 1)",
+        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount.displayNumber)",
                                                awayTeamRunsScored: "\(inningFrameResult.gameState.totalAwayRunsScored)",
                                                homeTeamRunsScored: "\(inningFrameResult.gameState.totalHomeRunsScored)",
                                                isFinalInning: false)

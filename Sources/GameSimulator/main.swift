@@ -92,14 +92,14 @@ let percentageOfTriples = Double(totalTriples) / Double(totalHits)
 let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
 
 func printInningFrame(with gameState: GameState) {
-    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("frameResult: \(gameState.inningCount.frame) \(gameState.inningCount.displayNumber) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
 }
 
 func printFinalScore(with gameState: GameState) {
     print("************************")
     print("")
     print("Game Over!")
-    print("inningResult: \(gameState.inningCount.number + 1) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
+    print("inningResult: \(gameState.inningCount.displayNumber) - Away: \(gameState.totalAwayRunsScored) - Home: \(gameState.totalHomeRunsScored)")
     print("")
     print("************************")
     print("")

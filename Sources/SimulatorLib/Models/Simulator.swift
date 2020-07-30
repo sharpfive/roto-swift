@@ -569,7 +569,15 @@ public enum InningFrame {
 
 public struct InningCount {
     public var frame: InningFrame
+
+    // zero index number
     public var number: Int
+
+    // 1 index number for display purposes
+    public var displayNumber: Int {
+        return number + 1
+    }
+
     public var outs: Int
 
     static func beginningOfGame() -> InningCount {
