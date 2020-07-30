@@ -224,16 +224,57 @@ public struct Lineup {
 }
 
 public struct TeamLineup {
+    // Not currently used, but we will need to explore the relationship between the Team and lineup
+    // Lineup can be different every game (or part of game), but team
     let identifier: String
     let name: String
     let lineup: Lineup
 }
 
 public struct Team {
+    // We probably want to create a struct with a starting lineup, with the BatterProjection and Batter order number
+    //
+
+    public struct BatterLineupPosition {
+        let batterProjection: BatterProjection
+        let lineupPosition: Int
+    }
+
+    public struct BatterLineup {
+        let batterLineupPositions: [BatterLineupPosition]
+    }
+
+    static let numberOfBatters = 9
+
     public let identifier: String
     public let name: String
     public let pitchers: [PitcherProjection]
     public let batters: [BatterProjection]
+
+    var batterLineup: BatterLineup {
+        var batterLineupPositions = [BatterLineupPosition]()
+        for (index, batter) in batters.enumerated() {
+            if index >= Team.numberOfBatters {
+                break
+            }
+
+            batterLineupPositions.append(BatterLineupPosition(batterProjection: batter, lineupPosition: index))
+        }
+
+        return BatterLineup(batterLineupPositions: batterLineupPositions)
+    }
+
+    func battingLineupPosition(by playerId: String) -> Int? {
+        let lineupPosition = batters.firstIndex(where: { return $0.playerId == playerId }) ??
+            batters.firstIndex(where: { return $0.playerId == playerId })
+
+        if let lineupPosition = lineupPosition,
+           lineupPosition < Team.numberOfBatters {
+            return lineupPosition
+        } else {
+            return nil
+        }
+    }
 }
 
 extension Team: Codable {}
