@@ -337,17 +337,11 @@ homeLineups.forEach { homeLineup in
     }
 }
 
-func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult], leagueAbbreviation: String?) -> LeagueResultsViewModel? {
+func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
 
     let gameViewModels: [GameMetaDataViewModel] = gameTeamResults.map { gameTeamResult in
 
-        let urlString: String
-        if let leagueAbbreviation = leagueAbbreviation,
-           !leagueAbbreviation.isEmpty {
-            urlString = "/\(leagueAbbreviation)/game/\(gameTeamResult.gameId)/index.html"
-        } else {
-            urlString = "/game/\(gameTeamResult.gameId)/index.html"
-        }
+        let urlString = "../game/\(gameTeamResult.gameId)/index.html"
 
         return GameMetaDataViewModel(
             title: gameTeamResult.title,
@@ -406,7 +400,7 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     return standingsViewModel
 }
 
-guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults, leagueAbbreviation: leagueAbbreviation) else {
+guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
     print("ERROR: unable to create leagueResultsViewModel")
     exit(0)
 }
