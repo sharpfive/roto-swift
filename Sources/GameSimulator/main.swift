@@ -76,7 +76,7 @@ guard let lineupsFilename = lineupsFileName else {
 
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-let lineups = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+let lineups = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
 let totalSingles = hitterProjections.values.map { $0.singles }.reduce(0, +)
 let totalDoubles = hitterProjections.values.map { $0.doubles }.reduce(0, +)

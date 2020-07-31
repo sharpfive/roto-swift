@@ -62,7 +62,7 @@ guard let lineupsFilename = lineupsFileName else {
 
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-let teams = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+let teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
 //TODO need to create the games, similar to LeagueSimulator
 

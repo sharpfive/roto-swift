@@ -7,7 +7,7 @@
 
 // ex swift run LeagueSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 import Foundation
-import RotoSwift
+//import RotoSwift
 import CSV
 import SPMUtility
 import SimulatorLib
@@ -27,6 +27,12 @@ extension SimulatorLib.Team {
             print("      \($0)")
         }
     }
+}
+
+public func defaultFilename(for application: String, format: String) -> String {
+    let dateString = Date().toString(dateFormat: "yyyy-MM-dd-HH:mm:ss")
+
+    return "\(FileManager.default.currentDirectoryPath)/\(application)-\(dateString).\(format)"
 }
 
 func printInningFrame(with gameState: GameState) {
@@ -232,7 +238,7 @@ if let outputFormatArgument = outputFormatArgument {
 
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-let lineups = createLineups(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+let teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
 
 let totalSingles = hitterProjections.values.map { $0.singles }.reduce(0, +)
 let totalDoubles = hitterProjections.values.map { $0.doubles }.reduce(0, +)
@@ -247,8 +253,10 @@ let percentageOfDoubles = Double(totalDoubles) / Double(totalHits)
 let percentageOfTriples = Double(totalTriples) / Double(totalHits)
 let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
 
-let homeTeam = lineups[0]
-let awayTeam = lineups[1]
+//let homeTeam = teams[0]
+//let awayTeam = teams[1]
+
+
 
 //print("Home Team:")
 //homeTeam.printToStandardOut()
@@ -258,8 +266,73 @@ let awayTeam = lineups[1]
 //print("Away Team:")
 //awayTeam.printToStandardOut()
 
-let homeLineups = createLineups(for: homeTeam)
-let awayLineups = createLineups(for: awayTeam)
+let lineups = teams.map { return createLineups(for: $0) }
+
+//let homeLineups = createLineups(for: homeTeam)
+//let awayLineups = createLineups(for: awayTeam)
+
+func simulateGames(for teams: [Team], pitcherDictionary: [String : PitcherProjection], batterDictionary: [String : BatterProjection]) -> [GameTeamResult] {
+    let teamsInLeague = teams.count
+
+    let teamLineups = teams.map { (team: $0, linups: createLineups(for: $0)) }
+
+
+    var gameTeamResults = [GameTeamResult]()
+    var gameId = 0
+    var gamePeriodIndex = 0
+    let gamesPerSeries = 3
+
+    for (index, teamLineup) in teamLineups.enumerated() {
+        (1..<teamsInLeague).forEach { awayTeamIndex in
+            let awayTeam = teamLineups[(awayTeamIndex + index) % teamsInLeague]
+            let awayTeamLineup = awayTeam.linups[0]
+            let homeTeamLineup = teamLineup.linups[0]
+
+            print("index: \(index)")
+            print("awayTeamIndex: \(awayTeamIndex)")
+            print((teamLineup.team.name, awayTeam.team.name))
+
+            let gameResult = simulateGame(homeLineup: homeTeamLineup,
+                         awayLineup: awayTeamLineup,
+                         pitcherDictionary: pitcherDictionary,
+                         batterDictionary: batterDictionary
+            )
+
+            let gameTeamResult = GameTeamResult(
+                gameId: "\(gameId)",
+                gameResult: gameResult,
+                homeTeam: teamLineup.team,
+                awayTeam: awayTeam.team
+            )
+
+            gameId += 1
+
+            gameTeamResults.append(gameTeamResult)
+        }
+
+        gamePeriodIndex += gamesPerSeries
+    }
+//    for (index, lineup) in lineups.enumerated() {
+//
+//        let nextTeamIndex = index+1
+//
+//        let homeTeamLineup = lineup.[lineupIndex % numberOfLineupsPerTeam]
+//        let awayTeamLineup = lineups[gameId % teamsInLeague][lineupIndex % numberOfLineupsPerTeam]
+//
+//        let gameResult = simulateGame(homeLineup: homeTeamLineup, awayLineup: awayTeamLineup, pitcherDictionary: pitcherDictionary, batterDictionary: batterDictionary)
+//
+//        GameTeamResult(gameId: "", gameResult: gameResult, homeTeam: <#T##Team#>, awayTeam: <#T##Team#>)
+//        let gameTeamResult = GameTeamResult(
+//                                gameId: "\(gameId)",
+//                                gameResult: gameResult,
+//                                homeTeam: homeTeamLineup,
+//                                awayTeam: awayTeamLineup)
+//
+//        gameTeamResults.append(gameTeamResult)
+//    }
+
+    return gameTeamResults
+}
 
 
 struct GameTeamResult {
@@ -316,26 +389,31 @@ struct GameTeamResult {
     }
 }
 
-var gameTeamResults = [GameTeamResult]()
-
-var gameId = 0
-homeLineups.forEach { homeLineup in
-    awayLineups.forEach { awayLineup in
-        let gameResult = simulateGame(homeLineup: homeLineup,
-                                      awayLineup: awayLineup,
-                                      pitcherDictionary: pitcherProjections,
-                                      batterDictionary: hitterProjections)
-
-        gameTeamResults.append(
-            GameTeamResult(gameId: "\(gameId)",
-                           gameResult: gameResult,
-                           homeTeam: homeTeam,
-                            awayTeam: awayTeam
-            )
-        )
-        gameId += 1
-    }
-}
+let gameTeamResults = simulateGames(
+    for: Array(teams.prefix(3)),
+    pitcherDictionary: pitcherProjections,
+    batterDictionary: hitterProjections
+)
+//var gameTeamResults = [GameTeamResult]()
+//
+//var gameId = 0
+//homeLineups.forEach { homeLineup in
+//    awayLineups.forEach { awayLineup in
+//        let gameResult = simulateGame(homeLineup: homeLineup,
+//                                      awayLineup: awayLineup,
+//                                      pitcherDictionary: pitcherProjections,
+//                                      batterDictionary: hitterProjections)
+//
+//        gameTeamResults.append(
+//            GameTeamResult(gameId: "\(gameId)",
+//                           gameResult: gameResult,
+//                           homeTeam: homeTeam,
+//                            awayTeam: awayTeam
+//            )
+//        )
+//        gameId += 1
+//    }
+//}
 
 func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
 
@@ -400,7 +478,7 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     return standingsViewModel
 }
 
-guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
+guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: teams, gameTeamResults: gameTeamResults) else {
     print("ERROR: unable to create leagueResultsViewModel")
     exit(0)
 }
@@ -548,7 +626,7 @@ extension GameTeamResult {
     }
 }
 
-let teamViewModels: [TeamViewModel] = lineups.map { lineup in
+let teamViewModels: [TeamViewModel] = teams.map { lineup in
     let batterViewModels = lineup.batters.map { lineupBatter in
         return PlayerViewModel(fullName: lineupBatter.fullName)
     }

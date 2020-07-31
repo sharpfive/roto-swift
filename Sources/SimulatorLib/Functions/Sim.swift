@@ -138,7 +138,7 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     }
 }
 
-public func createLineups(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [Team] {
+public func createTeams(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [Team] {
 
     let requiredBatters = 9
     let requiredPitchers = 5

@@ -258,12 +258,11 @@ public struct Lineup {
     let batterIds: [String]
 }
 
-public struct TeamLineup {
+public struct TeamLineups {
     // Not currently used, but we will need to explore the relationship between the Team and lineup
     // Lineup can be different every game (or part of game), but team
-    let identifier: String
-    let name: String
-    let lineup: Lineup
+    let team: Team
+    let lineups: [Lineup]
 }
 
 public struct Team {
