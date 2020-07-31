@@ -471,10 +471,11 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
         let gamesLost = totalGames - gamesWon
         let winningPercentage = Double(gamesWon) / Double(totalGames)
 
+        let winningPercentageString = String(format: "%.3f", winningPercentage)
         return TeamStandingsViewModel(teamName: teamName,
                                       wins: "\(gamesWon)",
                                       losses: "\(gamesLost)",
-                                      winPercentage: "\(winningPercentage)")
+                                      winPercentage: winningPercentageString)
     }.sorted { teamStandings1, teamStandings2 -> Bool in
         return teamStandings1.winPercentage > teamStandings2.winPercentage
     }
