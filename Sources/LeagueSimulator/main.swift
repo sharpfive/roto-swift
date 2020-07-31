@@ -430,18 +430,23 @@ let gameViewModels = createGameViewModels(from: gameTeamResults)
 extension GameTeamResult {
     func createHomeBatterBoxScore() -> [BatterBoxScore] {
         return homeTeam.batterLineup.batterLineupPositions.map { batterLineupPosition in
+            // runs for a batter requires all atBatRecords
+            let batterRuns = gameResult.runs(for: batterLineupPosition.batterProjection.playerId)
             return createBatterBoxScore(
                 for: batterLineupPosition.batterProjection,
-                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId)
+                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId),
+                runs: batterRuns
             )
         }
     }
 
     func createAwayBatterBoxScore() -> [BatterBoxScore] {
         return awayTeam.batterLineup.batterLineupPositions.map { batterLineupPosition in
+            let batterRuns = gameResult.runs(for: batterLineupPosition.batterProjection.playerId)
             return createBatterBoxScore(
                 for: batterLineupPosition.batterProjection,
-                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId)
+                with: gameResult.atBatRecords(for: batterLineupPosition.batterProjection.playerId),
+                runs: batterRuns
             )
         }
     }
@@ -462,14 +467,15 @@ extension GameTeamResult {
         return createPitcherBoxScore(from: atBatRecords)
     }
 
-    func createBatterBoxScore(for batter: BatterProjection, with atBatRecords: [AtBatRecord] ) -> BatterBoxScore {
+    func createBatterBoxScore(for batter: BatterProjection, with atBatRecords: [AtBatRecord], runs: Int) -> BatterBoxScore {
 
+        // we should likely pass in all the atBatRecords and filter here. This way we don't have to pass in runs
         let runsBattedIn = atBatRecords.map { $0.resultingState.runnersScored.count }.reduce(0,+)
 
         return BatterBoxScore(
             playerName: batter.fullName,
             atBats: "\(atBatRecords.filter { $0.wasAtBat}.count)",
-            runs: "",
+            runs: "\(runs)",
             hits: "\(atBatRecords.filter({ $0.wasHit }).count)",
             rbis: "\(runsBattedIn)",
             strikeouts: "\(atBatRecords.filter({ $0.result == .strikeout }).count)"
@@ -509,6 +515,9 @@ extension GameTeamResult {
             let homeRuns = keyValue.value.filter({$0.result == .homerun}).count
             let outs = keyValue.value.filter({ $0.wasOut}).count
 
+            // doesn't exactly match earned runs
+            let earnedRuns = keyValue.value.map { $0.resultingState.runnersScored.count }.reduce(0,+)
+
             let outsPerInning = 3
 
             let inningsPitchedString: String
@@ -528,7 +537,7 @@ extension GameTeamResult {
                 playerName: self.getPitcherName(by: keyValue.key) ?? "-",
                 inningsPitched: inningsPitchedString,
                 hits: "\(hits)",
-                runs: "---",
+                runs: "\(earnedRuns)",
                 walks: "\(walks)",
                 strikeouts: "\(strikeouts)",
                 homeRuns: "\(homeRuns)"

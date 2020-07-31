@@ -78,6 +78,18 @@ public struct GameResult {
         return atBatRecords.filter { return $0.batterId == playerId }
     }
 
+    public func pitcherAtBatRecords(for playerId: String) -> [AtBatRecord] {
+        return atBatRecords.filter { return $0.pitcherId == playerId }
+    }
+
+    public func runs(for playerId: String) -> Int {
+        return atBatRecords.flatMap { $0.resultingState.runnersScored }.filter { $0 == playerId }.count
+    }
+
+    public func earnedRuns(for playerId: String) -> Int {
+        return atBatRecords.flatMap { $0.resultingState.runnersScored }.filter { $0 == playerId }.count
+    }
+
     public var homeScore: Int {
         guard let lastGameState = inningFrameResults.last?.gameState else {
             return 0
