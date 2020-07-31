@@ -168,6 +168,10 @@ let outputFormatOption = parser.add(option: "--format", shortName: "-f", kind: S
 
 let lineupsFilenameOption = parser.add(option: "--lineups", shortName: "-l", kind: String.self, usage: "Filename for the team lineups.")
 
+let leagueNameOption = parser.add(option: "--leaguename", shortName: "-ln", kind: String.self, usage: "Name of the League")
+
+let leagueAbbreviationOption = parser.add(option: "--leagueAbbreviation", shortName: "-la", kind: String.self, usage: "Abbreviation for the league for html links, no spaces")
+
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 
 let parsedArguments: SPMUtility.ArgumentParser.Result
@@ -189,6 +193,9 @@ let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilenam
 let lineupsFileName = parsedArguments.get(lineupsFilenameOption)
 let outputFormatArgument = parsedArguments.get(outputFormatOption)
 
+let leagueName = parsedArguments.get(leagueNameOption) ?? "FanSim League"
+let leagueAbbreviation = parsedArguments.get(leagueAbbreviationOption)
+
 enum OutputFormat: String {
     case text
     case json
@@ -209,6 +216,8 @@ guard let lineupsFilename = lineupsFileName else {
     print("Lineup filename is required")
     exit(0)
 }
+
+
 
 let outputFormat: OutputFormat
 if let outputFormatArgument = outputFormatArgument {
@@ -328,10 +337,18 @@ homeLineups.forEach { homeLineup in
     }
 }
 
-func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
+func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult], leagueAbbreviation: String?) -> LeagueResultsViewModel? {
 
     let gameViewModels: [GameMetaDataViewModel] = gameTeamResults.map { gameTeamResult in
-        let urlString = "/game/\(gameTeamResult.gameId)/index.html"
+
+        let urlString: String
+        if let leagueAbbreviation = leagueAbbreviation,
+           !leagueAbbreviation.isEmpty {
+            urlString = "/\(leagueAbbreviation)/game/\(gameTeamResult.gameId)/index.html"
+        } else {
+            urlString = "/game/\(gameTeamResult.gameId)/index.html"
+        }
+
         return GameMetaDataViewModel(
             title: gameTeamResult.title,
             detailURLString: urlString,
@@ -389,7 +406,7 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     return standingsViewModel
 }
 
-guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults) else {
+guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults, leagueAbbreviation: leagueAbbreviation) else {
     print("ERROR: unable to create leagueResultsViewModel")
     exit(0)
 }
@@ -537,7 +554,7 @@ let teamViewModels: [TeamViewModel] = lineups.map { lineup in
     return TeamViewModel(name: lineup.name, batters: batterViewModels, pitchers: pitcherViewModels)
 }
 
-let leagueData = LeagueData(leagueName: "CIK",
+let leagueData = LeagueData(leagueName: leagueName,
                             teams: teamViewModels,
                             leagueResults: leagueResultsViewModel,
                             games: gameViewModels
