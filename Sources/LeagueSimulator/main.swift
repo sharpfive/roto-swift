@@ -464,12 +464,14 @@ extension GameTeamResult {
 
     func createBatterBoxScore(for batter: BatterProjection, with atBatRecords: [AtBatRecord] ) -> BatterBoxScore {
 
+        let runsBattedIn = atBatRecords.map { $0.resultingState.runnersScored.count }.reduce(0,+)
+
         return BatterBoxScore(
             playerName: batter.fullName,
             atBats: "\(atBatRecords.filter { $0.wasAtBat}.count)",
             runs: "",
             hits: "\(atBatRecords.filter({ $0.wasHit }).count)",
-            rbis: "",
+            rbis: "\(runsBattedIn)",
             strikeouts: "\(atBatRecords.filter({ $0.result == .strikeout }).count)"
         )
     }

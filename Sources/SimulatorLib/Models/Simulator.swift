@@ -53,6 +53,10 @@ public struct AtBatRecord {
             return false
         }
     }
+
+    public var runsBattedIn: Int {
+        return resultingState.runnersScored.count
+    }
 }
 
 public struct GameResult {
