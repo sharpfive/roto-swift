@@ -269,7 +269,7 @@ struct GameTeamResult {
     let awayTeam: SimulatorLib.Team
 
     var title: String {
-        return "\(homeTeam.name) vs \(awayTeam.name)"
+        return "\(awayTeam.name) at \(homeTeam.name)"
     }
 
     var detailURLString: String {
