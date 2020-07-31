@@ -282,35 +282,40 @@ func simulateGames(for teams: [Team], pitcherDictionary: [String : PitcherProjec
     var gamePeriodIndex = 0
     let gamesPerSeries = 3
 
+    let lineupPerTeam = teamLineups.first!.linups.count
+
     for (index, teamLineup) in teamLineups.enumerated() {
         (1..<teamsInLeague).forEach { awayTeamIndex in
             let awayTeam = teamLineups[(awayTeamIndex + index) % teamsInLeague]
-            let awayTeamLineup = awayTeam.linups[0]
-            let homeTeamLineup = teamLineup.linups[0]
 
-            print("index: \(index)")
-            print("awayTeamIndex: \(awayTeamIndex)")
-            print((teamLineup.team.name, awayTeam.team.name))
+            (0..<gamesPerSeries).forEach { seriesIndex in
+                let awayTeamLineup = awayTeam.linups[(gamePeriodIndex + seriesIndex) % lineupPerTeam]
+                let homeTeamLineup = teamLineup.linups[(gamePeriodIndex + seriesIndex) % lineupPerTeam]
 
-            let gameResult = simulateGame(homeLineup: homeTeamLineup,
-                         awayLineup: awayTeamLineup,
-                         pitcherDictionary: pitcherDictionary,
-                         batterDictionary: batterDictionary
-            )
+                print("index: \(index)")
+                print("awayTeamIndex: \(awayTeamIndex)")
+                print((teamLineup.team.name, awayTeam.team.name))
 
-            let gameTeamResult = GameTeamResult(
-                gameId: "\(gameId)",
-                gameResult: gameResult,
-                homeTeam: teamLineup.team,
-                awayTeam: awayTeam.team
-            )
+                let gameResult = simulateGame(homeLineup: homeTeamLineup,
+                             awayLineup: awayTeamLineup,
+                             pitcherDictionary: pitcherDictionary,
+                             batterDictionary: batterDictionary
+                )
 
-            gameId += 1
+                let gameTeamResult = GameTeamResult(
+                    gameId: "\(gameId)",
+                    gameResult: gameResult,
+                    homeTeam: teamLineup.team,
+                    awayTeam: awayTeam.team
+                )
 
-            gameTeamResults.append(gameTeamResult)
+                gameId += 1
+
+                gameTeamResults.append(gameTeamResult)
+            }
+
+            gamePeriodIndex += gamesPerSeries
         }
-
-        gamePeriodIndex += gamesPerSeries
     }
 //    for (index, lineup) in lineups.enumerated() {
 //
