@@ -14,6 +14,13 @@ import SimulatorLib
 import OlivaDomain
 import SimulationLeagueSiteGenerator
 
+struct StderrOutputStream: TextOutputStream {
+    mutating func write(_ string: String) {
+        fputs(string, stderr)
+    }
+}
+var standardError = StderrOutputStream()
+
 extension SimulatorLib.Team {
     func printToStandardOut() {
         print("Team: \(name)")
@@ -283,6 +290,9 @@ func simulateGames(for teams: [Team], pitcherDictionary: [String : PitcherProjec
     let gamesPerSeries = 3
 
     let lineupPerTeam = teamLineups.first!.linups.count
+
+    let totalGames = (teamsInLeague-1) * teamLineups.count * gamesPerSeries
+    var gameCount = 1
 
     for (index, teamLineup) in teamLineups.enumerated() {
         (1..<teamsInLeague).forEach { awayTeamIndex in
