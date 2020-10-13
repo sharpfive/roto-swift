@@ -4,6 +4,10 @@ import PackageDescription
 
 let package = Package(
     name: "RotoSwift",
+    products: [
+            .library(name: "SimulatorLib", targets: ["SimulatorLib"]),
+            .library(name: "RotoSwift", targets: ["RotoSwift"])
+    ],
     dependencies: [
     .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
     .package(url: "https://github.com/apple/swift-package-manager.git", .exact("0.5.0")),
