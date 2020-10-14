@@ -74,7 +74,7 @@ func calculatePitcherZScores(with filename: String) -> [PitcherZScores] {
     return calculatePitcherZScores(for: startingPitchers)
 }
 
-func calculateZScores(with filename: String) -> [BatterZScores] {
+public func calculateZScores(with filename: String) -> [BatterZScores] {
     let batters = convertFileToBatters(filename: filename)
     return calculateZScores(for: batters)
 }
@@ -97,7 +97,7 @@ func calculatePitcherZScores(for pitchers: [Pitcher]) -> [PitcherZScores] {
     }
 }
 
-func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
+public func calculateZScores(for batters: [Batter]) -> [BatterZScores] {
     let homeRunsStandardDeviation = standardDeviation(for: batters.map { $0.homeRuns })
     let meanHomeRuns = calculateMean(for: batters.map { $0.homeRuns })
 
@@ -179,6 +179,16 @@ public func convertPitcherProjectionsFileToActionValues(from sourceFilename: Str
     }
 
     csvWriter.stream.close()
+}
+
+public func normalizeZScores(for batterZScores: [BatterZScores], replacementPosition: Int) -> [BatterZScores] {
+    let replacementZScore = batterZScores[replacementPosition].totalZScore
+
+    return batterZScores.map { batterZScore in
+        var batterZScoreCopy = batterZScore
+        batterZScoreCopy.totalZScore = batterZScore.totalZScore - replacementZScore
+        return batterZScoreCopy
+    }
 }
 
 public func convertProjectionsFileToActionValues(from sourceFilename: String, to outputFilename: String) {
@@ -311,7 +321,7 @@ public func calculateProjections(with filename: String) {
     // use the percentage of z-score to determine the players total value (total-auction-pool & z-percentage)
 }
 
-func convertFileToBatters(filename: String) -> [Batter] {
+public func convertFileToBatters(filename: String) -> [Batter] {
     let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
     let csv = try! CSVReader(string: playerDataCSV,
@@ -354,7 +364,7 @@ func convertFileToBatters(filename: String) -> [Batter] {
     return batters
 }
 
-func convertFileToPitchers(filename: String) -> [Pitcher] {
+public func convertFileToPitchers(filename: String) -> [Pitcher] {
     let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
     let csv = try! CSVReader(string: playerDataCSV,
