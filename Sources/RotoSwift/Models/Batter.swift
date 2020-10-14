@@ -26,24 +26,24 @@ struct PitcherZScores {
     }
 }
 
-struct Batter {
-    let name: String
-    let homeRuns: Int
-    let runs: Int
-    let onBasePercentage: Double
-    let stolenBases: Int
-    let runsBattedIn: Int
+public struct Batter {
+    public let name: String
+    public let homeRuns: Int
+    public let runs: Int
+    public let onBasePercentage: Double
+    public let stolenBases: Int
+    public let runsBattedIn: Int
 }
 
-struct BatterZScores {
-    let name: String
-    let homeRuns: Double
-    let runs: Double
-    let onBasePercentage: Double
-    let stolenBases: Double
-    let runsBattedIn: Double
+public struct BatterZScores {
+    public let name: String
+    public let homeRuns: Double
+    public let runs: Double
+    public let onBasePercentage: Double
+    public let stolenBases: Double
+    public let runsBattedIn: Double
 
-    var totalZScore: Double {
+    public var totalZScore: Double {
         return homeRuns + runs + onBasePercentage + stolenBases + runsBattedIn
     }
 }
