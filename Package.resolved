@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/johnsundell/files.git",
         "state": {
           "branch": null,
-          "revision": "22fe84797d499ffca911ccd896b34efaf06a50b9",
-          "version": "4.1.1"
+          "revision": "d273b5b7025d386feef79ef6bad7de762e106eaf",
+          "version": "4.2.0"
         }
       },
       {
@@ -42,7 +42,7 @@
         "repositoryURL": "https://github.com/sharpfive/oliva.git",
         "state": {
           "branch": "dev",
-          "revision": "3dea4e5dda4712e44621e75a9ba227a11383cb9d",
+          "revision": "c9b31f3813d935d0b8b6788e1350ec21a42064d3",
           "version": null
         }
       },

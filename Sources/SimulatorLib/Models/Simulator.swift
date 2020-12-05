@@ -261,11 +261,11 @@ public struct Lineup {
 public struct TeamLineups {
     // Not currently used, but we will need to explore the relationship between the Team and lineup
     // Lineup can be different every game (or part of game), but team
-    let team: Team
+    let team: TeamProjections
     let lineups: [Lineup]
 }
 
-public struct Team {
+public struct TeamProjections {
     // We probably want to create a struct with a starting lineup, with the BatterProjection and Batter order number
     //
 
@@ -288,7 +288,7 @@ public struct Team {
     public var batterLineup: BatterLineup {
         var batterLineupPositions = [BatterLineupPosition]()
         for (index, batter) in batters.enumerated() {
-            if index >= Team.numberOfBatters {
+            if index >= TeamProjections.numberOfBatters {
                 break
             }
 
@@ -303,7 +303,7 @@ public struct Team {
             batters.firstIndex(where: { return $0.playerId == playerId })
 
         if let lineupPosition = lineupPosition,
-           lineupPosition < Team.numberOfBatters {
+           lineupPosition < TeamProjections.numberOfBatters {
             return lineupPosition
         } else {
             return nil
@@ -311,14 +311,14 @@ public struct Team {
     }
 }
 
-extension Team: Codable {}
-extension Team: Hashable {}
+extension TeamProjections: Codable {}
+extension TeamProjections: Hashable {}
 extension PitcherProjection: Codable {}
 extension PitcherProjection: Hashable {}
 extension BatterProjection: Hashable {}
 extension BatterProjection: Codable {}
 
-extension Team {
+extension TeamProjections {
     func printToStandardOut() {
         print("Team: \(name)")
         print("   id: \(identifier)")

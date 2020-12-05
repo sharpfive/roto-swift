@@ -12,7 +12,7 @@ import CSV
 import SPMUtility
 import SimulatorLib
 
-extension SimulatorLib.Team {
+extension SimulatorLib.TeamProjections {
     func printToStandardOut() {
         print("Team: \(name)")
         print("   id: \(identifier)")

@@ -13,6 +13,7 @@ import SPMUtility
 import SimulatorLib
 import OlivaDomain
 import SimulationLeagueSiteGenerator
+import Publish
 
 struct StderrOutputStream: TextOutputStream {
     mutating func write(_ string: String) {
@@ -21,7 +22,7 @@ struct StderrOutputStream: TextOutputStream {
 }
 var standardError = StderrOutputStream()
 
-extension SimulatorLib.Team {
+extension SimulatorLib.TeamProjections {
     func printToStandardOut() {
         print("Team: \(name)")
         print("   id: \(identifier)")
@@ -181,6 +182,9 @@ let outputFormatOption = parser.add(option: "--format", shortName: "-f", kind: S
 
 let lineupsFilenameOption = parser.add(option: "--lineups", shortName: "-l", kind: String.self, usage: "Filename for the team lineups.")
 
+let lineupsFiletypeOption = parser.add(option: "--lineupType", shortName: "-t", kind: String.self, usage: "Type of lineup file draft or auction.")
+
+
 let leagueNameOption = parser.add(option: "--leaguename", shortName: "-ln", kind: String.self, usage: "Name of the League")
 
 let leagueAbbreviationOption = parser.add(option: "--leagueAbbreviation", shortName: "-la", kind: String.self, usage: "Abbreviation for the league for html links, no spaces")
@@ -204,15 +208,21 @@ let hitterFilename = parsedArguments.get(hitterFilenameOption)
 let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
 let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "HitterAuctionValues", format: "csv")
 let lineupsFileName = parsedArguments.get(lineupsFilenameOption)
+let lineupsFiletype = parsedArguments.get(lineupsFiletypeOption)
 let outputFormatArgument = parsedArguments.get(outputFormatOption)
 
 let leagueName = parsedArguments.get(leagueNameOption) ?? "FanSim League"
-let leagueAbbreviation = parsedArguments.get(leagueAbbreviationOption)
+let leagueAbbreviation = parsedArguments.get(leagueAbbreviationOption) ?? "RL1"
 
 enum OutputFormat: String {
     case text
     case json
     case publish
+}
+
+public enum LineupFiletype: String {
+    case draft
+    case auction
 }
 
 guard let hitterFilename = hitterFilename else {
@@ -230,7 +240,13 @@ guard let lineupsFilename = lineupsFileName else {
     exit(0)
 }
 
+let lineupType: LineupFiletype
 
+if let lineupsFiletype = lineupsFiletype {
+    lineupType = LineupFiletype(rawValue: lineupsFiletype) ?? .auction
+} else {
+    lineupType = .auction
+}
 
 let outputFormat: OutputFormat
 if let outputFormatArgument = outputFormatArgument {
@@ -245,7 +261,20 @@ if let outputFormatArgument = outputFormatArgument {
 
 let hitterProjections = inputHitterProjections(filename: hitterFilename)
 let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-let teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+
+let teams: [TeamProjections]
+
+switch lineupType {
+case .auction:
+    teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+case .draft:
+    teams = createDraftTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+}
+
+guard teams.count > 0 else {
+    print("Error no teams defined")
+    exit(0)
+}
 
 let totalSingles = hitterProjections.values.map { $0.singles }.reduce(0, +)
 let totalDoubles = hitterProjections.values.map { $0.doubles }.reduce(0, +)
@@ -262,7 +291,7 @@ let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearan
 
 let lineups = teams.map { return createLineups(for: $0) }
 
-func simulateGames(for teams: [Team], pitcherDictionary: [String : PitcherProjection], batterDictionary: [String : BatterProjection]) -> [GameTeamResult] {
+func simulateGames(for teams: [TeamProjections], pitcherDictionary: [String : PitcherProjection], batterDictionary: [String : BatterProjection]) -> [GameTeamResult] {
     let teamsInLeague = teams.count
 
     let teamLineups = teams.map { (team: $0, linups: createLineups(for: $0)) }
@@ -317,8 +346,8 @@ func simulateGames(for teams: [Team], pitcherDictionary: [String : PitcherProjec
 struct GameTeamResult {
     let gameId: String
     let gameResult: GameResult
-    let homeTeam: SimulatorLib.Team
-    let awayTeam: SimulatorLib.Team
+    let homeTeam: SimulatorLib.TeamProjections
+    let awayTeam: SimulatorLib.TeamProjections
 
     var title: String {
         return "\(awayTeam.name) at \(homeTeam.name)"
@@ -374,7 +403,7 @@ let gameTeamResults = simulateGames(
     batterDictionary: hitterProjections
 )
 
-func convertToLeagueResultsViewModel(teams: [SimulatorLib.Team], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
+func convertToLeagueResultsViewModel(teams: [SimulatorLib.TeamProjections], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
 
     let gameViewModels: [GameMetaDataViewModel] = gameTeamResults.map { gameTeamResult in
 
@@ -399,7 +428,7 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     // let teamsRedundantArray = gameTeamResults.compactMap {[$0.homeTeam.identifier, $0.awayTeam.identifier]}
 
     struct TeamResult {
-        let team: SimulatorLib.Team
+        let team: SimulatorLib.TeamProjections
         let won: Bool
     }
 
@@ -616,7 +645,11 @@ case .json:
 
     print(String(data: data, encoding: .utf8)!)
 case .publish:
-    publishSimulationLeagueSite(from: leagueData)
+    let pathString = "/Users/jaim/SimHTML/new"// FileManager.default.currentDirectoryPath
+    let path: Path? = Path(pathString)
+//    print("aiai path=\(path)")
+//    print("leagueData: \(leagueData)")
+    publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: "UA-174172139-1", at: path )
 }
 
 

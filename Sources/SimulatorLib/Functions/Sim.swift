@@ -138,7 +138,66 @@ func getRandomElementWeighted(_ weights: [(outcome: AtBatOutcome, weight: Double
     }
 }
 
-public func createTeams(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [Team] {
+public func createDraftTeams(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [TeamProjections] {
+
+    let requiredBatters = 9
+    let requiredPitchers = 5
+
+    let repository = CouchManagerLeagueRespository(filename: filename)
+    let draftEntries = repository.getDraftEntries()
+
+    var teamPlayers = [String: [CouchManagerLeagueRespository.DraftEntry]]()
+
+    for draftEntry in draftEntries {
+        var teamArray = teamPlayers[draftEntry.teamName] ?? [CouchManagerLeagueRespository.DraftEntry]()
+        teamArray.append(draftEntry)
+
+        teamPlayers[draftEntry.teamName] = teamArray
+    }
+
+    let playerComparer = PlayerComparer()
+
+    var teams = [TeamProjections]()
+
+    for teamName in teamPlayers.keys {
+        guard let playerArray = teamPlayers[teamName] else { continue }
+        var batters = [BatterProjection]()
+        var pitchers = [PitcherProjection]()
+
+        for draftEntry in playerArray {
+            let draftedBatters = [CouchManagerLeagueRespository.DraftEntry]()
+            let draftedPitchers = [CouchManagerLeagueRespository.DraftEntry]()
+
+            if draftedBatters.count < requiredBatters,
+                let batterProjection = batterProjections.values.first(where: {
+                playerComparer.isSamePlayer(playerOne: draftEntry, playerTwo: $0)
+            }) {
+                batters.append(batterProjection)
+            } else if draftedPitchers.count < requiredPitchers,
+                      let pitcherProjection = pitcherProjections.values.first(where: {
+                        playerComparer.isSamePlayer(playerOne: draftEntry, playerTwo: $0)
+                      }) {
+                pitchers.append(pitcherProjection)
+            } else {
+                print("ERROR: createDraftTeams can't find \(draftEntry)")
+            }
+        }
+        let team: TeamProjections = TeamProjections(
+            identifier: teamName,
+            name: teamName,
+            pitchers: pitchers,
+            batters: batters)
+
+//        if teams.count >= 2 {//aiai
+//            continue
+//        }
+        teams.append(team)
+    }
+
+    return teams
+}
+
+public func createTeams(filename: String, batterProjections: [String: BatterProjection], pitcherProjections: [String: PitcherProjection]) -> [TeamProjections] {
 
     let requiredBatters = 9
     let requiredPitchers = 5
@@ -154,7 +213,7 @@ public func createTeams(filename: String, batterProjections: [String: BatterProj
     var batters = [BatterProjection]()
     var pitchers = [PitcherProjection]()
 
-    var teams = [Team]()
+    var teams = [TeamProjections]()
 
     for auctionEntry in auctionEntries {
         if let unwrappedCurrentTeamId = currentTeamId,
@@ -170,7 +229,12 @@ public func createTeams(filename: String, batterProjections: [String: BatterProj
                 exit(0)
             }
 
-            let team = Team(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, pitchers: pitchers, batters: batters)
+            let team = TeamProjections(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, pitchers: pitchers, batters: batters)
+
+//            if teams.count >= 2 {//aiai
+//                continue
+//            }
+
             teams.append(team)
 
             // Reset counters
@@ -313,7 +377,7 @@ public func simulateGame(homeLineup: Lineup,
     return GameResult(inningFrameResults: inningFrameResults)
 }
 
-public func createLineups(for team: Team) -> [Lineup] {
+public func createLineups(for team: TeamProjections) -> [Lineup] {
     return team.pitchers.map { pitcherProjection in
         return Lineup(startingPitcherId: pitcherProjection.playerId, batterIds: team.batters.prefix(9).map{ $0.playerId })
     }

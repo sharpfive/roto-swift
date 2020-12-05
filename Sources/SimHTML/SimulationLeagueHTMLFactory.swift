@@ -168,7 +168,7 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
         )
     }
 
-    func makeRostersHTML(leagueName: String, teams: [Team]) -> HTML {
+    func makeRostersHTML(leagueName: String, teams: [TeamProjections]) -> HTML {
         return HTML(
             .head(
                 .title(leagueName)

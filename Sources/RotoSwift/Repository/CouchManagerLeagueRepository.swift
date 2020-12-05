@@ -15,13 +15,6 @@ public class CouchManagerLeagueRespository {
         self.filename = filename
     }
 
-    let firstNameRow = 0
-    let lastNameRow = 1
-    let auctionAmountRow = 2
-    let teamNameRow = 3
-    let teamNumberRow = 4
-    let ottidRow = 5
-
     public struct AuctionEntry: TwoPartNameHaving, FullNameHaving {
         public let firstName: String
         public let lastName: String
@@ -35,7 +28,57 @@ public class CouchManagerLeagueRespository {
         }
     }
 
+    public struct DraftEntry: TwoPartNameHaving, FullNameHaving {
+        public let firstName: String
+        public let lastName: String
+        public let teamName: String // Simulation league team name
+        public let mlbTeam: String // Real life league team e.g. MLB
+
+        public var fullName: String {
+            return "\(firstName) \(lastName)"
+        }
+    }
+
+    public func getDraftEntries() -> [DraftEntry] {
+
+        let firstNameRow = 2
+        let lastNameRow = 3
+        let mlbTeamRow = 4 // Current MLB team
+        let teamNameRow = 6
+
+        var draftEntries = [DraftEntry]()
+
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+
+        let csv = try! CSVReader(string: playerDataCSV,
+                                 hasHeaderRow: true)
+
+        while let row = csv.next() {
+            guard row.count > teamNameRow else { continue }
+            let firstName = row[firstNameRow]
+            let lastName = row[lastNameRow]
+            let teamName = row[teamNameRow]
+            let mlbTeam = row[mlbTeamRow]
+
+
+            let draftEntry = DraftEntry(firstName: firstName, lastName: lastName, teamName: teamName, mlbTeam: mlbTeam)
+
+            draftEntries.append(draftEntry)
+        }
+
+        print("getDraftEntries count: \(draftEntries.count)")
+        return draftEntries
+    }
+
     public func getAuctionEntries() -> [AuctionEntry] {
+
+        let firstNameRow = 0
+        let lastNameRow = 1
+        let auctionAmountRow = 2
+        let teamNameRow = 3
+        let teamNumberRow = 4
+        let ottidRow = 5
+
         let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
         let csv = try! CSVReader(string: playerDataCSV,

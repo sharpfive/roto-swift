@@ -150,12 +150,12 @@ struct SimulationLeague: Website {
 
     struct ItemMetadata: WebsiteItemMetadata {
         let leagueName: String
-        let teams: [Team]
+        let teams: [TeamProjections]
         let game: GameViewModel?
         let leagueResults: LeagueResultsViewModel?
 
         init(leagueName: String,
-             teams: [Team],
+             teams: [TeamProjections],
              game: GameViewModel? = nil,
              leagueResults: LeagueResultsViewModel? = nil) {
             self.leagueName = leagueName
