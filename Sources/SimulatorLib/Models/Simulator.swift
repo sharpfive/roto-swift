@@ -134,7 +134,7 @@ public struct PitcherProjection: FullNameHaving {
         walks
     }
 
-    func probability(doublePercentage: Double, triplePercentage: Double, hitByPitchProbability: Double) -> AtBatEventProbability {
+    public func probability(doublePercentage: Double, triplePercentage: Double, hitByPitchProbability: Double) -> AtBatEventProbability {
         let estimatedDoubles = Double(hits) * doublePercentage
         let estimatedTriples = Double(hits) * triplePercentage
         let doubleProbability = estimatedDoubles / Double(plateAppearances)
@@ -238,8 +238,8 @@ public struct AtBatEventProbability {
 }
 
 public struct PlayerProbability {
-    let playerId: String
-    let probability: AtBatEventProbability
+    public let playerId: String
+    public let probability: AtBatEventProbability
 }
 
 public struct TeamLineupProbabilities {
@@ -687,7 +687,7 @@ public struct ProbabilityLineupConverter {
         return totalPlateAppearances - totalHits - totalWalks - totalStrikeouts - totalHitByPitch
     }
 
-    var baseAtBatProbabilites: AtBatEventProbability {
+    public var baseAtBatProbabilites: AtBatEventProbability {
         let baseProbabilities = AtBatEventProbability(
         single: Double(totalSingles) / Double(totalPlateAppearances),
         double: Double(totalDoubles) / Double(totalPlateAppearances),
@@ -708,14 +708,26 @@ public struct ProbabilityLineupConverter {
             batterDictionary[$0]
         }
 
-        let doublePercentage = Double(totalDoubles) / Double(totalHits)
-        let triplePercentage = Double(totalTriples) / Double(totalHits)
-        let hitByPitchPercentage = Double(totalHitByPitch) / Double(totalHits)
-        let pitcherProbability = PlayerProbability(playerId: pitcher.playerId, probability: pitcher.probability(doublePercentage: doublePercentage, triplePercentage: triplePercentage, hitByPitchProbability: hitByPitchPercentage))
+        let pitcherProbability = createPitcherProbability(for: pitcher)
+//        let doublePercentage = Double(totalDoubles) / Double(totalHits)
+//        let triplePercentage = Double(totalTriples) / Double(totalHits)
+//        let hitByPitchPercentage = Double(totalHitByPitch) / Double(totalHits)
+//        let pitcherProbability = PlayerProbability(playerId: pitcher.playerId, probability: pitcher.probability(doublePercentage: doublePercentage, triplePercentage: triplePercentage, hitByPitchProbability: hitByPitchPercentage))
         return TeamLineupProbabilities(
             startingPitcher: pitcherProbability,
             batters: batters.map {
                 return PlayerProbability(playerId: $0.playerId, probability: $0.probability)
             })
+    }
+
+    public func createPitcherProbability(for pitcherProjection: PitcherProjection) -> PlayerProbability {
+
+        let doublePercentage = Double(totalDoubles) / Double(totalHits)
+        let triplePercentage = Double(totalTriples) / Double(totalHits)
+        let hitByPitchPercentage = Double(totalHitByPitch) / Double(totalHits)
+
+        let pitcherProbability = PlayerProbability(playerId: pitcherProjection.playerId, probability: pitcherProjection.probability(doublePercentage: doublePercentage, triplePercentage: triplePercentage, hitByPitchProbability: hitByPitchPercentage))
+
+        return pitcherProbability
     }
 }

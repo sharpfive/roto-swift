@@ -244,8 +244,6 @@ guard let lineupsFilename = lineupsFileName else {
     exit(0)
 }
 
-
-
 let lineupType: LineupFiletype
 
 if let lineupsFiletype = lineupsFiletype {
