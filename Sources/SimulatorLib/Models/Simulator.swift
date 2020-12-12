@@ -156,7 +156,7 @@ public struct BatterProjection: FullNameHaving {
     public let playerId: String
     public let fullName: String
     public let plateAppearances: Int
-    public let singles: Int
+    public let hits: Int
     public let doubles: Int
     public let triples: Int
     public let homeRuns: Int
@@ -166,6 +166,10 @@ public struct BatterProjection: FullNameHaving {
 
     public var outs: Int {
         return plateAppearances - singles - doubles - triples - hitByPitch - homeRuns - walks
+    }
+
+    public var singles: Int {
+        return hits - doubles - triples - homeRuns
     }
 
     public var probability: AtBatEventProbability {

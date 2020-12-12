@@ -273,7 +273,7 @@ public func inputHitterProjections(filename: String) -> [String: BatterProjectio
     var hitterProjectionsDictionary = [String: BatterProjection]()
     while let row = csv.next() {
         guard let plateAppearances = Int(row[3]),
-            let singles = Int(row[5]),
+            let hits = Int(row[5]),
             let doubles = Int(row[6]),
             let triples = Int(row[7]),
             let homeRuns = Int(row[8]),
@@ -290,7 +290,7 @@ public func inputHitterProjections(filename: String) -> [String: BatterProjectio
         let hitterProjection = BatterProjection(playerId: playerId,
                                                  fullName: playerName,
                                                  plateAppearances: plateAppearances,
-                                                 singles: singles,
+                                                 hits: hits,
                                                  doubles: doubles,
                                                  triples: triples,
                                                  homeRuns: homeRuns,
