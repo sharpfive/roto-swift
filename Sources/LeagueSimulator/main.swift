@@ -176,8 +176,6 @@ let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind
 
 let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitcher projections.")
 
-let outputFilenameOption = parser.add(option: "--output", shortName: "-o", kind: String.self, usage: "Filename for output")
-
 let outputFormatOption = parser.add(option: "--format", shortName: "-f", kind: String.self, usage: "Output Format text, json")
 
 let lineupsFilenameOption = parser.add(option: "--lineups", shortName: "-l", kind: String.self, usage: "Filename for the team lineups.")
@@ -188,6 +186,11 @@ let lineupsFiletypeOption = parser.add(option: "--lineupType", shortName: "-t", 
 let leagueNameOption = parser.add(option: "--leaguename", shortName: "-ln", kind: String.self, usage: "Name of the League")
 
 let leagueAbbreviationOption = parser.add(option: "--leagueAbbreviation", shortName: "-la", kind: String.self, usage: "Abbreviation for the league for html links, no spaces")
+
+let googleAnalyticsOption = parser.add(option: "--googleAnalytics", shortName: "-ga", kind: String.self, usage: "Google Analytics string")
+
+let pathOption = parser.add(option: "--path", shortName: "-p", kind: String.self, usage: "Output directory")
+
 
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 
@@ -206,10 +209,11 @@ do {
 // Required fields
 let hitterFilename = parsedArguments.get(hitterFilenameOption)
 let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
-let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "HitterAuctionValues", format: "csv")
 let lineupsFileName = parsedArguments.get(lineupsFilenameOption)
 let lineupsFiletype = parsedArguments.get(lineupsFiletypeOption)
 let outputFormatArgument = parsedArguments.get(outputFormatOption)
+let pathString = parsedArguments.get(pathOption)
+let googleAnalyticsKey = parsedArguments.get(googleAnalyticsOption) ?? "Unknown GA Key"
 
 let leagueName = parsedArguments.get(leagueNameOption) ?? "FanSim League"
 let leagueAbbreviation = parsedArguments.get(leagueAbbreviationOption) ?? "RL1"
@@ -239,6 +243,8 @@ guard let lineupsFilename = lineupsFileName else {
     print("Lineup filename is required")
     exit(0)
 }
+
+
 
 let lineupType: LineupFiletype
 
@@ -645,11 +651,20 @@ case .json:
 
     print(String(data: data, encoding: .utf8)!)
 case .publish:
-    let pathString = "/Users/jaim/SimHTML/new"// FileManager.default.currentDirectoryPath
-    let path: Path? = Path(pathString)
-//    print("aiai path=\(path)")
-//    print("leagueData: \(leagueData)")
-    publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: "UA-174172139-1", at: path )
+    let path: Path?
+    if let pathString = pathString {
+        path = Path(pathString)
+    } else {
+        path = nil
+    }
+
+    print("DEBUG path=\(String(describing: path))")
+
+    if googleAnalyticsKey.isEmpty {
+        print("WARNING: googleAnalyticsKey is empty")
+    }
+
+    publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: googleAnalyticsKey, at: path )
 }
 
 
