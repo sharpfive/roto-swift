@@ -346,6 +346,15 @@ public func simulateGame(homeLineup: Lineup,
     let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherDictionary,
                                                batterDictionary: batterDictionary)
 
+    print("aiai")
+    print("batting average: \(converter.battingAverage)")
+    print("batting OBP: \(converter.onBasePercentage)")
+    print("slugging percentage: \(converter.sluggingPercentage)")
+    print("OPS: \(converter.onbasePlusSlugging)")
+
+
+    exit(0)
+
     let awayProbabilities = converter.convert(lineup: awayLineup)
     let homeProbabilities = converter.convert(lineup: homeLineup)
 

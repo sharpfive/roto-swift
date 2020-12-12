@@ -66,6 +66,10 @@ let package = Package(
             dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib", "Oliva", "SimulationLeagueSiteGenerator"]
         ),
         .target(
+            name: "AtBatSimulator",
+            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib"]
+        ),
+        .target(
             name: "SimHTML",
             dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility", "Publish", "Oliva"]
         ),

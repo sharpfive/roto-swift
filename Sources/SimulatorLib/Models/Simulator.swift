@@ -658,6 +658,30 @@ public struct ProbabilityLineupConverter {
         return batterDictionary.values.map { $0.plateAppearances }.reduce(0, +)
     }
 
+    var totalAtBats: Int {
+        return totalPlateAppearances - totalWalks - totalHitByPitch
+    }
+
+    var battingAverage: Decimal {
+        return Decimal(totalHits) / Decimal(totalAtBats)
+    }
+
+    var totalbases: Int {
+        return totalSingles + totalDoubles*2 + totalTriples*3 + totalHomeRuns*4
+    }
+
+    var sluggingPercentage: Decimal {
+        return Decimal(totalbases) / Decimal(totalAtBats)
+    }
+
+    var onbasePlusSlugging: Decimal {
+        return sluggingPercentage + onBasePercentage
+    }
+
+    var onBasePercentage: Decimal {
+        return Decimal(totalHits + totalWalks + totalHitByPitch) / Decimal(totalPlateAppearances)
+    }
+
     // Out but not a strikeout
     var totalOuts: Int {
         return totalPlateAppearances - totalHits - totalWalks - totalStrikeouts - totalHitByPitch
