@@ -168,7 +168,7 @@ public struct BatterProjection: FullNameHaving {
         return plateAppearances - singles - doubles - triples - hitByPitch - homeRuns - walks
     }
 
-    var probability: AtBatEventProbability {
+    public var probability: AtBatEventProbability {
         let singleProbability: Double = Double(singles) / Double(plateAppearances)
         let doubleProbability: Double = Double(doubles) / Double(plateAppearances)
         let tripleProbability: Double = Double(triples) / Double(plateAppearances)
