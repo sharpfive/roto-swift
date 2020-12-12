@@ -122,22 +122,23 @@ let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections
 
 let averageAtBatProbabilities = converter.baseAtBatProbabilites
 
-let pitcherId = "13125" //Gerrit Cole
+//let pitcherId = "13125" //Gerrit Cole
+let pitcherId = "6397" // Jake Odorizzi
 let pitcherProjection = pitcherProjections[pitcherId]!
-let pitcherProbability = converter.createPitcherProbability(for: pitcherProjection)
+let pitcherProbability = converter.createPitcherProbability(for: pitcherProjection).probability
 
 
 let hitterId = "20123" //Juan Soto
 let hitterProjection = hitterProjections[hitterId]!
 let hitterProbability = hitterProjection.probability
 
-print("hitterProbability :\(hitterProbability)")
-print("baseProbability: \(averageAtBatProbabilities)")
+//print("hitterProbability :\(hitterProbability)")
+//print("baseProbability: \(averageAtBatProbabilities)")
 
 let atBatOutcomes = (0..<10000).map { _ in
-    getAtBatEvent(pitcherProbability: averageAtBatProbabilities,
+    getAtBatEvent(pitcherProbability: pitcherProbability,
                                     batterProbability: hitterProbability,
-                                    baseProbability: averageAtBatProbabilities)
+                                    baseProbability: defaultAtBatEventProbability)
 }
 
 let atBatData = AtBatListData(atBatOutcomes: atBatOutcomes)

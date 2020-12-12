@@ -322,7 +322,8 @@ func simulateGames(for teams: [TeamProjections], pitcherDictionary: [String : Pi
                 let gameResult = simulateGame(homeLineup: homeTeamLineup,
                              awayLineup: awayTeamLineup,
                              pitcherDictionary: pitcherDictionary,
-                             batterDictionary: batterDictionary
+                             batterDictionary: batterDictionary,
+                             baseProjections: defaultAtBatEventProbability
                 )
 
                 let gameTeamResult = GameTeamResult(
@@ -651,7 +652,7 @@ case .json:
 case .publish:
     let path: Path?
     if let pathString = pathString {
-        try createContentDirectory(at: pathString)
+        // try createContentDirectory(at: pathString)
         path = Path(pathString)
     } else {
         path = nil

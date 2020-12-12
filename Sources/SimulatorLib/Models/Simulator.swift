@@ -144,10 +144,19 @@ public struct PitcherProjection: FullNameHaving {
         let walkProbability: Double = Double(walks) / Double(plateAppearances)
         let strikeoutProbability: Double = Double(strikeouts) / Double(plateAppearances)
 
-        let outs = plateAppearances - hits - strikeouts - Int((Double(plateAppearances) * hitByPitchProbability))
-        let outProbability: Double = Double(outs) / Double(plateAppearances)
+        //let outs = plateAppearances - hits - strikeouts - Int((Double(plateAppearances) * hitByPitchProbability)) - walks - strikeouts
+        // let outProbability: Double = Double(outs) / Double(plateAppearances)
 
-        return AtBatEventProbability(single: singleProbability, double: doubleProbability, triple: tripleProbability, homeRun: homeRunProbability, walk: walkProbability, strikeOut: strikeoutProbability, hitByPitch: hitByPitchProbability, out: outProbability)
+        let outProbability = 1.0 - singleProbability - doubleProbability - tripleProbability - homeRunProbability - walkProbability - hitByPitchProbability
+        return AtBatEventProbability(
+            single: singleProbability,
+            double: doubleProbability,
+            triple: tripleProbability,
+            homeRun: homeRunProbability,
+            walk: walkProbability,
+            strikeOut: strikeoutProbability,
+            hitByPitch: hitByPitchProbability,
+            out: outProbability)
     }
 }
 
@@ -193,6 +202,25 @@ public struct BatterProjection: FullNameHaving {
                                 out: outProbability)
     }
 }
+
+let defaultPlateAppearances = 186518
+let defaultHits = 42039
+let defaultDoubles = 8531
+let defaultTriples = 785
+let defaultHomeruns = 6776
+let defaultWalks = 15895
+let defaultStrikeouts = 42823
+let defaultHitByPitch = 1984
+
+public let defaultAtBatEventProbability = AtBatEventProbability(
+    single: Double(defaultHits - defaultDoubles - defaultTriples - defaultHomeruns) / Double(defaultPlateAppearances),
+    double: Double(defaultDoubles) / Double(defaultPlateAppearances),
+    triple: Double(defaultTriples) / Double(defaultPlateAppearances),
+    homeRun: Double(defaultHomeruns) / Double(defaultPlateAppearances), walk: Double(defaultWalks) / Double(defaultPlateAppearances),
+    strikeOut: Double(defaultStrikeouts) / Double(defaultPlateAppearances),
+    hitByPitch: Double(defaultHitByPitch) / Double(defaultPlateAppearances),
+    out: Double(defaultPlateAppearances - defaultHits - defaultDoubles - defaultTriples - defaultWalks - defaultStrikeouts - defaultHitByPitch - defaultHomeruns) / Double(defaultPlateAppearances)
+)
 
 public struct AtBatEventProbability {
     let single: Double
@@ -728,7 +756,7 @@ public struct ProbabilityLineupConverter {
 
         let doublePercentage = Double(totalDoubles) / Double(totalHits)
         let triplePercentage = Double(totalTriples) / Double(totalHits)
-        let hitByPitchPercentage = Double(totalHitByPitch) / Double(totalHits)
+        let hitByPitchPercentage = Double(totalHitByPitch) / Double(totalPlateAppearances)
 
         let pitcherProbability = PlayerProbability(playerId: pitcherProjection.playerId, probability: pitcherProjection.probability(doublePercentage: doublePercentage, triplePercentage: triplePercentage, hitByPitchProbability: hitByPitchPercentage))
 

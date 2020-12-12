@@ -74,9 +74,11 @@ public func getAtBatEvent(pitcherProbability: AtBatEventProbability,
     let hitByPitchOdds = oddsRatio(batter: batterProbability.hitByPitch, pitcher: pitcherProbability.hitByPitch, base: baseProbability.hitByPitch)
     let walkOdds = oddsRatio(batter: batterProbability.walk, pitcher: pitcherProbability.walk, base: baseProbability.walk)
     let strikeoutOdds = oddsRatio(batter: batterProbability.strikeOut, pitcher: pitcherProbability.strikeOut, base: baseProbability.strikeOut)
-    let outOdds = oddsRatio(batter: batterProbability.out, pitcher: pitcherProbability.out, base: baseProbability.out)
 
-    //print("outOdds: \(outOdds)")
+    let outOdds = 1 - (singleOdds + doubleOdds + tripleOdds + homeRunOdds + hitByPitchOdds + walkOdds + strikeoutOdds)
+    //let outOdds = oddsRatio(batter: batterProbability.out, pitcher: pitcherProbability.out, base: baseProbability.out)
+
+    // print("outOdds: \(outOdds)")
     let weights: [(outcome: AtBatOutcome, weight: Double)] = [
         (outcome: .single, weight: singleOdds),
         (outcome: .double, weight: doubleOdds),
@@ -88,7 +90,10 @@ public func getAtBatEvent(pitcherProbability: AtBatEventProbability,
         (outcome: .out, weight: outOdds)
     ]
 
+
+//    let totalWeights: Double = weights.map{ $0.weight }.reduce(0,+)
 //    print(">-------<")
+//    print("totalWeights: \(totalWeights)")
 //    print("pitcherProbability: \(pitcherProbability)")
 //    print("batterProbability: \(batterProbability)")
 //    print("baseProbability: \(baseProbability)")
@@ -342,21 +347,14 @@ public func inputPitcherProjections(filename: String) -> [String: PitcherProject
 public func simulateGame(homeLineup: Lineup,
                          awayLineup: Lineup,
                          pitcherDictionary: [String: PitcherProjection],
-                         batterDictionary: [String: BatterProjection]) -> GameResult {
+                         batterDictionary: [String: BatterProjection],
+                         baseProjections: AtBatEventProbability? = nil) -> GameResult {
     let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherDictionary,
                                                batterDictionary: batterDictionary)
 
-    print("aiai")
-    print("batting average: \(converter.battingAverage)")
-    print("batting OBP: \(converter.onBasePercentage)")
-    print("slugging percentage: \(converter.sluggingPercentage)")
-    print("OPS: \(converter.onbasePlusSlugging)")
-
-
-    exit(0)
-
     let awayProbabilities = converter.convert(lineup: awayLineup)
     let homeProbabilities = converter.convert(lineup: homeLineup)
+    let baseProbabilities = baseProjections ?? converter.baseAtBatProbabilites
 
     let gameLineup = GameLineup(awayTeam: awayProbabilities, homeTeam: homeProbabilities)
 
@@ -375,7 +373,7 @@ public func simulateGame(homeLineup: Lineup,
         } else {
             gameState.advanceFrame()
         }
-        let inningFrameResult = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: converter.baseAtBatProbabilites)
+        let inningFrameResult = simulateInningFrame(lineup: gameLineup, gameState: gameState, baseProbability: baseProbabilities)
 
         gameState = inningFrameResult.gameState
 
