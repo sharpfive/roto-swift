@@ -653,6 +653,7 @@ case .json:
 case .publish:
     let path: Path?
     if let pathString = pathString {
+        try createContentDirectory(at: pathString)
         path = Path(pathString)
     } else {
         path = nil
@@ -667,7 +668,20 @@ case .publish:
     publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: googleAnalyticsKey, at: path )
 }
 
+func createContentDirectory(at basePathString: String) throws {
+    let filemanager = FileManager.default
 
+    guard let baseURL = URL(string: basePathString) else {
+        print("Unable to create URL: \(basePathString)")
+        exit(0)
+    }
+
+    let contentDirectory = baseURL.appendingPathComponent("Content")
+
+    if !filemanager.fileExists(atPath: contentDirectory.absoluteString) {
+        try filemanager.createDirectory(at: contentDirectory, withIntermediateDirectories: false)
+    }
+}
 ///output
 ///
 //Teams
