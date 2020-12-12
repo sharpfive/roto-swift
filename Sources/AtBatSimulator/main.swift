@@ -134,7 +134,7 @@ let hitterProbability = hitterProjection.probability
 print("hitterProbability :\(hitterProbability)")
 print("baseProbability: \(averageAtBatProbabilities)")
 
-let atBatOutcomes = (0..<1).map { _ in
+let atBatOutcomes = (0..<10000).map { _ in
     getAtBatEvent(pitcherProbability: averageAtBatProbabilities,
                                     batterProbability: hitterProbability,
                                     baseProbability: averageAtBatProbabilities)
