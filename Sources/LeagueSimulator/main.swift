@@ -347,6 +347,18 @@ func simulateGames(for teams: [TeamProjections], pitcherDictionary: [String : Pi
     return gameTeamResults
 }
 
+struct GameResultData {
+    let gameTeamResults: [GameTeamResult]
+
+    var leagueEarnedRunAverage: Decimal {
+        let totalScores = gameTeamResults.map {
+            $0.gameResult.homeScore + $0.gameResult.awayScore
+        }.reduce(0,+)
+
+        // Not accounting for extra innings
+        return Decimal(totalScores) / Decimal((gameTeamResults.count * 2))
+    }
+}
 
 struct GameTeamResult {
     let gameId: String
@@ -637,6 +649,8 @@ let leagueData = LeagueData(leagueName: leagueName,
                             games: gameViewModels
                 )
 
+let gameResultData = GameResultData(gameTeamResults: gameTeamResults)
+print("ERA: \(gameResultData.leagueEarnedRunAverage)")
 
 switch outputFormat {
 case .text:
