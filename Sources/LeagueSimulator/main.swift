@@ -414,6 +414,8 @@ struct GameTeamResult {
     }
 }
 
+srand48(Int(Date().timeIntervalSince1970))
+
 let gameTeamResults = simulateGames(
     for: teams,
     pitcherDictionary: pitcherProjections,

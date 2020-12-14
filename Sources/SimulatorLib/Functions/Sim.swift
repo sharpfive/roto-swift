@@ -360,8 +360,6 @@ public func simulateGame(homeLineup: Lineup,
 
     var gameState = GameState(inningCount: InningCount(frame: .top, number: 0, outs: 0), homeBattersRetired: 0, awayBattersRetired: 0)
 
-    srand48(Int(Date().timeIntervalSince1970))
-
     var gameStarted = true
 
     var inningFrameResults = [InningFrameResult]()
