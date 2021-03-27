@@ -9,13 +9,27 @@ func processTeams(at auctionValueFilename: String) {
     }
 }
 
-public func processTeamsWithRelativeValues(auctionValuesFilename: String, fangraphsHitterFilename: String, fangraphsPitcherFilename: String) -> [Team] {
+public enum RosterFile {
+    case CBAuctionCSV(String)
+    case ESPNScrapeCSV(String)
+}
 
-    // If this is true, we calculate which players are still valuable. If false, we use the list as-is
-    let estimateKeepers = true
 
-    let auctionRepository = CBAuctionValueRepository(filename: auctionValuesFilename)
-    let teams = auctionRepository.getTeams()
+/// estimateKeepers If this is true, we calculate which players are still valuable. If false, we use the list as-is
+public func processTeamsWithRelativeValues(auctionValues: RosterFile,
+                                           fangraphsHitterFilename: String,
+                                           fangraphsPitcherFilename: String,
+                                           estimateKeepers: Bool = true) -> [Team] {
+
+    let teams: [Team]
+    switch auctionValues {
+    case .CBAuctionCSV(let filenameString):
+            let auctionRepository = CBAuctionValueRepository(filename: filenameString)
+            teams = auctionRepository.getTeams()
+    case .ESPNScrapeCSV(let filenameString):
+            print("processTeamsWithRelativeValues -> ESPNScraped Not implemented")
+            exit(0)
+    }
 
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()

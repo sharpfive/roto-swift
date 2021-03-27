@@ -51,4 +51,10 @@ guard let auctionValuesFilename = auctionValuesFilename else {
     exit(0)
 }
 
-_ = processTeamsWithRelativeValues(auctionValuesFilename: auctionValuesFilename, fangraphsHitterFilename: hitterFilename, fangraphsPitcherFilename: pitcherFilename)
+let estimateKeepers = true
+// let rosterFile = RosterFile.CBAuctionCSV(auctionValuesFilename) Old school C&B csv file
+let rosterFile = RosterFile.ESPNScrapeCSV(auctionValuesFilename) // Scraped csv of full roster data
+_ = processTeamsWithRelativeValues(auctionValues: rosterFile,
+                                   fangraphsHitterFilename: hitterFilename,
+                                   fangraphsPitcherFilename: pitcherFilename,
+                                   estimateKeepers: estimateKeepers)
