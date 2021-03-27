@@ -26,18 +26,18 @@ import Darwin.C
 // The output of this program. This program converts the projected stats into auction values
 //
 
-let dateString = "2019-08-25"
+let dateString = "2021-03-21"
 
 let baseDirectoryString = "/Users/jaim/Dropbox/roto/projections/\(dateString)"
 let inputDirectoryString = "\(baseDirectoryString)/input/"
 let outputDirectoryString = "\(baseDirectoryString)/output/"
 
-let keeperValuesFilenameString = "Keeper-Values-2019.csv"
-let nextYearProjectionFilenameString = "Zips-projections-2020-pitchers.csv"
-let followingYearProjectionFilenameString = "Zips-projections-2021-pitchers.csv"
+let keeperValuesFilenameString = "Keeper-Values-2021.csv"
+let nextYearProjectionFilenameString = "Zips-projections-2022-pitchers.csv"
+let followingYearProjectionFilenameString = "Zips-projections-2023-pitchers.csv"
 
-let nextYearAuctionValuesFilenameString = "Zips-auction-values-2020-pitchers.csv"
-let followingYearAuctionValuesFilenameString = "Zips-auction-values-2021-pitchers.csv"
+let nextYearAuctionValuesFilenameString = "Zips-auction-values-2022-pitchers.csv"
+let followingYearAuctionValuesFilenameString = "Zips-auction-values-2023-pitchers.csv"
 let futureRelativeValuesFilenameString = "Zips-pitcher-future-values.csv"
 
 let keeperValuesFullPathString = inputDirectoryString + keeperValuesFilenameString
