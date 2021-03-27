@@ -27,8 +27,8 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
             let auctionRepository = CBAuctionValueRepository(filename: filenameString)
             teams = auctionRepository.getTeams()
     case .ESPNScrapeCSV(let filenameString):
-            print("processTeamsWithRelativeValues -> ESPNScraped Not implemented")
-            exit(0)
+            let repository = ESPNSCrapeCSVRosterRepository(filename: filenameString)
+            teams = repository.getTeams()
     }
 
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)

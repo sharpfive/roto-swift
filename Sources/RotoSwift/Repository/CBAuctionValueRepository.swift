@@ -19,7 +19,7 @@ public protocol FullNameHaving {
 }
 
 /* Gets auction values for players from the C&B format */
-public class CBAuctionValueRepository {
+public class CBAuctionValueRepository: TeamRepository {
     let filename: String
 
     let nameTeamPositionRow = 0
@@ -50,7 +50,7 @@ public class CBAuctionValueRepository {
         return playerKeeperPrices
 	}
 
-    func getTeams() -> [Team] {
+    public func getTeams() -> [Team] {
 
         let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
 
