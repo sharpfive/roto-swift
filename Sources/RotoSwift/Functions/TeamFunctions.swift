@@ -12,6 +12,7 @@ func processTeams(at auctionValueFilename: String) {
 public enum RosterFile {
     case CBAuctionCSV(String)
     case ESPNScrapeCSV(String)
+    case FantraxRostersScrapeCSV(String)
 }
 
 
@@ -24,11 +25,14 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
     let teams: [Team]
     switch auctionValues {
     case .CBAuctionCSV(let filenameString):
-            let auctionRepository = CBAuctionValueRepository(filename: filenameString)
-            teams = auctionRepository.getTeams()
+        let auctionRepository = CBAuctionValueRepository(filename: filenameString)
+        teams = auctionRepository.getTeams()
     case .ESPNScrapeCSV(let filenameString):
-            let repository = ESPNSCrapeCSVRosterRepository(filename: filenameString)
-            teams = repository.getTeams()
+        let repository = ESPNSCrapeCSVRosterRepository(filename: filenameString)
+        teams = repository.getTeams()
+    case .FantraxRostersScrapeCSV(let filenameString):
+        let repository = FantraxScrapeCSVRosterRepository(filename: filenameString)
+        teams = repository.getTeams()
     }
 
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
