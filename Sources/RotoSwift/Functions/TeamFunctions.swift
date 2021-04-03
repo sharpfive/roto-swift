@@ -19,7 +19,7 @@ public enum RosterFile {
 public func processTeamsWithRelativeValues(auctionValues: RosterFile,
                                            fangraphsHitterFilename: String,
                                            fangraphsPitcherFilename: String,
-                                           estimateKeepers: Bool = true) -> [Team] {
+                                           estimateKeepers: Bool) -> [Team] {
 
     let teams: [Team]
     switch auctionValues {
@@ -63,7 +63,8 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
         let teamPlayers = valueTeam.players
 
         func calculateValue(for playerRelativeValue: PlayerRelativeValue) -> Double {
-            return playerRelativeValue.effectiveValue
+//            return playerRelativeValue.effectiveValue
+            return playerRelativeValue.projectedAuctionValue
         }
 
         // only show players with positive value
@@ -105,8 +106,15 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
         return (valueTeam.name, totalTeamValue, leftoverMoney)
     }
 
-    teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyFactor > $1.1 + $1.2 * moneyFactor }).forEach { tuple in
-        print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyFactor)")
+    if estimateKeepers {
+        teamKeeperRankings.sorted(by: { $0.1 + $0.2 * moneyFactor > $1.1 + $1.2 * moneyFactor }).forEach { tuple in
+            print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1 + tuple.2 * moneyFactor)")
+        }
+    } else {
+        teamKeeperRankings.sorted(by: { $0.1 > $1.1 }).forEach { tuple in
+            print("team: \(tuple.0) - totalTeamValue: \(tuple.1) -  leftoverMoney: \(tuple.2) - powerRanking: \(tuple.1)")
+        }
     }
+
     return teams
 }
