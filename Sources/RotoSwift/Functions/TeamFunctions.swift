@@ -13,6 +13,7 @@ public enum RosterFile {
     case CBAuctionCSV(String)
     case ESPNScrapeCSV(String)
     case FantraxRostersScrapeCSV(String)
+    case YahooRostersScrapeCSV(String)
 }
 
 
@@ -32,6 +33,9 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
         teams = repository.getTeams()
     case .FantraxRostersScrapeCSV(let filenameString):
         let repository = FantraxScrapeCSVRosterRepository(filename: filenameString)
+        teams = repository.getTeams()
+    case .YahooRostersScrapeCSV(let filenameString):
+        let repository = YahooScrapeCSVRosterRepository(filename: filenameString)
         teams = repository.getTeams()
     }
 
