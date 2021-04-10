@@ -22,11 +22,15 @@ let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/projections/FanGraphs-pitch
 
 public func joinRelativeValues(playerKeeperPrices: [PlayerKeeperPrice], playerAuctions: [PlayerAuction]) -> [PlayerRelativeValue] {
 
+    let playerComparer = PlayerComparer()
+
     var playerRelativeValues = [PlayerRelativeValue]()
 
     playerKeeperPrices.forEach { nameKeeperValue in
 
-        let fangraphPlayer = playerAuctions.first(where: { $0.fullName == nameKeeperValue.name})
+        let fangraphPlayer = playerAuctions.first(where: {
+            playerComparer.isSamePlayer(playerOne: $0, playerTwo: nameKeeperValue)
+        })
 
         if let fangraphPlayer = fangraphPlayer {
             let playerRelativeValue = PlayerRelativeValue(name: nameKeeperValue.name,

@@ -53,7 +53,21 @@ public class PlayerComparer {
     }
 
     private func trim(_ string: String) -> String {
-        let trimmedString = string.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+//        if string.contains("ñ") {
+//            print("aiai string = \(string)")
+//        }
+        var trimmedString = string.replacingOccurrences(of: " Jr", with: "")
+        trimmedString = string.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        trimmedString = trimmedString.replacingOccurrences(of: "ó", with: "o")
+        trimmedString = trimmedString.replacingOccurrences(of: "ñ", with: "n")
+        trimmedString = trimmedString.replacingOccurrences(of: "é", with: "e")
+        trimmedString = trimmedString.replacingOccurrences(of: "á", with: "a")
+        trimmedString = trimmedString.replacingOccurrences(of: "ú", with: "u")
+        trimmedString = trimmedString.replacingOccurrences(of: "í", with: "i")
+        trimmedString = trimmedString.replacingOccurrences(of: " (Batter)", with: "")
+        trimmedString = trimmedString.replacingOccurrences(of: " (Pitcher)", with: "")
+
+
         return trimmedString
     }
 
@@ -74,7 +88,8 @@ public class PlayerComparer {
         "Jake": "Jakob",
         "Nick": "Nicholas",
         "Yuli": "Yulieski",
-        "Nate": "Nathaniel"
+        "Nate": "Nathaniel",
+        "Alex": "Alexander"
     ]
 }
 

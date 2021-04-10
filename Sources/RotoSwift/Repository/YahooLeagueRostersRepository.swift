@@ -73,7 +73,7 @@ public class YahooScrapeCSVRosterRepository: TeamRepository {
         let nameTeamPositionRow = 1
         let playerDataRow = 0
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true)
