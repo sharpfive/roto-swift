@@ -326,7 +326,7 @@ public func calculateProjections(with filename: String) {
 }
 
 public func convertFileToBatters(filename: String) -> [Batter] {
-    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
     let csv = try! CSVReader(string: playerDataCSV,
                              hasHeaderRow: true) // It must be true.
@@ -369,7 +369,7 @@ public func convertFileToBatters(filename: String) -> [Batter] {
 }
 
 public func convertFileToPitchers(filename: String) -> [Pitcher] {
-    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
     let csv = try! CSVReader(string: playerDataCSV,
                              hasHeaderRow: true) // It must be true.

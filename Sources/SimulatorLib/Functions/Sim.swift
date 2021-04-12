@@ -270,7 +270,7 @@ public func createTeams(filename: String, batterProjections: [String: BatterProj
 }
 
 public func inputHitterProjections(filename: String) -> [String: BatterProjection] {
-    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
     let csv = try! CSVReader(string: playerDataCSV,
                              hasHeaderRow: true)
@@ -310,7 +310,7 @@ public func inputHitterProjections(filename: String) -> [String: BatterProjectio
 }
 
 public func inputPitcherProjections(filename: String) -> [String: PitcherProjection] {
-    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+    let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
     let csv = try! CSVReader(string: playerDataCSV,
                              hasHeaderRow: true)

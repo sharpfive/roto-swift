@@ -16,15 +16,9 @@ public enum RosterFile {
     case YahooRostersScrapeCSV(String)
 }
 
-
-/// estimateKeepers If this is true, we calculate which players are still valuable. If false, we use the list as-is
-public func processTeamsWithRelativeValues(auctionValues: RosterFile,
-                                           fangraphsHitterFilename: String,
-                                           fangraphsPitcherFilename: String,
-                                           estimateKeepers: Bool) -> [Team] {
-
+public func buildTeams(from rosterFile: RosterFile) -> [Team] {
     let teams: [Team]
-    switch auctionValues {
+    switch rosterFile {
     case .CBAuctionCSV(let filenameString):
         let auctionRepository = CBAuctionValueRepository(filename: filenameString)
         teams = auctionRepository.getTeams()
@@ -38,6 +32,16 @@ public func processTeamsWithRelativeValues(auctionValues: RosterFile,
         let repository = YahooScrapeCSVRosterRepository(filename: filenameString)
         teams = repository.getTeams()
     }
+    return teams
+}
+
+/// estimateKeepers If this is true, we calculate which players are still valuable. If false, we use the list as-is
+public func processTeamsWithRelativeValues(rosterFile: RosterFile,
+                                           fangraphsHitterFilename: String,
+                                           fangraphsPitcherFilename: String,
+                                           estimateKeepers: Bool) -> [Team] {
+
+    let teams = buildTeams(from: rosterFile)
 
     let fangraphsRepository = FanGraphsAuctionRepository(hitterFilename: fangraphsHitterFilename, pitcherFilename: fangraphsPitcherFilename)
     let projectedValues = fangraphsRepository.getAuctionValues()

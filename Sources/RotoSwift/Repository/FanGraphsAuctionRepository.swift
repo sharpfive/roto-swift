@@ -12,7 +12,7 @@ public class FanGraphsAuctionRepository {
     let hitterFilename: String?
     let pitcherFilename: String?
 
-    var nameFieldValue = "ï»¿\"PlayerName\""
+    var nameFieldValue = "PlayerName"
     var auctionFieldValue = "Dollars"
 
     public init(hitterFilename: String?, pitcherFilename: String?) {
@@ -36,7 +36,7 @@ public class FanGraphsAuctionRepository {
     }
 
     func getAuctionValues(for filename: String) -> [PlayerAuction] {
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true) // It must be true.

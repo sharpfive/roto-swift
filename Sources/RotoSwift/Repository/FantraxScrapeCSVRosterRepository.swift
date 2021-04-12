@@ -69,7 +69,7 @@ public class FantraxScrapeCSVRosterRepository: TeamRepository {
         let nameTeamPositionRow = 0
         let playerDataRow = 1
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true)

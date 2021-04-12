@@ -48,7 +48,7 @@ public class CouchManagerLeagueRespository {
 
         var draftEntries = [DraftEntry]()
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true)
@@ -79,7 +79,7 @@ public class CouchManagerLeagueRespository {
         let teamNumberRow = 4
         let ottidRow = 5
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: false)

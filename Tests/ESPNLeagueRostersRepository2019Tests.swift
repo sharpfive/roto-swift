@@ -58,7 +58,7 @@ class ESPNLeagueRostersRepository2019Tests: XCTestCase {
 
     func createLeague(with filename: String, version: Int? = nil) -> League {
         let repository = ESPNLeagueRostersRepository2019()
-        let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let league = repository.getLeagueRosters(from: leagueRostersDataString)
         return league

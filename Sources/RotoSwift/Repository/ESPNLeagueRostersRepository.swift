@@ -31,7 +31,7 @@ public class ESPNLeagueRostersRepository {
         var players = [League.Player]()
 
         // open file and read text
-        let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         var lineCount = 0
 

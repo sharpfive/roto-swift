@@ -1,24 +1,55 @@
 import Foundation
 import RotoSwift
 
+enum RuleFormat {
+    case singleYear
+    case threeYearAuction
+}
+
+let ruleFormat = RuleFormat.singleYear
+let csvFormat = CSVFormat.fangraphs
+
 // This will take projections and determine the best available free-agents
-let hitterFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-batters.csv"
+let hitterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Batters.csv"
 
-let hitterFilename2020 = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2020-batters-auctionvalues.csv"
-let hitterFilename2021 = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
+let hitterFilenameNextYear: String?
+let hitterFilenameFollowingYear: String?
 
-let pitcherFilename = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-auctionvalues-pitchers.csv"
-let rosterFilename = "/Users/jaim/Dropbox/roto/2019/rosters/ESPN-2019-04-20.txt"
+if case .threeYearAuction = ruleFormat {
+    hitterFilenameNextYear = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2020-batters-auctionvalues.csv"
+    hitterFilenameFollowingYear = "/Users/jaim/Dropbox/roto/2019/Zips/2019-04-19/Zips-projections-2021-batters-auctionvalues.csv"
+} else {
+    hitterFilenameNextYear = nil
+    hitterFilenameFollowingYear = nil
+}
 
-var hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename, pitcherFilename: nil)
-var hitterValuesIn2020 = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename2020, pitcherFilename: nil, csvFormat: .rotoswift)
-var hitterValuesIn2021 = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename2021, pitcherFilename: nil, csvFormat: .rotoswift)
+let pitcherFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Pitchers.csv"
+let rosterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/rosters/2021-04-10-ESPN_Baseball_Rosters2__629542443.csv"
+
+let hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename, pitcherFilename: nil)
+
+let hitterValuesNextYear: [PlayerAuction]?
+let hitterValuesFollowingYear: [PlayerAuction]?
+
+if case .threeYearAuction = ruleFormat {
+    hitterValuesNextYear = buildPlayerAuctionValuesArray(hitterFilename: hitterFilenameNextYear, pitcherFilename: nil, csvFormat: csvFormat)
+    hitterValuesFollowingYear = buildPlayerAuctionValuesArray(hitterFilename: hitterFilenameFollowingYear, pitcherFilename: nil, csvFormat: csvFormat)
+} else {
+    hitterValuesNextYear = nil
+    hitterValuesFollowingYear = nil
+}
 
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 let league = buildLeague(with: rosterFilename)
 
+let rosterFile = RosterFile.ESPNScrapeCSV(rosterFilename)
+
+let teams = buildTeams(from: rosterFile)
+
 var sortedHitterValues = hitterValues.sorted(by: { $0.auctionValue > $1.auctionValue })
 var sortedPitcherValues = pitcherValues.sorted(by: { $0.auctionValue > $1.auctionValue })
+
+let playerComparer = PlayerComparer()
 
 //let totalPlayerNames = league.teams.flatMap { $0.players.map { $0.name} }
 //
@@ -72,14 +103,43 @@ struct PlayerKeeperActualValue {
 
 print("Here are the best available hitters")
 
-let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo: 100).map { hitter in
-    let valueIn2020 = hitterValuesIn2020.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
-    let valueIn2021 = hitterValuesIn2021.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
-    return PlayerKeeperValue(name: hitter.fullName, value: hitter.auctionValue, nextYearValue: valueIn2020, followingYearValue: valueIn2021)
-}
+if case .threeYearAuction = ruleFormat {
+    let nextTwoYearsHitters: [PlayerKeeperValue] = sortedHitterValues.prefix(upTo: 100).map { hitter in
+        let nextYearValue = hitterValuesNextYear?.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+        let followingYearValue = hitterValuesFollowingYear?.first(where: { $0.fullName == hitter.fullName })?.auctionValue ?? 0.0
+        return PlayerKeeperValue(name: hitter.fullName, value: hitter.auctionValue, nextYearValue: nextYearValue, followingYearValue: followingYearValue)
+    }
 
-nextTwoYearsHitters.sorted(by: { $0.futureValue > $1.futureValue }).forEach {
-    print("\($0) - total: \($0.totalValue) - future: \($0.futureValue)")
+    nextTwoYearsHitters.sorted(by: { $0.futureValue > $1.futureValue }).forEach {
+        print("\($0) - total: \($0.totalValue) - future: \($0.futureValue)")
+    }
+} else {
+    // single year
+
+    let allPlayers = teams.flatMap {
+        $0.players
+    }
+
+    let freeAgentHitters = sortedHitterValues.filter { playerAuction -> Bool in
+        !allPlayers.contains {
+            playerComparer.isSamePlayer(playerOne: playerAuction, playerTwo: $0)
+        }
+    }
+
+    freeAgentHitters.prefix(20).forEach {
+        print($0)
+    }
+
+    print("-----------------")
+    let freeAgentPitchers = sortedPitcherValues.filter { playerAuction -> Bool in
+        !allPlayers.contains {
+            playerComparer.isSamePlayer(playerOne: playerAuction, playerTwo: $0)
+        }
+    }
+
+    freeAgentPitchers.prefix(20).forEach {
+        print($0)
+    }
 }
 
 //sortedHitterValues.prefix(upTo: 20).forEach { hitter in

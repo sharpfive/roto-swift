@@ -49,7 +49,7 @@ public class FanGraphsProjectionRepository {
     }
 
     func getPlayers(for filename: String) -> [FanGraphsPlayer] {
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true) // It must be true.

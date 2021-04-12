@@ -63,7 +63,7 @@ public class ESPNSCrapeCSVRosterRepository: TeamRepository {
         let nameTeamPositionRow = 0
         let playerDataRow = 1
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true)
@@ -75,6 +75,10 @@ public class ESPNSCrapeCSVRosterRepository: TeamRepository {
             let playerDataString = row[playerDataRow]
 
             let names = extractPlayerNames(fromArray: playerDataString)
+
+            if names.isEmpty {
+                continue
+            }
 
             let playerKeeperPrices = names.map { PlayerKeeperPrice(name: $0, keeperPrice: 1)}
 
@@ -121,6 +125,10 @@ public class ESPNSCrapeCSVRosterRepository: TeamRepository {
 
         FilterWords.allCases.forEach { filterString in
             preString = preString.replacingOccurrences(of: filterString.rawValue, with: "")
+        }
+
+        if preString.hasSuffix("O") {
+            preString = String(preString.dropLast())
         }
 
         return preString

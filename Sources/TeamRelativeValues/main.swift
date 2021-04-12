@@ -56,7 +56,7 @@ let estimateKeepers = true
 // let rosterFile = RosterFile.ESPNScrapeCSV(auctionValuesFilename) // Scraped csv of full roster data
 // let rosterFile = RosterFile.FantraxRostersScrapeCSV(auctionValuesFilename)
 let rosterFile = RosterFile.YahooRostersScrapeCSV(auctionValuesFilename)
-_ = processTeamsWithRelativeValues(auctionValues: rosterFile,
+_ = processTeamsWithRelativeValues(rosterFile: rosterFile,
                                    fangraphsHitterFilename: hitterFilename,
                                    fangraphsPitcherFilename: pitcherFilename,
                                    estimateKeepers: estimateKeepers)

@@ -13,7 +13,7 @@ public enum CSVFormat {
 }
 
 public func buildLeague(with filename: String) -> League {
-    let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+    let leagueRostersDataString = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
     let repository = ESPNLeagueRostersRepository2019()
     let leagueRosters = repository.getLeagueRosters(from: leagueRostersDataString)
     return leagueRosters

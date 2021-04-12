@@ -8,8 +8,8 @@
 import Foundation
 
 public struct Team {
-    let name: String
-    let players: [PlayerKeeperPrice]
+    public let name: String
+    public let players: [PlayerKeeperPrice]
 }
 
 public struct TeamPlayerRelativeValue {

@@ -17,7 +17,7 @@ public class PlayerFieldPositionRepository {
     public func getPlayers(from filename: String) throws -> [League.Player] {
         let nameFieldValue = "ï»¿\"PlayerName\""
         let elligiblePositionsFieldValue = "POS"
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true) // It must be true.

@@ -30,7 +30,7 @@ public class CBAuctionValueRepository: TeamRepository {
     }
 
 	public func getAuctionValues() -> [PlayerKeeperPrice] {
-		let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+		let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
 		let csv = try! CSVReader(string: playerDataCSV,
 		                         hasHeaderRow: false)
@@ -52,7 +52,7 @@ public class CBAuctionValueRepository: TeamRepository {
 
     public func getTeams() -> [Team] {
 
-        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.ascii)
+        let playerDataCSV = try! String(contentsOfFile: filename, encoding: String.Encoding.utf8)
 
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: false)
