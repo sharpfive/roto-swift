@@ -10,7 +10,9 @@ let ruleFormat = RuleFormat.singleYear
 let csvFormat = CSVFormat.fangraphs
 
 // This will take projections and determine the best available free-agents
-let hitterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Batters.csv"
+//let hitterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Batters.csv"
+let hitterFilename = "/Users/jaim/Dropbox/roto/cash/2021/projections/2021-04-12/FanGraphs Leaderboard Batters.csv"
+
 
 let hitterFilenameNextYear: String?
 let hitterFilenameFollowingYear: String?
@@ -23,8 +25,12 @@ if case .threeYearAuction = ruleFormat {
     hitterFilenameFollowingYear = nil
 }
 
-let pitcherFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Pitchers.csv"
-let rosterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/rosters/2021-04-10-ESPN_Baseball_Rosters2__629542443.csv"
+//let pitcherFilename = "/Users/jaim/Dropbox/roto/C&B/2021/projections/2021-04-10/FanGraphs Leaderboard Pitchers.csv"
+let pitcherFilename = "/Users/jaim/Dropbox/roto/cash/2021/projections/2021-04-12/FanGraphs Leaderboard Pitchers.csv"
+
+//let rosterFilename = "/Users/jaim/Dropbox/roto/C&B/2021/rosters/2021-04-10-ESPN_Baseball_Rosters2__629542443.csv"
+let rosterFilename = "/Users/jaim/Dropbox/roto/cash/2021/Fantrax_Rosters__982415678-2021-04-12_Team_Names.csv"
+
 
 let hitterValues = buildPlayerAuctionValuesArray(hitterFilename: hitterFilename, pitcherFilename: nil)
 
@@ -42,7 +48,7 @@ if case .threeYearAuction = ruleFormat {
 var pitcherValues = buildPlayerAuctionValuesArray(hitterFilename: nil, pitcherFilename: pitcherFilename)
 let league = buildLeague(with: rosterFilename)
 
-let rosterFile = RosterFile.ESPNScrapeCSV(rosterFilename)
+let rosterFile = RosterFile.FantraxRostersScrapeCSV(rosterFilename) // RosterFile.ESPNScrapeCSV(rosterFilename)
 
 let teams = buildTeams(from: rosterFile)
 
