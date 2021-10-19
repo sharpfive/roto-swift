@@ -334,12 +334,12 @@ public func convertFileToBatters(filename: String) -> [Batter] {
     let headerRow = csv.headerRow!
 
     print(headerRow)
-    let homeRunsRowOptional = headerRow.index(of: BatterFields.homeRuns.rawValue)
+    let homeRunsRowOptional = headerRow.firstIndex(of: BatterFields.homeRuns.rawValue)
     let nameRowOptional: Int? = 0
-    let runsRowOptional = headerRow.index(of: BatterFields.runs.rawValue)
-    let onBasePercentageRowOptional = headerRow.index(of: BatterFields.onBasePercentage.rawValue)
-    let stolenBasesRowOptional = headerRow.index(of: BatterFields.steals.rawValue)
-    let runsBattedInRowOptional = headerRow.index(of: BatterFields.runsBattedIn.rawValue)
+    let runsRowOptional = headerRow.firstIndex(of: BatterFields.runs.rawValue)
+    let onBasePercentageRowOptional = headerRow.firstIndex(of: BatterFields.onBasePercentage.rawValue)
+    let stolenBasesRowOptional = headerRow.firstIndex(of: BatterFields.steals.rawValue)
+    let runsBattedInRowOptional = headerRow.firstIndex(of: BatterFields.runsBattedIn.rawValue)
 
     guard let homeRunsRow = homeRunsRowOptional,
         let nameRow = nameRowOptional,
@@ -377,11 +377,11 @@ public func convertFileToPitchers(filename: String) -> [Pitcher] {
     let headerRow = csv.headerRow!
 
     print(headerRow)
-    let strikeoutsRowOptional = headerRow.index(of: PitcherFields.strikeouts.rawValue)
+    let strikeoutsRowOptional = headerRow.firstIndex(of: PitcherFields.strikeouts.rawValue)
     let nameRowOptional: Int? = 0
-    let eraRowOptional = headerRow.index(of: PitcherFields.ERA.rawValue)
-    let whipRowOptional = headerRow.index(of: PitcherFields.WHIP.rawValue)
-    let inningsPitchedRowOptional = headerRow.index(of: PitcherFields.inningsPitched.rawValue)
+    let eraRowOptional = headerRow.firstIndex(of: PitcherFields.ERA.rawValue)
+    let whipRowOptional = headerRow.firstIndex(of: PitcherFields.WHIP.rawValue)
+    let inningsPitchedRowOptional = headerRow.firstIndex(of: PitcherFields.inningsPitched.rawValue)
 
     guard let strikeoutsRow = strikeoutsRowOptional,
         let nameRow = nameRowOptional,

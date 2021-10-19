@@ -54,9 +54,9 @@ public class FanGraphsProjectionRepository {
         let csv = try! CSVReader(string: playerDataCSV,
                                  hasHeaderRow: true) // It must be true.
         let headerRow = csv.headerRow!
-        let nameRowOptional = headerRow.index(of: nameFieldValue)
+        let nameRowOptional = headerRow.firstIndex(of: nameFieldValue)
 
-        let projectedAuctionValueRowOptional = headerRow.index(of: idFieldValue)
+        let projectedAuctionValueRowOptional = headerRow.firstIndex(of: idFieldValue)
 
         guard let nameRow = nameRowOptional else {
             print("Unable to find name row")

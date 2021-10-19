@@ -23,13 +23,13 @@ public class PlayerFieldPositionRepository {
                                  hasHeaderRow: true) // It must be true.
 
         let headerRow = csv.headerRow!
-        let nameRowOptional = headerRow.index(of: nameFieldValue)
+        let nameRowOptional = headerRow.firstIndex(of: nameFieldValue)
 
         guard let nameRow = nameRowOptional else {
             throw PlayerCSVError.missingField(fieldName: nameFieldValue)
         }
 
-        let elligiblePositionsFieldValueOptional = headerRow.index(of: elligiblePositionsFieldValue)
+        let elligiblePositionsFieldValueOptional = headerRow.firstIndex(of: elligiblePositionsFieldValue)
 
         guard let elligiblePositionsRow = elligiblePositionsFieldValueOptional else {
             throw PlayerCSVError.missingField(fieldName: elligiblePositionsFieldValue)
