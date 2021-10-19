@@ -109,9 +109,9 @@ public class ESPNSCrapeCSVRosterRepository: TeamRepository {
 //            return nil
 //        }
 
-        guard let range = teamAbbreviationStrings.compactMap { abbreviation in
+        guard let range = teamAbbreviationStrings.compactMap({ abbreviation in
             playerString.range(of: abbreviation)
-        }.sorted { $0.lowerBound < $1.lowerBound }.last else {
+        }).sorted(by: { $0.lowerBound < $1.lowerBound }).last else {
             print("extractName rejecting \(playerString)")
             return nil
         }
