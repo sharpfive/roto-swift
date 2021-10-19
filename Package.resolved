@@ -2,7 +2,7 @@
   "object": {
     "pins": [
       {
-        "package": "Codextended",
+        "package": "codextended",
         "repositoryURL": "https://github.com/johnsundell/codextended.git",
         "state": {
           "branch": null,
@@ -20,7 +20,7 @@
         }
       },
       {
-        "package": "Files",
+        "package": "files",
         "repositoryURL": "https://github.com/johnsundell/files.git",
         "state": {
           "branch": null,
@@ -29,7 +29,7 @@
         }
       },
       {
-        "package": "Ink",
+        "package": "ink",
         "repositoryURL": "https://github.com/johnsundell/ink.git",
         "state": {
           "branch": null,
@@ -38,7 +38,7 @@
         }
       },
       {
-        "package": "Oliva",
+        "package": "oliva",
         "repositoryURL": "https://github.com/sharpfive/oliva.git",
         "state": {
           "branch": "dev",
@@ -56,7 +56,7 @@
         }
       },
       {
-        "package": "Publish",
+        "package": "publish",
         "repositoryURL": "https://github.com/johnsundell/publish.git",
         "state": {
           "branch": null,
@@ -65,7 +65,7 @@
         }
       },
       {
-        "package": "ShellOut",
+        "package": "shellout",
         "repositoryURL": "https://github.com/johnsundell/shellout.git",
         "state": {
           "branch": null,
@@ -74,7 +74,7 @@
         }
       },
       {
-        "package": "Sweep",
+        "package": "sweep",
         "repositoryURL": "https://github.com/johnsundell/sweep.git",
         "state": {
           "branch": null,
@@ -83,7 +83,7 @@
         }
       },
       {
-        "package": "llbuild",
+        "package": "swift-llbuild",
         "repositoryURL": "https://github.com/apple/swift-llbuild.git",
         "state": {
           "branch": null,
@@ -92,7 +92,7 @@
         }
       },
       {
-        "package": "SwiftPM",
+        "package": "swift-package-manager",
         "repositoryURL": "https://github.com/apple/swift-package-manager.git",
         "state": {
           "branch": null,
