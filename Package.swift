@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -9,7 +9,7 @@ let package = Package(
             .library(name: "RotoSwift", targets: ["RotoSwift"])
     ],
     dependencies: [
-    .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMinor(from: "2.3.1")),
+    .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMajor(from: "2.3.1")),
     .package(url: "https://github.com/apple/swift-package-manager.git", .exact("0.5.0")),
     .package(url: "https://github.com/JohnSundell/Plot.git", from: "0.7.0"),
     .package(url: "https://github.com/johnsundell/publish.git", from: "0.1.0"),
@@ -18,69 +18,109 @@ let package = Package(
     targets: [
         .target(
             name: "RotoSwift",
-            dependencies: ["CSV"]
+            dependencies: [
+                .product(name: "CSV", package: "CSV.swift")
+            ]
         ),
         .target(
             name: "SimulatorLib",
-            dependencies: ["CSV", "RotoSwift"]
+            dependencies: [
+                "RotoSwift",
+                .product(name: "CSV", package: "CSV.swift")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "PlayerRelativeValues",
-            dependencies: ["RotoSwift", "SPMUtility"]
+            dependencies: [
+                "RotoSwift", 
+                .product(name: "SPMUtility", package: "swift-package-manager")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "TeamRelativeValues",
             dependencies: [
                 "RotoSwift", 
                 .product(name: "SPMUtility", package: "swift-package-manager")
             ]
         ),
-        .executableTarget(
+        .target(
             name: "ESPNScrape",
             dependencies: ["RotoSwift"]
         ),
-        .executableTarget(
+        .target(
             name: "LeagueRostersScrape",
-            dependencies: ["RotoSwift", "SPMUtility"]
+            dependencies: [
+                "RotoSwift", 
+                .product(name: "SPMUtility", package: "swift-package-manager")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "HitterAuctionValues",
-            dependencies: ["RotoSwift", "SPMUtility"]
+            dependencies: [
+                "RotoSwift", 
+                .product(name: "SPMUtility", package: "swift-package-manager")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "PitcherAuctionValues",
-            dependencies: ["RotoSwift", "SPMUtility"]
+            dependencies: [
+                "RotoSwift", 
+                .product(name: "SPMUtility", package: "swift-package-manager")
+            ]
         ),
 
-        .executableTarget(
+        .target(
             name: "FreeAgentFinder",
             dependencies: ["RotoSwift"]
         ),
-        .executableTarget(
+        .target(
             name: "Drafter",
             dependencies: ["RotoSwift"]
         ),
-        .executableTarget(
+        .target(
             name: "GameSimulator",
-            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib",]
+            dependencies: [
+                "RotoSwift",
+                .product(name: "CSV", package: "CSV.swift"),
+                .product(name: "SPMUtility", package: "swift-package-manager")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "LeagueSimulator",
-            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib", "Oliva", "SimulationLeagueSiteGenerator"]
+            dependencies: [
+                "RotoSwift", 
+                "SimulatorLib",
+                .product(name: "SimulationLeagueSiteGenerator", package: "oliva"),
+                .product(name: "CSV", package: "CSV.swift"),
+                .product(name: "SPMUtility", package: "swift-package-manager"),
+                .product(name: "Oliva", package: "oliva")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "AtBatSimulator",
-            dependencies: ["RotoSwift", "CSV", "SPMUtility", "SimulatorLib"]
+            dependencies: [
+                "RotoSwift",
+                "SimulatorLib",
+                .product(name: "CSV", package: "CSV.swift"),
+                .product(name: "SPMUtility", package: "swift-package-manager"),
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "SimHTML",
-            dependencies: ["RotoSwift", "SimulatorLib", "Plot", "SPMUtility", "Publish", "Oliva"]
+            dependencies: [
+                "RotoSwift",
+                "SimulatorLib",
+                .product(name: "SPMUtility", package: "swift-package-manager"),
+                .product(name: "Plot", package: "publish"),
+                .product(name: "Publish", package: "publish"),
+                .product(name: "Oliva", package: "oliva")
+            ]
         ),
-        .executableTarget(
+        .target(
             name: "ProjectionsToAuctionValues",
             dependencies: ["RotoSwift"]
         ),
-        .executableTarget(
+        .target(
             name: "ProjectionsToAuctionValuesPitchers",
             dependencies: ["RotoSwift"]
         ),
