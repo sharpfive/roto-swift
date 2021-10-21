@@ -60,14 +60,12 @@ let package = Package(
             name: "HitterAuctionValues",
             dependencies: [
                 "RotoSwift", 
-//                .product(name: "SPMUtility", package: "swift-package-manager")
             ]
         ),
         .target(
             name: "PitcherAuctionValues",
             dependencies: [
                 "RotoSwift", 
-//                .product(name: "SPMUtility", package: "swift-package-manager")
             ]
         ),
 
@@ -77,7 +75,10 @@ let package = Package(
         ),
         .target(
             name: "Drafter",
-            dependencies: ["RotoSwift"]
+            dependencies: [
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
         ),
         .target(
             name: "GameSimulator",
