@@ -34,6 +34,11 @@ Scrape a list of the League's rosters and compare that to projected values to de
 ### GameSimulator
 This takes hitter and pitcher projections, and an output of a CouchManagers draft CSV and simulates a game between two teams. Output to screen
 
+### HitterAuctionValues
+Takes a list of hitter projections, and converts Roto auction values for it.
+
+League values are hardcoded inside convertProjectionsFileToActionValues. Someday I'll make it configurable
+
 ### LeagueRostersScrape
 
 * Scrape league roster data from a copied-and-saved text file from a **Rosters** page from an ESPN league.

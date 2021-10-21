@@ -55,7 +55,8 @@ let package = Package(
         .target(
             name: "HitterAuctionValues",
             dependencies: [
-                "RotoSwift", 
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(
@@ -79,7 +80,6 @@ let package = Package(
         .target(
             name: "GameSimulator",
             dependencies: [
-                "RotoSwift",
                 "SimulatorLib",
                 .product(name: "CSV", package: "CSV.swift"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),

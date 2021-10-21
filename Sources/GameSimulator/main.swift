@@ -6,12 +6,13 @@
 //
 
 // ex swift run GameSimulator ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv ~/Dropbox/roto/cash/2020/2020-04-05-Auction-final.csv
+
+import ArgumentParser
 import Foundation
-import RotoSwift
+
 import CSV
 import SimulatorLib
 
-import ArgumentParser
 
 struct GameSimulator: ParsableCommand {
     @Argument(help: "CSV file of hitter projections")
