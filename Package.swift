@@ -80,8 +80,9 @@ let package = Package(
             name: "GameSimulator",
             dependencies: [
                 "RotoSwift",
+                "SimulatorLib",
                 .product(name: "CSV", package: "CSV.swift"),
-//                .product(name: "SPMUtility", package: "swift-package-manager")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(

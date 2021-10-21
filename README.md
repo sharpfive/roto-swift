@@ -19,14 +19,20 @@ You need to have Swift installed on your machine to run this. Most people do thi
 
 That said, here are the apps:
 
+### AtBatSimulator
+Takes a list of batter and pitcher projections and runs a bunch of simulated At Bats. This is used to make sure the algorithm that predicts the outcomes is reasonable.
 
-### ESPNScrape
+    Note: the id used for the pitcher and hitter is hardcoded in the code. Maybe someday I'll extract them to a parameter
 
-Aborted attempt to log in to my ESPN site and scrape data. Not much interesting here.
+### Drafter
+This was used to detect the best player to draft in a draft with Major league and Minor league players. 
 
 ### FreeAgentFinder
 
 Scrape a list of the League's rosters and compare that to projected values to determine the best available free agent.
+
+### GameSimulator
+This takes hitter and pitcher projections, and an output of a CouchManagers draft CSV and simulates a game between two teams. Output to screen
 
 ### LeagueRostersScrape
 
