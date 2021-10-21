@@ -8,7 +8,22 @@
 import CSV
 import Foundation
 import SimulatorLib
-import SPMUtility
+import ArgumentParser
+
+struct AtBatSimulator: ParsableCommand {
+    @Argument(help: "CSV file of hitter projections")
+    var hitterProjectionsFilename: String
+
+    @Argument(help: "CSV file of pitcher projections")
+    var pitcherProjectionsFilename: String
+
+    mutating func run() throws {
+        runMain(hitterFilename: hitterProjectionsFilename,
+                pitcherFilename: pitcherProjectionsFilename)
+    }
+}
+
+AtBatSimulator.main()
 
 struct AtBatListData {
     let atBatOutcomes: [AtBatOutcome]
@@ -78,86 +93,34 @@ struct AtBatListData {
     }
 }
 
+func runMain(hitterFilename: String, pitcherFilename: String) {
+    let hitterProjections = inputHitterProjections(filename: hitterFilename)
+    let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
 
-let parser = ArgumentParser(commandName: "GameSimulator",
-usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv --linup lineups.csv]",
-overview: "Converts a set of hitter statistic projections and turns them into auction values")
+    let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections,
+                                               batterDictionary: hitterProjections)
 
-let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters projections.")
+    let averageAtBatProbabilities = converter.baseAtBatProbabilites
 
-let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitcher projections.")
+    let pitcherId = "13125" //Gerrit Cole
+    let pitcherProjection = pitcherProjections[pitcherId]!
+    let pitcherProbability = converter.createPitcherProbability(for: pitcherProjection).probability
 
-let parsedArguments: SPMUtility.ArgumentParser.Result
 
-let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
+    let hitterId = "20123" //Juan Soto
+    let hitterProjection = hitterProjections[hitterId]!
+    let hitterProbability = hitterProjection.probability
 
-do {
-    parsedArguments = try parser.parse(arguments)
-} catch let error as ArgumentParserError {
-    print(error.description)
-    exit(0)
-} catch let error {
-    print(error.localizedDescription)
-    exit(0)
+    let atBatOutcomes = (0..<10000).map { _ in
+        getAtBatEvent(pitcherProbability: pitcherProbability,
+                                        batterProbability: hitterProbability,
+                                        baseProbability: defaultAtBatEventProbability)
+    }
+
+    let atBatData = AtBatListData(atBatOutcomes: atBatOutcomes)
+
+    print("AVG: \(atBatData.battingAverage)")
+    print("OBP: \(atBatData.onBasePercentage)")
+    print("SLG: \(atBatData.sluggingPercentage)")
+    print("OPS: \(atBatData.onBasePlusSlugging)")
 }
-
-let hitterFilename = parsedArguments.get(hitterFilenameOption)
-let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
-
-guard let hitterFilename = hitterFilename else {
-    print("Hitter filename is required")
-    exit(0)
-}
-
-guard let pitcherFilename = pitcherFilename else {
-    print("Pitcher filename is required")
-    exit(0)
-}
-
-let hitterProjections = inputHitterProjections(filename: hitterFilename)
-let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-
-let converter = ProbabilityLineupConverter(pitcherDictionary: pitcherProjections,
-                                           batterDictionary: hitterProjections)
-
-let averageAtBatProbabilities = converter.baseAtBatProbabilites
-
-//let pitcherId = "13125" //Gerrit Cole
-let pitcherId = "6397" // Jake Odorizzi
-let pitcherProjection = pitcherProjections[pitcherId]!
-let pitcherProbability = converter.createPitcherProbability(for: pitcherProjection).probability
-
-
-let hitterId = "20123" //Juan Soto
-let hitterProjection = hitterProjections[hitterId]!
-let hitterProbability = hitterProjection.probability
-
-//print("hitterProbability :\(hitterProbability)")
-//print("baseProbability: \(averageAtBatProbabilities)")
-
-let atBatOutcomes = (0..<10000).map { _ in
-    getAtBatEvent(pitcherProbability: pitcherProbability,
-                                    batterProbability: hitterProbability,
-                                    baseProbability: defaultAtBatEventProbability)
-}
-
-let atBatData = AtBatListData(atBatOutcomes: atBatOutcomes)
-
-print("AVG: \(atBatData.battingAverage)")
-print("OBP: \(atBatData.onBasePercentage)")
-print("SLG: \(atBatData.sluggingPercentage)")
-print("OPS: \(atBatData.onBasePlusSlugging)")
-
-
-
-
-
-
-
-
-
-
-
-
-
-

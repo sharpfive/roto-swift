@@ -6,14 +6,16 @@
 //
 
 // ex swift run LeagueSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
+import ArgumentParser
 import Foundation
+
 //import RotoSwift
 import CSV
-import SPMUtility
 import SimulatorLib
 import OlivaDomain
 import SimulationLeagueSiteGenerator
 import Publish
+
 
 struct StderrOutputStream: TextOutputStream {
     mutating func write(_ string: String) {
