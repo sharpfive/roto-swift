@@ -10,12 +10,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/yaslab/CSV.swift.git", .upToNextMajor(from: "2.3.1")),
-        .package(url: "https://github.com/apple/swift-package-manager.git", .upToNextMajor(from: "0.5.0")), //aiai
         .package(url: "https://github.com/JohnSundell/Plot.git", .upToNextMajor(from: "0.7.0")),
-        .package(url: "https://github.com/johnsundell/publish.git", .upToNextMajor(from: "0.1.0")),
-        .package(url: "https://github.com/sharpfive/oliva.git", .branch("dev")),
+        .package(url: "https://github.com/johnsundell/Publish.git", .upToNextMajor(from: "0.1.0")),
+        .package(url: "https://github.com/sharpfive/Oliva.git", .branch("dev")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.0.1")),
-
     ],
     targets: [
         .target(
@@ -40,13 +38,6 @@ let package = Package(
         ),
         .target(
             name: "TeamRelativeValues",
-            dependencies: [
-                "RotoSwift", 
-//                .product(name: "SPMUtility", package: "swift-package-manager")
-            ]
-        ),
-        .target(
-            name: "LeagueRostersScrape",
             dependencies: [
                 "RotoSwift", 
 //                .product(name: "SPMUtility", package: "swift-package-manager")
@@ -90,10 +81,10 @@ let package = Package(
             dependencies: [
                 "RotoSwift", 
                 "SimulatorLib",
-                .product(name: "SimulationLeagueSiteGenerator", package: "oliva"),
+                .product(name: "SimulationLeagueSiteGenerator", package: "Oliva"),
                 .product(name: "CSV", package: "CSV.swift"),
-//                .product(name: "SPMUtility", package: "swift-package-manager"),
-                .product(name: "Oliva", package: "oliva")
+                .product(name: "Oliva", package: "Oliva"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(
@@ -111,9 +102,9 @@ let package = Package(
                 "RotoSwift",
                 "SimulatorLib",
 //                .product(name: "SPMUtility", package: "swift-package-manager"),
-                .product(name: "Plot", package: "plot"),
-                .product(name: "Publish", package: "publish"),
-                .product(name: "Oliva", package: "oliva")
+                .product(name: "Plot", package: "Plot"),
+                .product(name: "Publish", package: "Publish"),
+                .product(name: "Oliva", package: "Oliva")
             ]
         ),
         .target(
@@ -124,10 +115,5 @@ let package = Package(
             name: "ProjectionsToAuctionValuesPitchers",
             dependencies: ["RotoSwift"]
         ),
-        .testTarget(
-            name: "LeagueRostersScrapeTests",
-            dependencies: ["LeagueRostersScrape", "RotoSwift"],
-            path: "Tests"
-        )
     ]
 )

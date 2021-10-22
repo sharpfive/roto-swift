@@ -70,6 +70,8 @@ This takes a scrape of the league rosters and adds the values for all the player
 
 swift run TeamRelativeValues --hitters data/FanGraphs-batters-2019-03-16.csv  --pitchers data/FanGraphs-pitchers-2019-03-16.csv --auction data/TeamRelativeValues.auctionvalues.csv
 
+### LeagueSimulator
+
 ### RotoSwift
 
 Common code that is shared between all the scripts.

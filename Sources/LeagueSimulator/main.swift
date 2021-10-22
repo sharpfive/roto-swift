@@ -5,16 +5,157 @@
 //  Created by Jaim Zuber on 5/23/20.
 //
 
-// ex swift run LeagueSimulator --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
+// ex swift run LeagueSimulator ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 import ArgumentParser
 import Foundation
 
-//import RotoSwift
 import CSV
 import SimulatorLib
 import OlivaDomain
 import SimulationLeagueSiteGenerator
 import Publish
+
+enum ArgumentError: Error {
+    case invalidArgument(name: String, value: String)
+}
+
+struct LeagueSimulatorCommand: ParsableCommand {
+    @Argument(help: "CSV file of hitter projections")
+    var hitterProjectionsFilename: String
+
+    @Argument(help: "CSV file of pitcher projections")
+    var pitcherProjectionsFilename: String
+
+    @Argument(help: "json file with Lineups data")
+    var lineupsFilename: String
+
+    @Option(name: .shortAndLong, help: "Which format to output")
+    var outputFormat: String = "text"
+
+    @Option(name: .shortAndLong, help: "Which type of lineup file format")
+    var lineupFileType: String = "auction"
+
+    @Option(help: "Name of the League")
+    var leagueName: String = "FanSim League"
+
+    @Option(help: "GoogleAnalytics Id")
+    var googleAnalyticsId: String = ""
+
+    @Option(help: "Output path")
+    var path: String?
+
+    mutating func run() throws {
+        guard let outputFormatUnwrapped = OutputFormat(rawValue: outputFormat) else {
+            print("Invalid outputFormat: \(outputFormat)")
+            throw ArgumentError.invalidArgument(name: "outputFormat", value: outputFormat)
+        }
+
+        guard let lineupFileTypeUnwrapped = LineupFiletype(rawValue: lineupFileType) else {
+            print("Invalid lineupFileType: \(lineupFileType)")
+            throw ArgumentError.invalidArgument(name: "lineupFileType", value: lineupFileType)
+        }
+
+        try runMain(hitterFilename: hitterProjectionsFilename,
+                pitcherFilename: pitcherProjectionsFilename,
+                lineupsFilename: lineupsFilename,
+                outputFormat: outputFormatUnwrapped,
+                lineupFileType: lineupFileTypeUnwrapped,
+                leagueName: leagueName,
+                googleAnalyticsId: googleAnalyticsId,
+                path: path)
+    }
+}
+
+LeagueSimulatorCommand.main()
+
+func runMain(hitterFilename: String,
+             pitcherFilename: String,
+             lineupsFilename: String,
+             outputFormat: OutputFormat,
+             lineupFileType: LineupFiletype,
+             leagueName: String,
+             googleAnalyticsId: String,
+             path pathString: String?) throws {
+    let hitterProjections = inputHitterProjections(filename: hitterFilename)
+    let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
+
+    let teams: [TeamProjections]
+
+    switch lineupFileType {
+    case .auction:
+        teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+    case .draft:
+        teams = createDraftTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
+    }
+
+    guard teams.count > 0 else {
+        print("Error no teams defined")
+        exit(0)
+    }
+
+    srand48(Int(Date().timeIntervalSince1970))
+
+    let gameTeamResults = simulateGames(
+        for: teams,
+        pitcherDictionary: pitcherProjections,
+        batterDictionary: hitterProjections
+    )
+
+    let teamViewModels: [TeamViewModel] = teams.map { lineup in
+        let batterViewModels = lineup.batters.map { lineupBatter in
+            return PlayerViewModel(fullName: lineupBatter.fullName)
+        }
+
+        let pitcherViewModels = lineup.pitchers.map { lineupPitcher in
+            return PlayerViewModel(fullName: lineupPitcher.fullName)
+        }
+        return TeamViewModel(name: lineup.name, batters: batterViewModels, pitchers: pitcherViewModels)
+    }
+
+    guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: teams, gameTeamResults: gameTeamResults) else {
+        print("ERROR: unable to create leagueResultsViewModel")
+        exit(0)
+    }
+
+    let gameViewModels = createGameViewModels(from: gameTeamResults)
+
+
+    let leagueData = LeagueData(leagueName: leagueName,
+                                teams: teamViewModels,
+                                leagueResults: leagueResultsViewModel,
+                                games: gameViewModels
+                    )
+
+    let gameResultData = GameResultData(gameTeamResults: gameTeamResults)
+    print("ERA: \(gameResultData.leagueEarnedRunAverage)")
+
+    switch outputFormat {
+    case .text:
+        printText(gameTeamResults.map { $0.gameResult})
+    case .json:
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .prettyPrinted
+        let data = try jsonEncoder.encode(leagueData)
+
+        print(String(data: data, encoding: .utf8)!)
+    case .publish:
+        let path: Path?
+        if let pathString = pathString {
+            path = Path(pathString)
+        } else {
+            path = nil
+        }
+
+        print("DEBUG path=\(String(describing: path))")
+
+        if googleAnalyticsId.isEmpty {
+            print("WARNING: googleAnalyticsKey is empty")
+        }
+
+        publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: googleAnalyticsId, path: path )
+    }
+
+}
 
 
 struct StderrOutputStream: TextOutputStream {
@@ -170,56 +311,6 @@ func createGameViewModels(from gameTeamResults: [GameTeamResult]) -> [GameViewMo
     return gameViewModels
 }
 
-let parser = ArgumentParser(commandName: "GameSimulator",
-usage: "filename [--hitters  hitter-projections.csv --pitchers  pitching-projections.csv --output output-auction-values-csv --linup lineups.csv]",
-overview: "Converts a set of hitter statistic projections and turns them into auction values")
-
-let hitterFilenameOption = parser.add(option: "--hitters", shortName: "-h", kind: String.self, usage: "Filename for the hitters projections.")
-
-let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitcher projections.")
-
-let outputFormatOption = parser.add(option: "--format", shortName: "-f", kind: String.self, usage: "Output Format text, json")
-
-let lineupsFilenameOption = parser.add(option: "--lineups", shortName: "-l", kind: String.self, usage: "Filename for the team lineups.")
-
-let lineupsFiletypeOption = parser.add(option: "--lineupType", shortName: "-t", kind: String.self, usage: "Type of lineup file draft or auction.")
-
-
-let leagueNameOption = parser.add(option: "--leaguename", shortName: "-ln", kind: String.self, usage: "Name of the League")
-
-let leagueAbbreviationOption = parser.add(option: "--leagueAbbreviation", shortName: "-la", kind: String.self, usage: "Abbreviation for the league for html links, no spaces")
-
-let googleAnalyticsOption = parser.add(option: "--googleAnalytics", shortName: "-ga", kind: String.self, usage: "Google Analytics string")
-
-let pathOption = parser.add(option: "--path", shortName: "-p", kind: String.self, usage: "Output directory")
-
-
-let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
-
-let parsedArguments: SPMUtility.ArgumentParser.Result
-
-do {
-    parsedArguments = try parser.parse(arguments)
-} catch let error as ArgumentParserError {
-    print(error.description)
-    exit(0)
-} catch let error {
-    print(error.localizedDescription)
-    exit(0)
-}
-
-// Required fields
-let hitterFilename = parsedArguments.get(hitterFilenameOption)
-let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
-let lineupsFileName = parsedArguments.get(lineupsFilenameOption)
-let lineupsFiletype = parsedArguments.get(lineupsFiletypeOption)
-let outputFormatArgument = parsedArguments.get(outputFormatOption)
-let pathString = parsedArguments.get(pathOption)
-let googleAnalyticsKey = parsedArguments.get(googleAnalyticsOption) ?? "Unknown GA Key"
-
-let leagueName = parsedArguments.get(leagueNameOption) ?? "FanSim League"
-let leagueAbbreviation = parsedArguments.get(leagueAbbreviationOption) ?? "RL1"
-
 enum OutputFormat: String {
     case text
     case json
@@ -230,72 +321,6 @@ public enum LineupFiletype: String {
     case draft
     case auction
 }
-
-guard let hitterFilename = hitterFilename else {
-    print("Hitter filename is required")
-    exit(0)
-}
-
-guard let pitcherFilename = pitcherFilename else {
-    print("Pitcher filename is required")
-    exit(0)
-}
-
-guard let lineupsFilename = lineupsFileName else {
-    print("Lineup filename is required")
-    exit(0)
-}
-
-let lineupType: LineupFiletype
-
-if let lineupsFiletype = lineupsFiletype {
-    lineupType = LineupFiletype(rawValue: lineupsFiletype) ?? .auction
-} else {
-    lineupType = .auction
-}
-
-let outputFormat: OutputFormat
-if let outputFormatArgument = outputFormatArgument {
-    guard let expectedOutputFormat = OutputFormat(rawValue: outputFormatArgument) else {
-        print("Unexpected outputFormat :\(outputFormatArgument)")
-        exit(0)
-    }
-    outputFormat = expectedOutputFormat
-} else {
-    outputFormat = .text
-}
-
-let hitterProjections = inputHitterProjections(filename: hitterFilename)
-let pitcherProjections = inputPitcherProjections(filename: pitcherFilename)
-
-let teams: [TeamProjections]
-
-switch lineupType {
-case .auction:
-    teams = createTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
-case .draft:
-    teams = createDraftTeams(filename: lineupsFilename, batterProjections: hitterProjections, pitcherProjections: pitcherProjections)
-}
-
-guard teams.count > 0 else {
-    print("Error no teams defined")
-    exit(0)
-}
-
-let totalSingles = hitterProjections.values.map { $0.singles }.reduce(0, +)
-let totalDoubles = hitterProjections.values.map { $0.doubles }.reduce(0, +)
-let totalTriples = hitterProjections.values.map { $0.triples}.reduce(0, +)
-let totalHomeRuns = hitterProjections.values.map { $0.homeRuns}.reduce(0, +)
-let totalHitByPitch = hitterProjections.values.map { $0.hitByPitch}.reduce(0, +)
-let totalPlateAppearances = hitterProjections.values.map { $0.plateAppearances}.reduce(0, +)
-
-let totalHits = totalSingles + totalDoubles + totalTriples + totalHomeRuns
-
-let percentageOfDoubles = Double(totalDoubles) / Double(totalHits)
-let percentageOfTriples = Double(totalTriples) / Double(totalHits)
-let percentageOfHitByPitch = Double(totalHitByPitch) / Double(totalPlateAppearances)
-
-let lineups = teams.map { return createLineups(for: $0) }
 
 func simulateGames(for teams: [TeamProjections], pitcherDictionary: [String : PitcherProjection], batterDictionary: [String : BatterProjection]) -> [GameTeamResult] {
     let teamsInLeague = teams.count
@@ -416,14 +441,6 @@ struct GameTeamResult {
     }
 }
 
-srand48(Int(Date().timeIntervalSince1970))
-
-let gameTeamResults = simulateGames(
-    for: teams,
-    pitcherDictionary: pitcherProjections,
-    batterDictionary: hitterProjections
-)
-
 func convertToLeagueResultsViewModel(teams: [SimulatorLib.TeamProjections], gameTeamResults: [GameTeamResult]) -> LeagueResultsViewModel? {
 
     let gameViewModels: [GameMetaDataViewModel] = gameTeamResults.map { gameTeamResult in
@@ -487,33 +504,6 @@ func calculateTeamStandingsViewModels(from gameTeamResults: [GameTeamResult]) ->
     let standingsViewModel = StandingsViewModel(teamStandings: teamStandingsViewModels)
     return standingsViewModel
 }
-
-guard let leagueResultsViewModel = convertToLeagueResultsViewModel(teams: teams, gameTeamResults: gameTeamResults) else {
-    print("ERROR: unable to create leagueResultsViewModel")
-    exit(0)
-}
-
-let lineScoreViewModals: [LineScoreViewModel] = gameTeamResults.map { gameTeamResult in
-
-    let inningScores: [LineScoreViewModel.InningResult] = gameTeamResult.gameResult.inningFrameResults.map { inningFrameResult in
-
-        return LineScoreViewModel.InningResult(inningNumber: "\(inningFrameResult.gameState.inningCount.displayNumber)",
-                                               awayTeamRunsScored: "\(inningFrameResult.gameState.totalAwayRunsScored)",
-                                               homeTeamRunsScored: "\(inningFrameResult.gameState.totalHomeRunsScored)",
-                                               isFinalInning: false)
-
-    }
-    return LineScoreViewModel(awayTeam: gameTeamResult.awayTeam.name,
-                              homeTeam: gameTeamResult.homeTeam.name,
-                              inningScores: inningScores,
-                              awayTeamHits: "\(gameTeamResult.homeTeamHits)",
-                              homeTeamHits: "\(gameTeamResult.awayTeamHits)",
-                              awayTeamFinalScore: "\(gameTeamResult.gameResult.awayScore)",
-                              homeTeamFinalScore: "\(gameTeamResult.gameResult.homeScore)")
-
-}
-
-let gameViewModels = createGameViewModels(from: gameTeamResults)
 
 extension GameTeamResult {
     func createHomeBatterBoxScore() -> [BatterBoxScore] {
@@ -634,55 +624,6 @@ extension GameTeamResult {
 
         return pitcherBoxScores
     }
-}
-
-let teamViewModels: [TeamViewModel] = teams.map { lineup in
-    let batterViewModels = lineup.batters.map { lineupBatter in
-        return PlayerViewModel(fullName: lineupBatter.fullName)
-    }
-
-    let pitcherViewModels = lineup.pitchers.map { lineupPitcher in
-        return PlayerViewModel(fullName: lineupPitcher.fullName)
-    }
-    return TeamViewModel(name: lineup.name, batters: batterViewModels, pitchers: pitcherViewModels)
-}
-
-let leagueData = LeagueData(leagueName: leagueName,
-                            teams: teamViewModels,
-                            leagueResults: leagueResultsViewModel,
-                            games: gameViewModels
-                )
-
-let gameResultData = GameResultData(gameTeamResults: gameTeamResults)
-print("ERA: \(gameResultData.leagueEarnedRunAverage)")
-
-switch outputFormat {
-case .text:
-    printText(gameTeamResults.map { $0.gameResult})
-case .json:
-//    let viewModel = convertToLeagueResultsViewModel(teams: lineups, gameTeamResults: gameTeamResults)
-//
-    let jsonEncoder = JSONEncoder()
-    jsonEncoder.outputFormatting = .prettyPrinted
-    let data = try jsonEncoder.encode(leagueData)
-
-    print(String(data: data, encoding: .utf8)!)
-case .publish:
-    let path: Path?
-    if let pathString = pathString {
-        // try createContentDirectory(at: pathString)
-        path = Path(pathString)
-    } else {
-        path = nil
-    }
-
-    print("DEBUG path=\(String(describing: path))")
-
-    if googleAnalyticsKey.isEmpty {
-        print("WARNING: googleAnalyticsKey is empty")
-    }
-
-    publishSimulationLeagueSite(from: leagueData, googleAnalyticsId: googleAnalyticsKey, at: path )
 }
 
 func createContentDirectory(at basePathString: String) throws {
