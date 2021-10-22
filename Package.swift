@@ -33,14 +33,12 @@ let package = Package(
             name: "PlayerRelativeValues",
             dependencies: [
                 "RotoSwift", 
-//                .product(name: "SPMUtility", package: "swift-package-manager")
             ]
         ),
         .target(
             name: "TeamRelativeValues",
             dependencies: [
                 "RotoSwift", 
-//                .product(name: "SPMUtility", package: "swift-package-manager")
             ]
         ),
         .target(
@@ -53,7 +51,8 @@ let package = Package(
         .target(
             name: "PitcherAuctionValues",
             dependencies: [
-                "RotoSwift", 
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
 

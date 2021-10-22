@@ -1,6 +1,6 @@
 import Foundation
 import RotoSwift
-import SPMUtility
+import ArgumentParser
 
 #if os(Linux)
     import Glibc
@@ -8,35 +8,24 @@ import SPMUtility
     import Darwin.C
 #endif
 
-let parser = ArgumentParser(commandName: "PitcherAuctionValues",
-                            usage: "filename [--pitchers  pitching-projections.csv --output output-auction-values-csv]",
-                            overview: "Converts a set of pitching statistic projections and turns them into auction values")
+struct PitcherAuctionValues: ParsableCommand {
+    @Argument(help: "CSV file of pitcher auction values")
+    var pitcherAuctionFilename: String
 
-let pitcherFilenameOption = parser.add(option: "--pitchers", shortName: "-p", kind: String.self, usage: "Filename for the pitcher projections.")
+    @Option(name: .shortAndLong, help: "CSV file to output the created auction values.")
+    var outputFilename: String?
 
-let outputFilenameOption = parser.add(option: "--output", shortName: "-o", kind: String.self, usage: "Filename for output")
-
-let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
-
-let parsedArguments: SPMUtility.ArgumentParser.Result
-
-do {
-    parsedArguments = try parser.parse(arguments)
-} catch let error as ArgumentParserError {
-    print(error.description)
-    exit(0)
-} catch let error {
-    print(error.localizedDescription)
-    exit(0)
+    mutating func run() throws {
+        runMain(pitcherFilename: pitcherAuctionFilename,
+                outputFilename: outputFilename ?? defaultFilename(for: "PitcherAuctionValues", format: "csv")
+        )
+    }
 }
 
-// Required fields
-let pitcherFilename = parsedArguments.get(pitcherFilenameOption)
-let outputFilename = parsedArguments.get(outputFilenameOption) ?? defaultFilename(for: "PitcherAuctionValues", format: "csv")
+PitcherAuctionValues.main()
 
-guard let pitcherFilename = pitcherFilename else {
-    print("Hitter filename is required")
-    exit(0)
+func runMain(pitcherFilename: String,
+             outputFilename: String) {
+
+    convertProjectionsFileToActionValues(from: pitcherFilename, to: outputFilename)
 }
-
-convertPitcherProjectionsFileToActionValues(from: pitcherFilename, to: outputFilename)
