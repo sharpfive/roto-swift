@@ -14,7 +14,7 @@ import ArgumentParser
 
 // ex swift run SimHTML --hitters ~/Dropbox/roto/sim/Steamer-600-Projections-batters.csv --pitchers ~/Dropbox/roto/sim/Steamer-600-Projections-pitchers.csv --lineups ~/Dropbox/roto/cash/2020-04-05-Auction-final.csv
 
-struct LeagueSimulatorCommand: ParsableCommand {
+struct SimHTMLCommand: ParsableCommand {
     @Argument(help: "CSV file of hitter projections")
     var hitterProjectionsFilename: String
 
@@ -30,6 +30,8 @@ struct LeagueSimulatorCommand: ParsableCommand {
                 lineupsFilename: lineupsFilename)
     }
 }
+
+SimHTMLCommand.main()
 
 struct SimulationLeague: Website {
     enum SectionID: String, WebsiteSectionID {

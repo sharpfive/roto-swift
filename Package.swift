@@ -39,7 +39,8 @@ let package = Package(
         .target(
             name: "TeamRelativeValues",
             dependencies: [
-                "RotoSwift", 
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(
