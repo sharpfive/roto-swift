@@ -32,7 +32,8 @@ let package = Package(
         .target(
             name: "PlayerRelativeValues",
             dependencies: [
-                "RotoSwift", 
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(
