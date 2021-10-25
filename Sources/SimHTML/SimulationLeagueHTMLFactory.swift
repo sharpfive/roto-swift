@@ -65,11 +65,11 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
 
         return HTML(
                     .head(
-                        .title(leagueName)
+                        .title(metadata.leagueName)
                     ),
                     .body(
                         .h1(
-                            .text("League: \(leagueName) Results")
+                            .text("League: \(metadata.leagueName) Results")
                         ),
                         .forEach(gameMetaDataViewModels) { gameMetaData in
                             .div(
@@ -83,18 +83,18 @@ class SimulationLeagueHTMLFactory: HTMLFactory {
         )
     }
 
-    func leagueHTML(for metadata: SimulationLeague.ItemMetadata ) -> HTML {
+    func leagueHTML(for metadata: SimulationLeague.ItemMetadata) -> HTML {
 
         let teams = metadata.teams
 
         return HTML(
             .head(
-                .title(leagueName)
+                .title(metadata.leagueName)
             ),
             .body(
                 .div(
                     .h1(
-                        .text("League: \(leagueName)")
+                        .text("League: \(metadata.leagueName)")
                     ),
                     .forEach(teams) { team in
                         .div(

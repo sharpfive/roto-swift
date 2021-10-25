@@ -101,15 +101,19 @@ let package = Package(
             dependencies: [
                 "RotoSwift",
                 "SimulatorLib",
-//                .product(name: "SPMUtility", package: "swift-package-manager"),
                 .product(name: "Plot", package: "Plot"),
                 .product(name: "Publish", package: "Publish"),
-                .product(name: "Oliva", package: "Oliva")
+                .product(name: "Oliva", package: "Oliva"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+
             ]
         ),
         .target(
             name: "ProjectionsToAuctionValues",
-            dependencies: ["RotoSwift"]
+            dependencies: [
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
         ),
         .target(
             name: "ProjectionsToAuctionValuesPitchers",
