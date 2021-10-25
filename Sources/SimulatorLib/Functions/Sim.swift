@@ -192,10 +192,6 @@ public func createDraftTeams(filename: String, batterProjections: [String: Batte
             name: teamName,
             pitchers: pitchers,
             batters: batters)
-
-//        if teams.count >= 2 {//aiai
-//            continue
-//        }
         teams.append(team)
     }
 
@@ -235,10 +231,6 @@ public func createTeams(filename: String, batterProjections: [String: BatterProj
             }
 
             let team = TeamProjections(identifier: "\(unwrappedCurrentTeamId)", name: currentTeamName, pitchers: pitchers, batters: batters)
-
-//            if teams.count >= 2 {//aiai
-//                continue
-//            }
 
             teams.append(team)
 

@@ -113,7 +113,7 @@ public class YahooScrapeCSVRosterRepository: TeamRepository {
         guard let range = teamAbbreviationStrings.compactMap({
             return playerString.range(of: $0)
         }).first else {
-            print("aiai rejecting \(playerString)")
+            print("rejecting \(playerString)")
             return nil
         }
 

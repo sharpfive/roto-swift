@@ -53,9 +53,6 @@ public class PlayerComparer {
     }
 
     private func trim(_ string: String) -> String {
-//        if string.contains("ñ") {
-//            print("aiai string = \(string)")
-//        }
         var trimmedString = string.replacingOccurrences(of: " Jr", with: "")
         trimmedString = string.trimmingCharacters(in: CharacterSet(charactersIn: "."))
         trimmedString = trimmedString.replacingOccurrences(of: "ó", with: "o")
