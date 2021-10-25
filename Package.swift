@@ -17,29 +17,30 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "RotoSwift",
-            dependencies: [
-                .product(name: "CSV", package: "CSV.swift")
-            ]
-        ),
-        .target(
-            name: "SimulatorLib",
+            name: "AtBatSimulator",
             dependencies: [
                 "RotoSwift",
-                .product(name: "CSV", package: "CSV.swift")
+                "SimulatorLib",
+                .product(name: "CSV", package: "CSV.swift"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
         .target(
-            name: "PlayerRelativeValues",
+            name: "Drafter",
             dependencies: [
                 "RotoSwift",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
         .target(
-            name: "TeamRelativeValues",
+            name: "FreeAgentFinder",
+            dependencies: ["RotoSwift"]
+        ),
+        .target(
+            name: "GameSimulator",
             dependencies: [
-                "RotoSwift",
+                "SimulatorLib",
+                .product(name: "CSV", package: "CSV.swift"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         ),
@@ -51,36 +52,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "PitcherAuctionValues",
-            dependencies: [
-                "RotoSwift",
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
-        ),
-
-        .target(
-            name: "FreeAgentFinder",
-            dependencies: ["RotoSwift"]
-        ),
-        .target(
-            name: "Drafter",
-            dependencies: [
-                "RotoSwift",
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
-        ),
-        .target(
-            name: "GameSimulator",
-            dependencies: [
-                "SimulatorLib",
-                .product(name: "CSV", package: "CSV.swift"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
-        ),
-        .target(
             name: "LeagueSimulator",
             dependencies: [
-                "RotoSwift", 
+                "RotoSwift",
                 "SimulatorLib",
                 .product(name: "SimulationLeagueSiteGenerator", package: "Oliva"),
                 .product(name: "CSV", package: "CSV.swift"),
@@ -89,12 +63,34 @@ let package = Package(
             ]
         ),
         .target(
-            name: "AtBatSimulator",
+            name: "PitcherAuctionValues",
             dependencies: [
                 "RotoSwift",
-                "SimulatorLib",
-                .product(name: "CSV", package: "CSV.swift"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
+        ),
+        .target(
+            name: "PlayerRelativeValues",
+            dependencies: [
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
+        ),
+        .target(
+            name: "ProjectionsToAuctionValues",
+            dependencies: [
+                "RotoSwift",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
+        ),
+        .target(
+            name: "ProjectionsToAuctionValuesPitchers",
+            dependencies: ["RotoSwift"]
+        ),
+        .target(
+            name: "RotoSwift",
+            dependencies: [
+                .product(name: "CSV", package: "CSV.swift")
             ]
         ),
         .target(
@@ -110,15 +106,18 @@ let package = Package(
             ]
         ),
         .target(
-            name: "ProjectionsToAuctionValues",
+            name: "SimulatorLib",
+            dependencies: [
+                "RotoSwift",
+                .product(name: "CSV", package: "CSV.swift")
+            ]
+        ),
+        .target(
+            name: "TeamRelativeValues",
             dependencies: [
                 "RotoSwift",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
-        ),
-        .target(
-            name: "ProjectionsToAuctionValuesPitchers",
-            dependencies: ["RotoSwift"]
         ),
     ]
 )
